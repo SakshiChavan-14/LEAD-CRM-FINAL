@@ -1,6 +1,6 @@
 import { Search, Filter, CalendarDays, ChevronDown, List, X } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
-import FollowupTabs from "./FollowupTabs";
+import FollowupTabs from "@/features/telecaller/followups/components/FollowupTabs";
 
 const DateRangeDropdown = ({ datePreset, setDatePreset, dateRange, setDateRange }) => {
   const [isOpen, setIsOpen] = useState(false);

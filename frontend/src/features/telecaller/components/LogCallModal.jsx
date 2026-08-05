@@ -7,7 +7,7 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import Button from "@/components/ui/Button";
-import { useLogInteraction } from "../hooks/useTelecallerInteractions";
+import { useLogInteraction } from "@/features/telecaller/hooks/useTelecallerInteractions";
 import {
   Phone,
   Clock,

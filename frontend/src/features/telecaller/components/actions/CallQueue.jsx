@@ -1,7 +1,7 @@
 import { Phone, Clock, Calendar } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
-import { telecallerLeadService } from "../services/telecallerLeadService";
+import { telecallerLeadService } from "@/features/telecaller/services/telecallerLeadService";
 
 const CallItem = ({ name, status, time, lastCall, onCall, isNext, onHover }) => (
   <div 

@@ -1,6 +1,6 @@
 import React from "react";
-import FollowupCard from "./FollowupCard";
-import EmptyFollowups from "./EmptyFollowups";
+import FollowupCard from "@/features/telecaller/followups/components/FollowupCard";
+import EmptyFollowups from "@/features/telecaller/followups/components/EmptyFollowups";
 
 export default function FollowupListView({ followups, onReschedule, onComplete, activeTab }) {
   if (!followups || followups.length === 0) {

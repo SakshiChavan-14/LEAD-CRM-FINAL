@@ -5,24 +5,24 @@ import { useTelecallerDashboard } from "@/features/telecaller/hooks/useTelecalle
 import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 
 // Header
-import DashboardHeader from "@/features/telecaller/components/header/DashboardHeader";
+import DashboardHeader from "@/features/telecaller/dashboard/components/DashboardHeader";
 
 // KPI
-import KPISection from "@/features/telecaller/components/kpi/KPISection";
-import TodaysFocus from "@/features/telecaller/components/kpi/TodaysFocus";
-import TodayGoalGauge from "@/features/telecaller/components/kpi/TodayGoalGauge";
+import KPISection from "@/features/telecaller/dashboard/components/KPISection";
+import TodaysFocus from "@/features/telecaller/dashboard/components/TodaysFocus";
+import TodayGoalGauge from "@/features/telecaller/dashboard/components/TodayGoalGauge";
 
 // Actions
-import NextCallsCard from "@/features/telecaller/components/actions/NextCallsCard";
+import NextCallsCard from "@/features/telecaller/calls/components/NextCallsCard";
 
 // Pipeline & Analytics
-import PipelineSection from "@/features/telecaller/components/pipeline/PipelineSection";
-import AnalyticsTrends from "@/features/telecaller/components/analytics/AnalyticsTrends";
-import WeeklyPerformance from "@/features/telecaller/components/analytics/WeeklyPerformance";
+import PipelineSection from "@/features/telecaller/dashboard/components/PipelineSection";
+import AnalyticsTrends from "@/features/telecaller/dashboard/components/AnalyticsTrends";
+import WeeklyPerformance from "@/features/telecaller/dashboard/components/WeeklyPerformance";
 
 // Followups & Activity
-import UpcomingFollowups from "@/features/telecaller/components/followups/UpcomingFollowups";
-import RecentActivity from "@/features/telecaller/components/activity/RecentActivity";
+import UpcomingFollowups from "@/features/telecaller/followups/components/UpcomingFollowups";
+import RecentActivity from "@/features/telecaller/calls/components/RecentActivity";
 
 // Modals
 import LogCallModal from "@/features/telecaller/components/LogCallModal";

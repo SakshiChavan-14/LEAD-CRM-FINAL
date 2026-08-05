@@ -18,10 +18,10 @@ const toTitleCase = (str) => {
 
 // Stitch Components
 import "@/features/telecaller/components/leads/stitch/stitch-myleads-theme.css";
-import MyLeadsHeader from "@/features/telecaller/components/leads/stitch/MyLeadsHeader";
-import MyLeadsKPISection from "@/features/telecaller/components/leads/stitch/MyLeadsKPISection";
+import MyLeadsHeader from "@/features/telecaller/leads/components/MyLeadsHeader";
+import MyLeadsKPISection from "@/features/telecaller/leads/components/MyLeadsKPISection";
 import MyLeadsFilterToolbar from "@/features/telecaller/components/leads/stitch/MyLeadsFilterToolbar";
-import MyLeadsTable from "@/features/telecaller/components/leads/stitch/MyLeadsTable";
+import MyLeadsTable from "@/features/telecaller/leads/components/MyLeadsTable";
 import TablePagination from "@/components/table/TablePagination";
 
 export default function TelecallerLeadsPage() {

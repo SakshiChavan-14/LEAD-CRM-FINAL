@@ -12,7 +12,7 @@ import WorkspaceControls from "@/features/telecaller/components/followups/Worksp
 import ReusableFilterDrawer from "@/components/layout/ReusableFilterDrawer";
 import RescheduleModal from "@/features/telecaller/components/followups/RescheduleModal";
 import ScheduleFollowupModal from "@/features/telecaller/components/followups/ScheduleFollowupModal";
-import EmptyFollowups from "@/features/telecaller/components/followups/EmptyFollowups";
+import EmptyFollowups from "@/features/telecaller/followups/components/EmptyFollowups";
 import Button from "@/components/ui/Button";
 
 export default function FollowUpsPage() {
