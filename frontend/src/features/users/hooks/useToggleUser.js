@@ -3,20 +3,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppToast } from "@/hooks/useAppToast";
 
-import usersService from "./services/usersService";
+import usersService from "../services/usersService";
 
-export default function useUpdateUser(options = {}) {
+export default function useToggleUser(options = {}) {
   const queryClient = useQueryClient();
   const toast = useAppToast();
 
   return useMutation({
-    mutationFn: usersService.updateUser,
+    mutationFn: usersService.toggleUserStatus,
 
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: ["users"],
       });
-      toast.success("Telecaller Updated", "Changes saved successfully.");
+      toast.success("Status Updated", "The telecaller status was updated successfully.");
 
       options.onSuccess?.(data, variables, context);
     },

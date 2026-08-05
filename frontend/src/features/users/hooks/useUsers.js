@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import usersService from "./services/usersService";
+import usersService from "../services/usersService";
 
 export default function useUsers({
   page = 0,

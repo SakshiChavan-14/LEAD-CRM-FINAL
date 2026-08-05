@@ -7,12 +7,12 @@ import TableCard from "@/components/table/TableCard";
 
 import { useRouter } from "next/navigation";
 
-import useInfiniteUsers from "./useInfiniteUsers";
+import useInfiniteUsers from "../../hooks/useInfiniteUsers";
 
-import UserKPICards from "./components/UserKPICards";
-import UserToolbar from "./components/UserToolbar";
-import UserDirectoryTable from "./components/UserDirectoryTable";
-import UserPagination from "./components/UserPagination";
+import UserKPICards from "./UserKPICards";
+import UserToolbar from "./UserToolbar";
+import UserDirectoryTable from "./UserDirectoryTable";
+import UserPagination from "../ui/UserPagination";
 
 export default function UsersTable() {
   const router = useRouter();

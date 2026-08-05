@@ -4,7 +4,7 @@ import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import AssignLeadsModal from "../../AssignLeadsModal";
-import useUsers from "../../../../users/useUsers";
+import useUsers from "@/features/users/hooks/useUsers";
 import { useAssignLeads } from "../../../hooks/useAssignLeads";
 
 export default function AssignLeadAction({ leadId, isAssigned, currentTelecallerId, fullWidth }) {

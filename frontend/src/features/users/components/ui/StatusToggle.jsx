@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Check, X } from "lucide-react";
-import useToggleUser from "../useToggleUser";
+import useToggleUser from "../../hooks/useToggleUser";
 import { useConfirm } from "@/hooks/useConfirm";
 
 export default function StatusToggle({ user }) {

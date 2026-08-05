@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLeadOverview } from "../hooks/useLeadOverview";
 import { useLeadFilterOptions } from "../hooks/useLeadFilterOptions";
 import { useLeadCounts } from "../hooks/useLeadCounts";
-import useUsers from "../../users/useUsers";
+import useUsers from "@/features/users/hooks/useUsers";
 import { useAssignLeads } from "../hooks/useAssignLeads";
 import { FILTER_CONFIG } from "../constants/filterConfig";
 
