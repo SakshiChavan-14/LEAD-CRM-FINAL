@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppToast } from "@/hooks/useAppToast";
 
-import usersService from "./usersService";
+import usersService from "./services/usersService";
 
 export default function useUpdateUser(options = {}) {
   const queryClient = useQueryClient();

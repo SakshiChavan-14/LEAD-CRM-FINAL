@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppToast } from "@/hooks/useAppToast";
-import telecallerService from "@/features/users/services/telecallerService";
+import telecallerService from "@/features/telecaller/services/telecallerService";
 import { USER_QUERY_KEYS } from "@/features/users/constants/queryKeys";
 
 export default function useUpdateTelecallerStatus(empId, options = {}) {

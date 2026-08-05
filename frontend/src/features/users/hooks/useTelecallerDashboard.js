@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { USER_QUERY_KEYS } from "@/features/users/constants/queryKeys";
-import telecallerService from "@/features/users/services/telecallerService";
+import telecallerService from "@/features/telecaller/services/telecallerService";
 
 export default function useTelecallerDashboard(empId) {
   return useQuery({

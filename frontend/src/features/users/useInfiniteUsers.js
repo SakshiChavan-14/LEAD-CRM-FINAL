@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import usersService from "./usersService";
+import usersService from "./services/usersService";
 
 export default function useInfiniteUsers({
   size = 10,
