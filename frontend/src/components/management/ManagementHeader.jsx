@@ -1,7 +1,6 @@
 "use client";
 
 import SearchBar from "./SearchBar";
-import TableActions from "@/features/leads/components/toolbars/TableActions";
 import { useTableScroll } from "@/providers/TableScrollProvider";
 
 export default function ManagementHeader({
@@ -30,7 +29,7 @@ export default function ManagementHeader({
 
         </div>
 
-        {actions ? actions : <TableActions activeTab={activeTab} />}
+        {actions}
 
       </div>
 
