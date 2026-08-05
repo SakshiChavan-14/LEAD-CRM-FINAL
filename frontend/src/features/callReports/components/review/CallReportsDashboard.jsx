@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import TelecallerPerformanceTable from "./TelecallerPerformanceTable";
+import TelecallerPerformanceTable from "../tables/TelecallerPerformanceTable";
 
 export default function CallReportsDashboard() {
   return (

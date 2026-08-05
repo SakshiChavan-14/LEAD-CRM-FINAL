@@ -6,11 +6,11 @@ import { useTelecallerCallLogs } from "@/features/callReports/hooks/useCallRepor
 import CallDetailsModal from "@/features/telecaller/voice/components/details/CallDetailsModal";
 
 // Stitch UI Components
-import "@/features/callReports/components/stitch/stitch-theme.css";
-import StitchHeader from "@/features/callReports/components/stitch/StitchHeader";
-import StitchKPISection from "@/features/callReports/components/stitch/StitchKPISection";
-import StitchFilterToolbar from "@/features/callReports/components/stitch/StitchFilterToolbar";
-import StitchCallReportTable from "@/features/callReports/components/stitch/StitchCallReportTable";
+import "@/features/callReports/components/ui/stitch-theme.css";
+import StitchHeader from "@/features/callReports/components/ui/StitchHeader";
+import StitchKPISection from "@/features/callReports/components/ui/StitchKPISection";
+import StitchFilterToolbar from "@/features/callReports/components/filters/StitchFilterToolbar";
+import StitchCallReportTable from "@/features/callReports/components/tables/StitchCallReportTable";
 import TablePagination from "@/components/table/TablePagination";
 
 export default function TelecallerCallLogsPage() {

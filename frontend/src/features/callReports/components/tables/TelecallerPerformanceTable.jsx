@@ -2,16 +2,16 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCallReportsSummary } from "../hooks/useCallReports";
+import { useCallReportsSummary } from "../../hooks/useCallReports";
 import { TableSkeleton } from "@/components/ui/Skeletons";
 import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 import { PhoneOff } from "lucide-react";
 import ErrorState from "@/components/ui/ErrorState";
 
-import CallReportsHeader from "./ui/CallReportsHeader";
-import CallReportsStats from "./ui/CallReportsStats";
-import CallReportsFilters from "./ui/CallReportsFilters";
-import CallReportsTable from "./ui/CallReportsTable";
+import CallReportsHeader from "../ui/CallReportsHeader";
+import CallReportsStats from "../ui/CallReportsStats";
+import CallReportsFilters from "../filters/CallReportsFilters";
+import CallReportsTable from "./CallReportsTable";
 
 function parseDurationToSeconds(dur) {
   if (typeof dur === "number") return dur;
