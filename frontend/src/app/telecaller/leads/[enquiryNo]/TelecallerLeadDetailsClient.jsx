@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, PhoneCall, AlertTriangle, CalendarPlus } from "lucide-react";
 import { useLeadDetails } from "@/features/telecaller/hooks/useLeadDetails";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
-import LeadDetailsView from "@/features/leads/components/details/LeadDetailsView";
+import LeadDetailsView from "@/features/leads/components/views/LeadDetailsView";
 import LogCallModal from "@/features/telecaller/components/LogCallModal";
 import ScheduleFollowupModal from "@/features/telecaller/components/followups/ScheduleFollowupModal";
 import Button from "@/components/ui/Button";

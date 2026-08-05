@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ErrorState from "@/components/ui/ErrorState";
 
-import { TABS_CONFIG } from "../../constants/detailsConfig";
+import { TABS_CONFIG } from "@/features/leads/constants/detailsConfig";
 import LeadHeaderCard from "@/features/leads/components/profile/LeadHeaderCard";
 import LeadStatisticsSection from "@/features/leads/components/statistics/LeadStatisticsSection";
 import ProfileSkeleton from "@/features/leads/components/profile/ProfileSkeleton";
