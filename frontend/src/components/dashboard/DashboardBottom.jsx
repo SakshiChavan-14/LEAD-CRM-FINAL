@@ -1,9 +1,9 @@
-import RecentLeadsTable from "./RecentLeadsTable";
-import FollowUpsCard from "./FollowUpsCard";
-import ActivityTimeline from "./ActivityTimeline";
-import TelecallerPerformanceCard from "./TelecallerPerformanceCard";
-import AdmissionSummaryCard from "./AdmissionSummaryCard";
-import MonthlyAdmissionTrendCard from "./MonthlyAdmissionTrendCard";
+import RecentLeadsTable from "@/features/dashboard/components/widgets/RecentLeadsTable";
+import FollowUpsCard from "@/features/dashboard/components/widgets/FollowUpsCard";
+import ActivityTimeline from "@/features/dashboard/components/widgets/ActivityTimeline";
+import TelecallerPerformanceCard from "@/features/dashboard/components/widgets/TelecallerPerformanceCard";
+import AdmissionSummaryCard from "@/features/dashboard/components/widgets/AdmissionSummaryCard";
+import MonthlyAdmissionTrendCard from "@/features/dashboard/components/widgets/MonthlyAdmissionTrendCard";
 
 export default function DashboardBottom({ tables, timeline }) {
   return (

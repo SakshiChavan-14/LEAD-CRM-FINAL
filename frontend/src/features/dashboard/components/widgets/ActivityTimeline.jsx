@@ -1,6 +1,6 @@
 import { Activity } from "lucide-react";
-import { EmptyState } from "../dashboard-ui/EmptyState";
-import { formatTimeAgo } from "../dashboard-ui/ActivityCard";
+import { EmptyState } from "@/components/dashboard-ui/EmptyState";
+import { formatTimeAgo } from "@/components/dashboard-ui/ActivityCard";
 
 // Rotating dot colors per Stitch design
 const DOT_COLORS = [

@@ -1,5 +1,5 @@
-import PipelineChart from "./PipelineChart";
-import SourceAnalytics from "./SourceAnalytics";
+import PipelineChart from "../widgets/PipelineChart";
+import SourceAnalytics from "../widgets/SourceAnalytics";
 
 export default function DashboardCharts({ charts }) {
   return (

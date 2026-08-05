@@ -1,6 +1,6 @@
 "use client";
 
-import { useDashboardStats } from "@/features/leads/hooks/useDashboardStats";
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
 
 export default function AdmissionSummaryCard() {
   // Use existing hook directly — React Query will return the cached data

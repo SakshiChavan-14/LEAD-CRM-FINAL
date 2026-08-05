@@ -2,7 +2,7 @@
 
 import { useCallReportsSummary } from "@/features/callReports/hooks/useCallReports";
 import { Users } from "lucide-react";
-import { EmptyState } from "../dashboard-ui/EmptyState";
+import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 
 // Avatar color rotation per Stitch design
 const AVATAR_STYLES = [

@@ -1,5 +1,5 @@
 import { Calendar, Phone, MessageCircle } from "lucide-react";
-import { EmptyState } from "../dashboard-ui/EmptyState";
+import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 
 // Priority badge styles matching Stitch design
 const PRIORITY_STYLES = {

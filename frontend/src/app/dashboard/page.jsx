@@ -1,11 +1,11 @@
 "use client";
 
 
-import DashboardStats from "@/components/dashboard/DashboardStats";
-import LeadTemperature from "@/components/dashboard/LeadTemperature";
-import DashboardCharts from "@/components/dashboard/DashboardCharts";
+import DashboardStats from "@/features/dashboard/components/sections/DashboardStats";
+import LeadTemperature from "@/features/dashboard/components/widgets/LeadTemperature";
+import DashboardCharts from "@/features/dashboard/components/sections/DashboardCharts";
 import DashboardBottom from "@/components/dashboard/DashboardBottom";
-import { useDashboardStats } from "@/features/leads/hooks/useDashboardStats";
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
 import { DashboardSkeleton } from "@/components/dashboard-ui/DashboardSkeleton";
 import ErrorState from "@/components/ui/ErrorState";
 

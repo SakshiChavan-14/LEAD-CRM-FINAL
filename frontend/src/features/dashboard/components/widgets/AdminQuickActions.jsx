@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Users, UserPlus, PhoneCall, FileText } from "lucide-react";
-import { DashboardSection } from "../dashboard-ui/DashboardSection";
+import { DashboardSection } from "@/components/dashboard-ui/DashboardSection";
 
 export default function AdminQuickActions() {
   const actions = [

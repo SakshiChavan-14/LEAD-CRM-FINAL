@@ -1,5 +1,5 @@
 import { Users } from "lucide-react";
-import { EmptyState } from "../dashboard-ui/EmptyState";
+import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 
 // Status badge colors matching Stitch design
 const STATUS_STYLES = {

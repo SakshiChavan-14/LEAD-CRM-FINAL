@@ -1,5 +1,5 @@
 import React from "react";
-import { KPICard } from "../dashboard-ui/KPICard";
+import { KPICard } from "@/components/dashboard-ui/KPICard";
 import { Users, UserCheck, UserPlus, Clock, Percent, Headphones, GraduationCap } from "lucide-react";
 
 const getIconForTitle = (title) => {

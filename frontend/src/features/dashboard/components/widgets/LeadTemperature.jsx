@@ -1,4 +1,4 @@
-import { KPICard } from "../dashboard-ui/KPICard";
+import { KPICard } from "@/components/dashboard-ui/KPICard";
 import { Flame, Snowflake } from "lucide-react";
 
 export default function LeadTemperature({ temperature }) {
