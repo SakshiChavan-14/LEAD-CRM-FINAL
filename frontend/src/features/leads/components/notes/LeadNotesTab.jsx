@@ -1,5 +1,5 @@
 import React from 'react';
-import NoteCard from "@/features/leads/components/notes/NoteCard";
+import NoteCard from "@/components/crm/NoteCard";
 import { useLeadNotes } from "@/features/leads/hooks/useLeadNotes";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 
