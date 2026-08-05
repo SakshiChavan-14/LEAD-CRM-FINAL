@@ -2,11 +2,11 @@ import LeadInfoTab from "@/features/leads/components/information/LeadInfoTab";
 import LeadTimelineTab from "@/features/leads/components/timeline/LeadTimelineTab";
 import LeadNotesTab from "@/features/leads/components/notes/LeadNotesTab";
 import LeadDocumentsTab from "@/features/leads/components/documents/LeadDocumentsTab";
-import LeadActivityTab from "../components/details/tabs/LeadActivityTab";
+import LeadActivityTab from "@/features/leads/components/views/LeadActivityTab";
 import ContactSection from "@/features/leads/components/information/ContactSection";
 import LeadInformationSection from "@/features/leads/components/information/LeadInformationSection";
 import AssignmentSection from "@/features/leads/components/assignments/AssignmentSection";
-import AdminActionsCard from "../components/details/sections/AdminActionsCard";
+import AdminActionsCard from "@/features/leads/components/assignments/AdminActionsCard";
 
 export const TABS_CONFIG = [
   { id: "info", label: "Overview", component: LeadInfoTab },

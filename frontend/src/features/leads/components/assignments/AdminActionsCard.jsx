@@ -1,4 +1,4 @@
-import DetailSectionCard from "../DetailSectionCard";
+import DetailSectionCard from "@/features/leads/components/details/DetailSectionCard";
 
 export default function AdminActionsCard({ data }) {
   if (!data?.admin) return null;
