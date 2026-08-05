@@ -1,8 +1,8 @@
 import React from "react";
-import QuickFilterBar from "./QuickFilterBar";
-import ActiveFilterChips from "./ActiveFilterChips";
+import QuickFilterBar from "@/features/leads/components/filters/QuickFilterBar";
+import ActiveFilterChips from "@/features/leads/components/filters/ActiveFilterChips";
 import { SlidersHorizontal } from "lucide-react";
-import { LEAD_BUCKETS } from "../constants/leadConstants";
+import { LEAD_BUCKETS } from "@/features/leads/constants/leadConstants";
 import { useTableScroll } from "@/providers/TableScrollProvider";
 
 export default function LeadsFilterToolbar({ 

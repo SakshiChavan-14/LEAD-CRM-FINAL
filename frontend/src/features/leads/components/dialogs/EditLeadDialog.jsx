@@ -6,10 +6,10 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
-import GeoSelectors from "./GeoSelectors";
-import { updateLeadSchema } from "../schemas/updateLeadSchema";
-import { useUpdateLead } from "../hooks/useUpdateLead";
-import leadService from "../services/leadService";
+import GeoSelectors from "@/features/leads/components/filters/GeoSelectors";
+import { updateLeadSchema } from "@/features/leads/schemas/updateLeadSchema";
+import { useUpdateLead } from "@/features/leads/hooks/useUpdateLead";
+import leadService from "@/features/leads/services/leadService";
 import { useAppToast } from "@/hooks/useAppToast";
 
 export default function EditLeadDialog({ open, onClose, lead }) {

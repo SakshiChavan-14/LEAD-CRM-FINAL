@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import Button from "@/components/ui/Button";
-import AssignLeadsModal from "../../AssignLeadsModal";
+import AssignLeadsModal from "@/features/leads/components/dialogs/AssignLeadsModal";
 import useUsers from "@/features/users/hooks/useUsers";
 import { useAssignLeads } from "../../../hooks/useAssignLeads";
 

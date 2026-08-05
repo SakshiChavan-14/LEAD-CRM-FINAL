@@ -1,5 +1,5 @@
 import React from "react";
-import ActiveFilterChips from "./ActiveFilterChips";
+import ActiveFilterChips from "@/features/leads/components/filters/ActiveFilterChips";
 import { SlidersHorizontal } from "lucide-react";
 
 export default function AdvancedFiltersSection({ filters, onRemove, onClearAll, onOpenDrawer, refineButtonRef }) {

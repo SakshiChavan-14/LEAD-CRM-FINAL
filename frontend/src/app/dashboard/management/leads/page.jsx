@@ -1,7 +1,7 @@
 "use client";
 
-import LeadsHeader from "@/features/leads/components/LeadsHeader";
-import LeadsOverviewTable from "@/features/leads/components/LeadsOverviewTable";
+import LeadsHeader from "@/features/leads/components/ui/LeadsHeader";
+import LeadsOverviewTable from "@/features/leads/components/tables/LeadsOverviewTable";
 import { useLeadOverviewFilters } from "@/features/leads/hooks/useLeadOverviewFilters";
 
 export default function LeadsPage() {

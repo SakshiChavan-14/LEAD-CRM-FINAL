@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { FILTER_CONFIG } from "../constants/filterConfig";
+import { FILTER_CONFIG } from "@/features/leads/constants/filterConfig";
 
 export default function ActiveFilterChips({ filters, onRemove, onClearAll }) {
   const activeEntries = Object.entries(filters).filter(([key, value]) => {

@@ -7,7 +7,7 @@ import { TABS_CONFIG } from "../../constants/detailsConfig";
 import LeadHeaderCard from "./sections/LeadHeaderCard";
 import LeadStatisticsSection from "./sections/LeadStatisticsSection";
 import ProfileSkeleton from "./ProfileSkeleton";
-import EditLeadDialog from "../EditLeadDialog";
+import EditLeadDialog from "@/features/leads/components/dialogs/EditLeadDialog";
 
 export default function LeadDetailsView({
   leadId,

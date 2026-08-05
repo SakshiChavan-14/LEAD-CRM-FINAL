@@ -1,6 +1,6 @@
 import Select from "@/components/ui/Select";
-import { FILTER_CONFIG } from "../constants/filterConfig";
-import GeoSelectors from "./GeoSelectors";
+import { FILTER_CONFIG } from "@/features/leads/constants/filterConfig";
+import GeoSelectors from "@/features/leads/components/filters/GeoSelectors";
 
 export default function LeadFilters({ values, options, onChange }) {
   if (!options) return null;

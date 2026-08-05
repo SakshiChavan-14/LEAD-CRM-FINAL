@@ -4,9 +4,9 @@ import { useFormik } from "formik";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import GeoSelectors from "./GeoSelectors";
-import { createLeadSchema } from "../schemas/createLeadSchema";
-import { useCreateLead } from "../hooks/useCreateLead";
+import GeoSelectors from "@/features/leads/components/filters/GeoSelectors";
+import { createLeadSchema } from "@/features/leads/schemas/createLeadSchema";
+import { useCreateLead } from "@/features/leads/hooks/useCreateLead";
 import { useConfirm } from "@/hooks/useConfirm";
 
 const initialValues = {

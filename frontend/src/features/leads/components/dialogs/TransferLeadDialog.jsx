@@ -5,8 +5,8 @@ import Modal from "@/components/ui/Modal";
 import Textarea from "@/components/ui/Textarea";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
-import { transferLeadSchema } from "../schemas/transferLeadSchema";
-import { useTransferLead } from "../hooks/useTransferLead";
+import { transferLeadSchema } from "@/features/leads/schemas/transferLeadSchema";
+import { useTransferLead } from "@/features/leads/hooks/useTransferLead";
 import { useConfirm } from "@/hooks/useConfirm";
 
 // Assuming callers are passed as a prop from a shared hook or parent

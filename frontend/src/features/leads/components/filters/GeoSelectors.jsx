@@ -1,8 +1,8 @@
 import React from "react";
 import Select from "@/components/ui/Select";
-import { useGeoStates } from "../hooks/geo/useGeoStates";
-import { useGeoDistricts } from "../hooks/geo/useGeoDistricts";
-import { useGeoTaluks } from "../hooks/geo/useGeoTaluks";
+import { useGeoStates } from "@/features/leads/hooks/geo/useGeoStates";
+import { useGeoDistricts } from "@/features/leads/hooks/geo/useGeoDistricts";
+import { useGeoTaluks } from "@/features/leads/hooks/geo/useGeoTaluks";
 
 export default function GeoSelectors({ formik, disabled = false, required = false, layout = "grid" }) {
   const { values, setFieldValue, touched, errors, handleBlur } = formik;

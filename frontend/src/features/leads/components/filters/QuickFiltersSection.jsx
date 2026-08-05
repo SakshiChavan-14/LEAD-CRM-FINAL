@@ -1,6 +1,6 @@
 import React from "react";
-import QuickFilterBar from "./QuickFilterBar";
-import { LEAD_BUCKETS } from "../constants/leadConstants";
+import QuickFilterBar from "@/features/leads/components/filters/QuickFilterBar";
+import { LEAD_BUCKETS } from "@/features/leads/constants/leadConstants";
 
 export default function QuickFiltersSection({ activeFilter, onSelect, counts }) {
   return (

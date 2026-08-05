@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import CreateLeadDialog from "@/features/leads/components/CreateLeadDialog";
-import ImportLeadsDialog from "@/features/leads/components/ImportLeadsDialog";
+import CreateLeadDialog from "@/features/leads/components/dialogs/CreateLeadDialog";
+import ImportLeadsDialog from "@/features/leads/components/dialogs/ImportLeadsDialog";
 import { useExportLeads } from "@/features/leads/hooks/useExportLeads";
 import { useConfirm } from "@/hooks/useConfirm";
 

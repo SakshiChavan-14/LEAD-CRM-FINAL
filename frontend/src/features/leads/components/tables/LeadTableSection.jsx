@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import LeadsDataTable from "./LeadsDataTable";
+import LeadsDataTable from "@/features/leads/components/tables/LeadsDataTable";
 import TableCard from "@/components/table/TableCard";
 import TablePagination from "@/components/table/TablePagination";
 import { TableSkeleton } from "@/components/ui/Skeletons";

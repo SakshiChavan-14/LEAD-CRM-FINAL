@@ -3,21 +3,21 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-import { useLeadOverview } from "../hooks/useLeadOverview";
-import { useLeadFilterOptions } from "../hooks/useLeadFilterOptions";
-import { useLeadCounts } from "../hooks/useLeadCounts";
+import { useLeadOverview } from "@/features/leads/hooks/useLeadOverview";
+import { useLeadFilterOptions } from "@/features/leads/hooks/useLeadFilterOptions";
+import { useLeadCounts } from "@/features/leads/hooks/useLeadCounts";
 import useUsers from "@/features/users/hooks/useUsers";
-import { useAssignLeads } from "../hooks/useAssignLeads";
-import { FILTER_CONFIG } from "../constants/filterConfig";
+import { useAssignLeads } from "@/features/leads/hooks/useAssignLeads";
+import { FILTER_CONFIG } from "@/features/leads/constants/filterConfig";
 
 import ReusableFilterDrawer from "@/components/layout/ReusableFilterDrawer";
-import LeadFilters from "./LeadFilters";
-import AssignLeadsModal from "./AssignLeadsModal";
+import LeadFilters from "@/features/leads/components/filters/LeadFilters";
+import AssignLeadsModal from "@/features/leads/components/dialogs/AssignLeadsModal";
 
 // Modular Sections
-import LeadsKPICards from "./LeadsKPICards";
-import LeadsFilterPills from "./LeadsFilterPills";
-import LeadTableSection from "./LeadTableSection";
+import LeadsKPICards from "@/features/leads/components/kpis/LeadsKPICards";
+import LeadsFilterPills from "@/features/leads/components/filters/LeadsFilterPills";
+import LeadTableSection from "@/features/leads/components/tables/LeadTableSection";
 
 const SPECIAL_FILTER_KEYS = ["state", "district", "taluk"];
 

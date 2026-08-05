@@ -5,10 +5,10 @@ import Modal from "@/components/ui/Modal";
 import ErrorState from "@/components/ui/ErrorState";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 
-import { useLeadDetails } from "../hooks/useLeadDetails";
-import { useDeleteLead } from "../hooks/useDeleteLead";
-import { mapLeadToViewModel } from "../utils/leadViewModelMapper";
-import { TABS_CONFIG } from "../constants/detailsConfig";
+import { useLeadDetails } from "@/features/leads/hooks/useLeadDetails";
+import { useDeleteLead } from "@/features/leads/hooks/useDeleteLead";
+import { mapLeadToViewModel } from "@/features/leads/utils/leadViewModelMapper";
+import { TABS_CONFIG } from "@/features/leads/constants/detailsConfig";
 
 import LeadHeader from "./details/LeadHeader";
 import LeadStatusBar from "./details/LeadStatusBar";
