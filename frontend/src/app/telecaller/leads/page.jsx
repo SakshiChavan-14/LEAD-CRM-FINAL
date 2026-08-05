@@ -20,7 +20,7 @@ const toTitleCase = (str) => {
 import "@/features/telecaller/components/leads/stitch/stitch-myleads-theme.css";
 import MyLeadsHeader from "@/features/telecaller/leads/components/MyLeadsHeader";
 import MyLeadsKPISection from "@/features/telecaller/leads/components/MyLeadsKPISection";
-import MyLeadsFilterToolbar from "@/features/telecaller/components/leads/stitch/MyLeadsFilterToolbar";
+import MyLeadsFilterToolbar from "@/features/telecaller/leads/components/MyLeadsFilterToolbar";
 import MyLeadsTable from "@/features/telecaller/leads/components/MyLeadsTable";
 import TablePagination from "@/components/table/TablePagination";
 
