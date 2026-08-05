@@ -17,7 +17,7 @@ const toTitleCase = (str) => {
 };
 
 // Stitch Components
-import "@/features/telecaller/components/leads/stitch/stitch-myleads-theme.css";
+import "@/features/telecaller/leads/components/stitch-myleads-theme.css";
 import MyLeadsHeader from "@/features/telecaller/leads/components/MyLeadsHeader";
 import MyLeadsKPISection from "@/features/telecaller/leads/components/MyLeadsKPISection";
 import MyLeadsFilterToolbar from "@/features/telecaller/leads/components/MyLeadsFilterToolbar";
