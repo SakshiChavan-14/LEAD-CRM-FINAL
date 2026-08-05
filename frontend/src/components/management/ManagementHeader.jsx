@@ -1,7 +1,7 @@
 "use client";
 
 import SearchBar from "./SearchBar";
-import TableActions from "./TableActions";
+import TableActions from "@/features/leads/components/toolbars/TableActions";
 import { useTableScroll } from "@/providers/TableScrollProvider";
 
 export default function ManagementHeader({
