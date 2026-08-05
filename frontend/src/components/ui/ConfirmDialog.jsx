@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { AlertTriangle, Trash2, Info, CheckCircle2 } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
-import { useConfirmStore } from "@/stores/confirmStore";
+import { useConfirmStore } from "@/store/confirmStore";
 
 const variantConfig = {
   primary: {

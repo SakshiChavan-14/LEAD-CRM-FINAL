@@ -1,4 +1,4 @@
-import { useConfirmStore } from '@/stores/confirmStore';
+import { useConfirmStore } from '@/store/confirmStore';
 
 export const useConfirm = () => {
   return useConfirmStore((state) => state.confirm);
