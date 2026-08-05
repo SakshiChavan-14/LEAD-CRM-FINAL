@@ -1,6 +1,6 @@
 import React from 'react';
 import TimelineItem from "@/features/leads/components/timeline/TimelineItem";
-import { useLeadTimeline } from "../../../hooks/useLeadTimeline";
+import { useLeadTimeline } from "@/features/leads/hooks/useLeadTimeline";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 
 const MemoizedTimelineItem = React.memo(TimelineItem);

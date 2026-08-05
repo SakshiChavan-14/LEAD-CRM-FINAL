@@ -1,6 +1,6 @@
 import React from 'react';
 import NoteCard from "@/features/leads/components/notes/NoteCard";
-import { useLeadNotes } from "../../../hooks/useLeadNotes";
+import { useLeadNotes } from "@/features/leads/hooks/useLeadNotes";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 
 const MemoizedNoteCard = React.memo(NoteCard);

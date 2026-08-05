@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import Avatar from "@/components/ui/Avatar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { LEAD_KEYS } from "../../constants/queryKeys";
-import leadService from "../../services/leadService";
+import { LEAD_KEYS } from "@/features/leads/constants/queryKeys";
+import leadService from "@/features/leads/services/leadService";
 import { toast } from "sonner";
 
 /**

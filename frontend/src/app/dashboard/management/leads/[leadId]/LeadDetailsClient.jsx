@@ -6,7 +6,7 @@ import { useLeadDetails } from "@/features/leads/hooks/useLeadDetails";
 import { useDeleteLead } from "@/features/leads/hooks/useDeleteLead";
 import { mapLeadToViewModel } from "@/features/leads/utils/leadViewModelMapper";
 import LeadDetailsView from "@/features/leads/components/details/LeadDetailsView";
-import AssignLeadAction from "@/features/leads/components/details/sections/AssignLeadAction";
+import AssignLeadAction from "@/features/leads/components/assignments/AssignLeadAction";
 import { useConfirm } from "@/hooks/useConfirm";
 
 export default function LeadDetailsClient({ leadId }) {

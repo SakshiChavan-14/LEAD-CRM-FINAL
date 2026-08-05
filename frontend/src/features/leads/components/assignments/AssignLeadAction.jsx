@@ -5,7 +5,7 @@ import { UserPlus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import AssignLeadsModal from "@/features/leads/components/dialogs/AssignLeadsModal";
 import useUsers from "@/features/users/hooks/useUsers";
-import { useAssignLeads } from "../../../hooks/useAssignLeads";
+import { useAssignLeads } from "@/features/leads/hooks/useAssignLeads";
 
 export default function AssignLeadAction({ leadId, isAssigned, currentTelecallerId, fullWidth }) {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);

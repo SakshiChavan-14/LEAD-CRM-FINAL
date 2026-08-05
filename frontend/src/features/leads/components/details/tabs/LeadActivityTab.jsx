@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import LeadTimelineTab from "./LeadTimelineTab";
-import LeadNotesTab from "./LeadNotesTab";
+import LeadTimelineTab from "@/features/leads/components/timeline/LeadTimelineTab";
+import LeadNotesTab from "@/features/leads/components/notes/LeadNotesTab";
 
 export default function LeadActivityTab({ leadId, data }) {
   return (
