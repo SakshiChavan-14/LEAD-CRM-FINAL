@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "@/config/env";
 import { useEffect, useState } from "react";
 
 export default function PreviewBadge() {
@@ -10,7 +9,11 @@ export default function PreviewBadge() {
     setMounted(true);
   }, []);
 
-  if (!mounted || !env.FRONTEND_ONLY) {
+  // Temporary: Disabled until repurposed for environment indicators (Staging, QA, etc.)
+  return null;
+
+  /*
+  if (!mounted) {
     return null;
   }
 
@@ -20,4 +23,5 @@ export default function PreviewBadge() {
       <span className="text-xs font-normal">Using Sample Data</span>
     </div>
   );
+  */
 }

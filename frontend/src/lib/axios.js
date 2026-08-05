@@ -94,10 +94,5 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// Initialize Frontend Development Mode mocks
-if (env.FRONTEND_ONLY) {
-  const { initializeMocks } = require("@/mocks/setup");
-  initializeMocks(axiosInstance);
-}
 
 export default axiosInstance;
