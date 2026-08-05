@@ -1,5 +1,5 @@
 import React from 'react';
-import TimelineItem from "@/features/leads/components/details/timeline/TimelineItem";
+import TimelineItem from "@/features/leads/components/timeline/TimelineItem";
 import { useTelecallerLeadTimeline } from "../../../hooks/useTelecallerLeadTimeline";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 

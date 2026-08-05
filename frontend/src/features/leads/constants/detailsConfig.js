@@ -1,11 +1,11 @@
 import LeadInfoTab from "../components/details/tabs/LeadInfoTab";
 import LeadTimelineTab from "../components/details/tabs/LeadTimelineTab";
 import LeadNotesTab from "../components/details/tabs/LeadNotesTab";
-import LeadDocumentsTab from "../components/details/tabs/LeadDocumentsTab";
+import LeadDocumentsTab from "@/features/leads/components/documents/LeadDocumentsTab";
 import LeadActivityTab from "../components/details/tabs/LeadActivityTab";
-import ContactSection from "../components/details/sections/ContactSection";
-import LeadInformationSection from "../components/details/sections/LeadInformationSection";
-import AssignmentSection from "../components/details/sections/AssignmentSection";
+import ContactSection from "@/features/leads/components/information/ContactSection";
+import LeadInformationSection from "@/features/leads/components/information/LeadInformationSection";
+import AssignmentSection from "@/features/leads/components/assignments/AssignmentSection";
 import AdminActionsCard from "../components/details/sections/AdminActionsCard";
 
 export const TABS_CONFIG = [

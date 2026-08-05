@@ -4,9 +4,9 @@ import { useState } from "react";
 import ErrorState from "@/components/ui/ErrorState";
 
 import { TABS_CONFIG } from "../../constants/detailsConfig";
-import LeadHeaderCard from "./sections/LeadHeaderCard";
-import LeadStatisticsSection from "./sections/LeadStatisticsSection";
-import ProfileSkeleton from "./ProfileSkeleton";
+import LeadHeaderCard from "@/features/leads/components/profile/LeadHeaderCard";
+import LeadStatisticsSection from "@/features/leads/components/statistics/LeadStatisticsSection";
+import ProfileSkeleton from "@/features/leads/components/profile/ProfileSkeleton";
 import EditLeadDialog from "@/features/leads/components/dialogs/EditLeadDialog";
 
 export default function LeadDetailsView({

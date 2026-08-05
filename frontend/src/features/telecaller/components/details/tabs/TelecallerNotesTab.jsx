@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import NoteCard from "@/features/leads/components/details/notes/NoteCard";
+import NoteCard from "@/features/leads/components/notes/NoteCard";
 import { useTelecallerLeadNotes, useUpdateTelecallerLeadNote } from "../../../hooks/useTelecallerLeadNotes";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 

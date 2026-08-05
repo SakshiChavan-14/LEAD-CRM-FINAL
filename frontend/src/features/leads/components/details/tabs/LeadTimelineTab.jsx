@@ -1,5 +1,5 @@
 import React from 'react';
-import TimelineItem from "../timeline/TimelineItem";
+import TimelineItem from "@/features/leads/components/timeline/TimelineItem";
 import { useLeadTimeline } from "../../../hooks/useLeadTimeline";
 import { FormSkeleton } from "@/components/ui/Skeletons";
 
