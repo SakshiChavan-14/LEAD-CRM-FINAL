@@ -10,8 +10,8 @@ import FollowupListView from "@/features/telecaller/components/followups/Followu
 import FollowupCalendarView from "@/features/telecaller/components/followups/FollowupCalendarView";
 import WorkspaceControls from "@/features/telecaller/followups/components/WorkspaceControls";
 import ReusableFilterDrawer from "@/components/layout/ReusableFilterDrawer";
-import RescheduleModal from "@/features/telecaller/components/followups/RescheduleModal";
-import ScheduleFollowupModal from "@/features/telecaller/components/followups/ScheduleFollowupModal";
+import RescheduleModal from "@/features/telecaller/followups/components/RescheduleModal";
+import ScheduleFollowupModal from "@/features/telecaller/followups/components/ScheduleFollowupModal";
 import EmptyFollowups from "@/features/telecaller/followups/components/EmptyFollowups";
 import Button from "@/components/ui/Button";
 

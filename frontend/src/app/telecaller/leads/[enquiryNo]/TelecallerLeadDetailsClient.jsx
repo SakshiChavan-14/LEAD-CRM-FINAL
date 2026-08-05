@@ -6,8 +6,8 @@ import { ArrowLeft, PhoneCall, AlertTriangle, CalendarPlus } from "lucide-react"
 import { useLeadDetails } from "@/features/telecaller/hooks/useLeadDetails";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 import LeadDetailsView from "@/features/leads/components/views/LeadDetailsView";
-import LogCallModal from "@/features/telecaller/components/LogCallModal";
-import ScheduleFollowupModal from "@/features/telecaller/components/followups/ScheduleFollowupModal";
+import LogCallModal from "@/features/telecaller/calls/components/LogCallModal";
+import ScheduleFollowupModal from "@/features/telecaller/followups/components/ScheduleFollowupModal";
 import Button from "@/components/ui/Button";
 import { TELECALLER_TABS_CONFIG } from "@/features/telecaller/constants/telecallerDetailsConfig";
 import CallButton from "@/features/telecaller/voice/components/CallButton";

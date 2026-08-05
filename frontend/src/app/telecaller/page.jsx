@@ -25,7 +25,7 @@ import UpcomingFollowups from "@/features/telecaller/followups/components/Upcomi
 import RecentActivity from "@/features/telecaller/calls/components/RecentActivity";
 
 // Modals
-import LogCallModal from "@/features/telecaller/components/LogCallModal";
+import LogCallModal from "@/features/telecaller/calls/components/LogCallModal";
 
 export default function TelecallerDashboard() {
   const { data, isLoading, error } = useTelecallerDashboard();

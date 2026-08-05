@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatDisplayDate } from "@/utils/dateUtils";
 import { User, Phone, Home, MapPin, Calendar, Clock, CheckCircle2, ChevronRight, Mail, AlertTriangle, ShieldAlert, Globe } from "lucide-react";
-import ScheduleFollowupModal from "@/features/telecaller/components/followups/ScheduleFollowupModal";
+import ScheduleFollowupModal from "@/features/telecaller/followups/components/ScheduleFollowupModal";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 
 export default function TelecallerOverviewTab({ data, rawData, leadId }) {

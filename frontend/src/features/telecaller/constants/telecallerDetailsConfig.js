@@ -1,6 +1,6 @@
-import TelecallerOverviewTab from "../components/TelecallerOverviewTab";
-import TelecallerTimelineTab from "../components/details/tabs/TelecallerTimelineTab";
-import TelecallerNotesTab from "../components/details/tabs/TelecallerNotesTab";
+import TelecallerOverviewTab from "@/features/telecaller/leads/components/TelecallerOverviewTab";
+import TelecallerTimelineTab from "@/features/telecaller/leads/components/TelecallerTimelineTab";
+import TelecallerNotesTab from "@/features/telecaller/leads/components/TelecallerNotesTab";
 
 /**
  * Telecaller tab configuration.

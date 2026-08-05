@@ -1,5 +1,5 @@
 import React from "react";
-import TelecallerTimelineTab from "@/features/telecaller/components/details/tabs/TelecallerTimelineTab";
+import TelecallerTimelineTab from "@/features/telecaller/leads/components/TelecallerTimelineTab";
 import { AlertCircle } from "lucide-react";
 
 export default function TimelineTab({ enquiryNo }) {
