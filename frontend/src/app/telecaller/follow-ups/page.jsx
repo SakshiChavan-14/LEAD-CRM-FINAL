@@ -6,8 +6,8 @@ import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 import { useUpdateFollowup, useCompleteFollowup } from "@/features/telecaller/hooks/useFollowupMutations";
 import { useFollowupWorkspace } from "@/features/telecaller/hooks/useFollowupWorkspace";
 
-import FollowupListView from "@/features/telecaller/components/followups/FollowupListView";
-import FollowupCalendarView from "@/features/telecaller/components/followups/FollowupCalendarView";
+import FollowupListView from "@/features/telecaller/followups/components/FollowupListView";
+import FollowupCalendarView from "@/features/telecaller/followups/components/FollowupCalendarView";
 import WorkspaceControls from "@/features/telecaller/followups/components/WorkspaceControls";
 import ReusableFilterDrawer from "@/components/layout/ReusableFilterDrawer";
 import RescheduleModal from "@/features/telecaller/followups/components/RescheduleModal";
