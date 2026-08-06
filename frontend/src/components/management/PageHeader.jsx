@@ -2,6 +2,10 @@
 
 import React from "react";
 
+function PageHeaderActions({ children, className = "" }) {
+  return <div className={`flex flex-wrap items-center gap-3 ${className}`}>{children}</div>;
+}
+
 export default function PageHeader({
   title,
   description,
@@ -27,10 +31,10 @@ export default function PageHeader({
         {children}
       </div>
       {actions && (
-        <div className="flex flex-wrap items-center gap-3">
-          {actions}
-        </div>
+        <PageHeaderActions>{actions}</PageHeaderActions>
       )}
     </div>
   );
 }
+
+PageHeader.Actions = PageHeaderActions;
