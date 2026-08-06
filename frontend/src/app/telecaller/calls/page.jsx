@@ -15,6 +15,9 @@ import TimelineCard from "@/features/telecaller/voice/components/TimelineCard";
 import AudioTestModal from "@/features/telecaller/voice/components/AudioTestModal";
 import DeviceSettingsModal from "@/features/telecaller/voice/components/DeviceSettingsModal";
 
+import ContentSection from "@/components/management/ContentSection";
+import KPIGrid from "@/components/management/KPIGrid";
+
 export default function TelecallerCallsPage() {
   const queryClient = useQueryClient();
 
@@ -31,7 +34,7 @@ export default function TelecallerCallsPage() {
   };
 
   return (
-    <div
+    <ContentSection
       className="bg-[#FFFFFF] -m-4 sm:-m-6 p-4 sm:p-6 lg:p-8 space-y-6 animate-in fade-in duration-500 min-h-screen"
       style={{ fontFamily: "var(--font-outfit), sans-serif" }}
     >
@@ -42,11 +45,11 @@ export default function TelecallerCallsPage() {
       />
 
       {/* ── TOP ROW: Device Status | Active Call | Quick Dial ─────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <KPIGrid columns={3} className="grid-cols-1 lg:grid-cols-3 gap-6">
         <DeviceStatusCard onTestAudio={() => setIsAudioTestOpen(true)} />
         <ActiveCallCard callNotes={callNotes} setCallNotes={setCallNotes} />
         <QuickDialCard />
-      </div>
+      </KPIGrid>
 
       {/* ── ANALYTICS STRIP ──────────────────────────────────────────── */}
       <AnalyticsCards />
@@ -59,7 +62,10 @@ export default function TelecallerCallsPage() {
 
       {/* ── MODALS ────────────────────────────────────────────────────── */}
       <AudioTestModal isOpen={isAudioTestOpen} onClose={() => setIsAudioTestOpen(false)} />
-      <DeviceSettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-    </div>
+      <DeviceSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
+    </ContentSection>
   );
 }

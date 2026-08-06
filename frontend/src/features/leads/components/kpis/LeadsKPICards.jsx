@@ -57,9 +57,11 @@ const kpiConfig = [
   },
 ];
 
+import KPIGrid from "@/components/management/KPIGrid";
+
 export default function LeadsKPICards({ counts = {} }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+    <KPIGrid className="grid-cols-2 sm:grid-cols-3 xl:grid-cols-6">
       {kpiConfig.map(({ key, label, icon, variant, trend, trendDirection, note }) => (
         <KPICard
           key={key}
@@ -72,6 +74,6 @@ export default function LeadsKPICards({ counts = {} }) {
           subtitle={note}
         />
       ))}
-    </div>
+    </KPIGrid>
   );
 }

@@ -13,6 +13,9 @@ import RecentCallLogsSection from "./RecentCallLogsSection";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import { breadcrumbs } from "@/config/breadcrumbs";
 
+import ContentSection from "@/components/management/ContentSection";
+import KPIGrid from "@/components/management/KPIGrid";
+
 export default function TelecallerDetailsView({
   userId,
   telecaller,
@@ -50,20 +53,20 @@ export default function TelecallerDetailsView({
         actions={<div />}
       />
       
-      <div className="flex flex-col gap-6 mt-6 pb-10">
+      <ContentSection className="mt-6 pb-10">
         <TelecallerHeader profile={telecaller.profile} kpi={telecaller.kpi} />
 
         <PerformanceSnapshot kpi={telecaller.kpi} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <KPIGrid columns={2} className="grid-cols-1 lg:grid-cols-2 gap-6">
           <ProfileSection profile={telecaller.profile} kpi={telecaller.kpi} />
           <CallsTrendChart data={telecaller.callsPerformance} />
-        </div>
+        </KPIGrid>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <KPIGrid columns={2} className="grid-cols-1 lg:grid-cols-2 gap-6">
           <CallOutcomeChart data={telecaller.callOutcomes} />
           <LeadPipelineChart data={telecaller.leadPipeline} />
-        </div>
+        </KPIGrid>
 
         <div className="grid grid-cols-1 gap-6">
           <AssignedLeadsSection leads={telecaller.assignedLeads} userId={userId} />
@@ -72,7 +75,7 @@ export default function TelecallerDetailsView({
         <div className="grid grid-cols-1 gap-6">
           <RecentCallLogsSection userId={userId} />
         </div>
-      </div>
+      </ContentSection>
     </>
   );
 }

@@ -21,6 +21,8 @@ import LeadTableSection from "@/features/leads/components/tables/LeadTableSectio
 
 const SPECIAL_FILTER_KEYS = ["state", "district", "taluk"];
 
+import FilterToolbar from "@/components/management/FilterToolbar";
+
 export default function LeadsOverviewTable({ filters, actions, search }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -135,7 +137,7 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
     <>
       <LeadsKPICards counts={bucketCounts} />
       
-      <div className="flex flex-col gap-3">
+      <FilterToolbar>
         <LeadsFilterPills 
           activeFilter={type} 
           onSelect={actions.setType} 
@@ -170,7 +172,7 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
             </div>
           </div>
         )}
-      </div>
+      </FilterToolbar>
 
       <LeadTableSection
         data={leadsData}

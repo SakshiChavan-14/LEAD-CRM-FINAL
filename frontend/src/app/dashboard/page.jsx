@@ -9,11 +9,13 @@ import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats"
 import { DashboardSkeleton } from "@/components/dashboard-ui/DashboardSkeleton";
 import ErrorState from "@/components/ui/ErrorState";
 
+import ContentSection from "@/components/management/ContentSection";
+
 export default function DashboardPage() {
   const { data, isLoading, isError, refetch } = useDashboardStats();
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto space-y-6 pr-2 pb-10">
+    <ContentSection className="overflow-y-auto space-y-6 pr-2 pb-10">
       {/* DashboardNavbar in layout already provides the header and breadcrumbs */}
 
       {isLoading ? (
@@ -30,6 +32,6 @@ export default function DashboardPage() {
           <DashboardBottom tables={data?.tables} timeline={data?.timeline} />
         </>
       )}
-    </div>
+    </ContentSection>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import ContentSection from "@/components/management/ContentSection";
 import LeadsHeader from "@/features/leads/components/ui/LeadsHeader";
 import LeadsOverviewTable from "@/features/leads/components/tables/LeadsOverviewTable";
 import { useLeadOverviewFilters } from "@/features/leads/hooks/useLeadOverviewFilters";
@@ -8,9 +9,9 @@ export default function LeadsPage() {
   const { search, filters, actions } = useLeadOverviewFilters();
 
   return (
-    <div className="p-8 flex flex-col gap-8 max-w-[1600px] mx-auto w-full">
+    <ContentSection className="p-8 max-w-[1600px] mx-auto w-full">
       <LeadsHeader />
       <LeadsOverviewTable filters={filters} actions={actions} search={search} />
-    </div>
+    </ContentSection>
   );
 }

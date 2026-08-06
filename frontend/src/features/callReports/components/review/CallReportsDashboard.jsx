@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import ContentSection from "@/components/management/ContentSection";
 import TelecallerPerformanceTable from "../tables/TelecallerPerformanceTable";
 
 export default function CallReportsDashboard() {
   return (
-    <div className="flex flex-col gap-6 flex-1 min-h-0">
+    <ContentSection>
       <TelecallerPerformanceTable />
-    </div>
+    </ContentSection>
   );
 }

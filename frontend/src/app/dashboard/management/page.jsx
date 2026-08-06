@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Users, PhoneCall, Target } from "lucide-react";
+import PageHeader from "@/components/management/PageHeader";
+import KPIGrid from "@/components/management/KPIGrid";
 
 export default function ManagementLandingPage() {
   const modules = [
@@ -31,16 +33,12 @@ export default function ManagementLandingPage() {
 
   return (
     <>
-      <div>
-        <h1 className="text-4xl font-bold font-outfit text-slate-900">
-          Management
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Choose a module to manage its settings and data.
-        </p>
-      </div>
+      <PageHeader
+        title="Management"
+        description="Choose a module to manage its settings and data."
+      />
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <KPIGrid columns={3} className="md:grid-cols-2 xl:grid-cols-3">
         {modules.map((module) => {
           const Icon = module.icon;
           return (
@@ -69,7 +67,7 @@ export default function ManagementLandingPage() {
             </Link>
           );
         })}
-      </div>
+      </KPIGrid>
     </>
   );
 }

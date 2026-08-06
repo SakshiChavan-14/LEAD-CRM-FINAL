@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Phone, MoreVertical, PhoneCall, PhoneOff, PhoneForwarded, PhoneMissed } from "lucide-react";
 import DataTable from "@/components/table/DataTable";
 import { DashboardSection } from "@/components/dashboard-ui/DashboardSection";

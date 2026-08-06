@@ -15,6 +15,9 @@ import ScheduleFollowupModal from "@/features/telecaller/followups/components/Sc
 import EmptyFollowups from "@/features/telecaller/followups/components/EmptyFollowups";
 import Button from "@/components/ui/Button";
 
+import ContentSection from "@/components/management/ContentSection";
+import SectionCard from "@/components/management/SectionCard";
+
 export default function FollowUpsPage() {
   // Fetch data
   const { data: allFollowupsData, isLoading } = useFollowups("all");

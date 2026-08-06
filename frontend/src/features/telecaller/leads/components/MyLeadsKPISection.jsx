@@ -1,6 +1,7 @@
 import React from "react";
 import { KPICard } from "@/components/dashboard-ui/KPICard";
 import { Users, Zap, Clock, CheckCircle2, XCircle, Star } from "lucide-react";
+import KPIGrid from "@/components/management/KPIGrid";
 
 export default function MyLeadsKPISection({ kpiData }) {
   const {
@@ -14,7 +15,7 @@ export default function MyLeadsKPISection({ kpiData }) {
 
   return (
     <div className="overflow-x-auto hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 mb-8">
-      <div className="flex md:grid md:grid-cols-3 lg:grid-cols-6 gap-card-gap min-w-max md:min-w-0">
+      <KPIGrid className="flex md:grid md:grid-cols-3 lg:grid-cols-6 gap-card-gap min-w-max md:min-w-0">
         
         <KPICard
           title="Total Assigned"
@@ -64,7 +65,7 @@ export default function MyLeadsKPISection({ kpiData }) {
           variant="blue"
         />
 
-      </div>
+      </KPIGrid>
     </div>
   );
 }
