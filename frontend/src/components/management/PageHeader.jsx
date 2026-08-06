@@ -3,7 +3,7 @@
 import React from "react";
 
 function PageHeaderActions({ children, className = "" }) {
-  return <div className={`flex flex-wrap items-center gap-3 ${className}`}>{children}</div>;
+  return <div className={`flex flex-wrap items-center gap-[var(--spacing-toolbar)] ${className}`}>{children}</div>;
 }
 
 export default function PageHeader({
@@ -13,10 +13,10 @@ export default function PageHeader({
   children,
   className = "",
   titleClassName = "text-heading-1 font-bold font-sans text-slate-900",
-  descriptionClassName = "mt-2 text-subtitle text-gray-500 font-sans",
+  descriptionClassName = "mt-[var(--spacing-control)] text-subtitle text-gray-500 font-sans",
 }) {
   return (
-    <div className={`flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 ${className}`}>
+    <div className={`flex flex-col sm:flex-row sm:items-start sm:justify-between gap-[var(--spacing-card)] ${className}`}>
       <div>
         {typeof title === "string" ? (
           <h1 className={titleClassName}>{title}</h1>

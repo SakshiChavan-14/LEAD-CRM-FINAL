@@ -47,9 +47,9 @@ export default function Input({
                     aria-describedby={error ? errorId : undefined}
                     className={`
                         w-full
-                        rounded-xl
+                        rounded-[var(--radius-control)]
                         border
-                        ${icon ? "pl-11 pr-4" : "px-4"}
+                        ${icon ? "pl-11 pr-[var(--spacing-card)]" : "px-[var(--spacing-card)]"}
                         py-3
                         text-body
                         placeholder:text-gray-400

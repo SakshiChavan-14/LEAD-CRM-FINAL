@@ -65,7 +65,7 @@ export default function Badge({
       className={`
         inline-flex items-center gap-1.5
         px-2.5 py-1
-        rounded-full
+        rounded-[var(--radius-pill)]
         text-caption font-semibold font-sans
         leading-none
         whitespace-nowrap
@@ -75,7 +75,7 @@ export default function Badge({
     >
       {dot && (
         <span
-          className={`w-1.5 h-1.5 rounded-full shrink-0 ${styles.dot}`}
+          className={`w-1.5 h-1.5 rounded-[var(--radius-pill)] shrink-0 ${styles.dot}`}
         />
       )}
       {children}

@@ -8,12 +8,13 @@ import { useCreateFollowup } from "@/features/telecaller/hooks/useFollowupMutati
 import { toast } from "sonner";
 import { Clock } from "lucide-react";
 
-export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, existingFollowups = [], allFollowups = [], initialLeadId = "" }) {
+export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, existingFollowups = [], allFollowups = [], initialLeadId = "", leads = [] }) {
   console.log("[ScheduleFollowupModal] render", { isOpen, defaultDate, existingFollowupsCount: existingFollowups.length, initialLeadId });
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
   const [priority, setPriority] = useState("Medium");
+  const [selectedLeadId, setSelectedLeadId] = useState("");
 
   const createMutation = useCreateFollowup();
 
@@ -23,12 +24,13 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
       setTime("");
       setNotes("");
       setPriority("Medium");
+      setSelectedLeadId(initialLeadId || "");
     }
-  }, [isOpen, defaultDate]);
+  }, [isOpen, defaultDate, initialLeadId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const enquiryNo = initialLeadId ? parseInt(initialLeadId, 10) : null;
+    const enquiryNo = selectedLeadId ? parseInt(selectedLeadId, 10) : null;
 
     // Duplicate prevention: check for an existing active follow-up for this lead
     const existingActive = allFollowups.find(
@@ -108,6 +110,21 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
           
           <h4 className="text-sm font-semibold text-gray-700">Schedule New Follow-up</h4>
 
+          {!initialLeadId && leads.length > 0 && (
+            <Select 
+              label="Select Lead"
+              value={selectedLeadId}
+              onChange={(e) => setSelectedLeadId(e.target.value)}
+              options={[
+                { label: "Choose a lead...", value: "" },
+                ...leads.map(lead => ({
+                  label: `${lead.name} (${lead.enquiryNo})`,
+                  value: String(lead.enquiryNo)
+                }))
+              ]}
+            />
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <Input 
               label="Date"
@@ -152,7 +169,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
               type="submit" 
               variant="primary" 
               className="h-10 text-sm font-semibold bg-[#7A1F2B] hover:bg-[#6F1D28] text-white shadow-sm transition-colors border-none"
-              disabled={createMutation.isPending || !initialLeadId}
+              disabled={createMutation.isPending || !selectedLeadId}
             >
               {createMutation.isPending ? "Scheduling..." : "Confirm Schedule"}
             </Button>

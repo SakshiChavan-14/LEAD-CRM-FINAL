@@ -17,7 +17,7 @@ export default function Button({
       to-[#E8BF67]
       text-[var(--primary)]
       hover:-translate-y-0.5
-      hover:shadow-lg
+      hover:shadow-[var(--shadow-md)]
     `,
     secondary: `
       border
@@ -35,7 +35,7 @@ export default function Button({
       bg-[var(--gmu-maroon)]
       text-white
       hover:bg-[#4a0808]
-      shadow-md
+      shadow-[var(--shadow-md)]
     `,
   };
 
@@ -50,8 +50,8 @@ export default function Button({
         inline-flex
         items-center
         justify-center
-        rounded-xl
-        px-4
+        rounded-[var(--radius-control)]
+        px-[var(--spacing-card)]
         py-2.5
         text-label
         font-semibold

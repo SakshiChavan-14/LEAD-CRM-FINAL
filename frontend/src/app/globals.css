@@ -1,5 +1,8 @@
 @import "tailwindcss";
 @import "../styles/typography.css";
+@import "../styles/spacing.css";
+@import "../styles/radius.css";
+@import "../styles/shadow.css";
 
   :root {
   --primary: #5C1D24;
@@ -413,4 +416,13 @@ body {
   --spacing-vertical_gap: 32px;
   --spacing-container_padding: 24px;
   --spacing-page_padding: 40px;
+}
+
+@layer utilities {
+  .p-page-padding { padding: var(--spacing-page); }
+  .px-page-padding { padding-left: var(--spacing-page); padding-right: var(--spacing-page); }
+  .gap-card-gap { gap: var(--spacing-card); }
+  .gap-section-gap { gap: var(--spacing-section); }
+  .space-y-section-gap > :not(:first-child) { margin-top: var(--spacing-section); }
+  .rounded-card { border-radius: var(--radius-surface); }
 }

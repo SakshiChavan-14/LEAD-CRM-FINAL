@@ -2,9 +2,15 @@ import React, { useState } from "react";
 
 export default function StitchFilterToolbar({ filters, onFilterChange, onApplyFilters, isLoading }) {
   // Local state for the inputs to match the Stitch design without breaking parent logic
-  const [localSearch, setLocalSearch] = useState(filters?.search || "");
-  const [localDateFrom, setLocalDateFrom] = useState(filters?.dateFrom || "");
-  const [localDateTo, setLocalDateTo] = useState(filters?.dateTo || "");
+  const [localSearch, setLocalSearch] = React.useState(filters?.search || "");
+  const [localDateFrom, setLocalDateFrom] = React.useState(filters?.dateFrom || "");
+  const [localDateTo, setLocalDateTo] = React.useState(filters?.dateTo || "");
+
+  React.useEffect(() => {
+    setLocalSearch(filters?.search || "");
+    setLocalDateFrom(filters?.dateFrom || "");
+    setLocalDateTo(filters?.dateTo || "");
+  }, [filters?.search, filters?.dateFrom, filters?.dateTo]);
 
   const handleApply = () => {
     // Validate date range

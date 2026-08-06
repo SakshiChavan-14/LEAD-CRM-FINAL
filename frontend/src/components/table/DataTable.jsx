@@ -134,17 +134,17 @@ export default function DataTable({
 
         {/* Mobile skeleton */}
         {renderMobileCard && (
-          <div className="md:hidden p-4 space-y-3">
+          <div className="md:hidden p-4 space-y-[var(--spacing-content)]">
             {Array.from({ length: skeletonRows }).map((_, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse"
+                className="bg-white rounded-[var(--radius-surface)] border border-gray-200 p-[var(--spacing-card)] animate-pulse"
               >
                 <div className="flex justify-between mb-3">
                   <div className="h-4 w-28 rounded bg-gray-200" />
                   <div className="h-5 w-16 rounded-full bg-gray-200" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-[var(--spacing-content)]">
                   <div className="h-3 w-20 rounded bg-gray-200" />
                   <div className="h-3 w-24 rounded bg-gray-200" />
                 </div>
@@ -155,11 +155,11 @@ export default function DataTable({
 
         {/* Fallback skeleton when no mobile renderer */}
         {!renderMobileCard && (
-          <div className="md:hidden p-4 space-y-3">
+          <div className="md:hidden p-4 space-y-[var(--spacing-content)]">
             {Array.from({ length: skeletonRows }).map((_, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse"
+                className="bg-white rounded-[var(--radius-surface)] border border-gray-200 p-[var(--spacing-card)] animate-pulse"
               >
                 <div className="h-4 w-32 rounded bg-gray-200 mb-2" />
                 <div className="h-3 w-24 rounded bg-gray-200" />
@@ -176,8 +176,8 @@ export default function DataTable({
     return (
       <div className="py-16 flex items-center justify-center">
         {emptyState || (
-          <div className="flex flex-col items-center gap-3 text-center px-6">
-            <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-[var(--spacing-content)] text-center px-[var(--spacing-section)]">
+            <div className="w-12 h-12 rounded-[var(--radius-pill)] bg-gray-50 flex items-center justify-center">
               <Inbox className="text-gray-400" size={24} />
             </div>
             <p className="text-sm font-medium text-gray-800">No records found</p>
@@ -312,7 +312,7 @@ export default function DataTable({
 
       {/* ── Mobile Card View ── */}
       {renderMobileCard ? (
-        <div className="md:hidden flex-1 overflow-y-auto bg-gray-50/30 p-4 space-y-3">
+        <div className="md:hidden flex-1 overflow-y-auto bg-gray-50/30 p-4 space-y-[var(--spacing-content)]">
           {data.map((row, index) => (
             <React.Fragment key={getRowId(row, index)}>
               {renderMobileCard(row, index)}

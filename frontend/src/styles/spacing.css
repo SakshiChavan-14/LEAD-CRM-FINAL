@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Semantic Spacing Scale */
+    --spacing-page: 2rem;       /* 32px - Page-level padding/margins */
+    --spacing-section: 1.5rem;  /* 24px - Spacing between sections */
+    --spacing-card: 1rem;       /* 16px - Standard card padding/gap */
+    --spacing-toolbar: 0.75rem; /* 12px - Toolbar / Content gaps */
+    --spacing-control: 0.5rem;  /* 8px  - Form controls, buttons, small gaps */
+    --spacing-inline: 0.25rem;  /* 4px  - Inline elements, micro gaps */
+  }
+}

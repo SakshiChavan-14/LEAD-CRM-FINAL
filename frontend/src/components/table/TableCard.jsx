@@ -19,7 +19,7 @@ export default function TableCard({ children, className = "" }) {
         bg-white
         rounded-[22px]
         border border-gray-200
-        shadow-sm
+        shadow-[var(--shadow-sm)]
         overflow-hidden
         ${className}
       `}

@@ -59,7 +59,7 @@ export default function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-[9999] flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-[9999] flex items-center justify-center bg-black/50 p-[var(--spacing-card)]"
       onClick={onClose}
       role="presentation"
     >
@@ -72,9 +72,9 @@ export default function Modal({
           ${sizes[size] || sizes.md}
           max-h-[90vh]
           sm:max-h-[85vh]
-          rounded-2xl
+          rounded-[var(--radius-overlay)]
           bg-white
-          shadow-2xl
+          shadow-[var(--shadow-overlay)]
           animate-in
           fade-in
           zoom-in-95
@@ -87,7 +87,7 @@ export default function Modal({
       >
         {/* Header */}
         {title !== null && title !== undefined && (
-          <div className={`flex items-center justify-between border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 ${headerClassName}`}>
+          <div className={`flex items-center justify-between border-b border-gray-200 px-[var(--spacing-card)] py-[var(--spacing-toolbar)] sm:px-[var(--spacing-section)] sm:py-[var(--spacing-card)] ${headerClassName}`}>
             <h2
               id="modal-title"
               className="text-xl font-semibold text-[var(--primary)]"
@@ -98,7 +98,7 @@ export default function Modal({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
+              className="rounded-[var(--radius-control)] p-[var(--spacing-control)] text-gray-500 transition hover:bg-gray-100 hover:text-black"
             >
               <X size={20} />
             </button>
@@ -106,13 +106,13 @@ export default function Modal({
         )}
 
         {/* Body */}
-        <div className={`flex-1 overflow-y-auto p-4 sm:p-6 ${bodyClassName}`}>
+        <div className={`flex-1 overflow-y-auto p-[var(--spacing-card)] sm:p-[var(--spacing-section)] ${bodyClassName}`}>
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className={`flex flex-col gap-3 border-t border-gray-200 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4 ${footerClassName}`}>
+          <div className={`flex flex-col gap-[var(--spacing-content)] border-t border-gray-200 px-[var(--spacing-card)] py-[var(--spacing-toolbar)] sm:flex-row sm:justify-end sm:gap-[var(--spacing-content)] sm:px-[var(--spacing-section)] sm:py-[var(--spacing-card)] ${footerClassName}`}>
             {footer}
           </div>
         )}

@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Semantic Radius Scale (Surface-Oriented) */
+    --radius-control: 0.75rem;  /* 12px - Inputs, Buttons, Selects */
+    --radius-surface: 1rem;     /* 16px - Standard cards and sections */
+    --radius-surface-lg: 1.25rem; /* 20px - Premium charts and large cards */
+    --radius-overlay: 1.5rem;   /* 24px - Modals, Dialogs, Overlays */
+    --radius-pill: 9999px;      /* Fully rounded badges, avatars */
+  }
+}

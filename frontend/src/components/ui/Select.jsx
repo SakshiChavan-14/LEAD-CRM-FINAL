@@ -36,9 +36,9 @@ export default function Select({
         aria-describedby={error ? errorId : undefined}
         className={`
           w-full
-          rounded-xl
+          rounded-[var(--radius-control)]
           border
-          px-4
+          px-[var(--spacing-card)]
           py-3
           text-body
           outline-none

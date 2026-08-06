@@ -3,7 +3,7 @@
 import React from "react";
 
 function SectionCardHeader({ children, className = "" }) {
-  return <div className={`flex items-center justify-between gap-4 mb-4 ${className}`}>{children}</div>;
+  return <div className={`flex items-center justify-between gap-[var(--spacing-card)] mb-[var(--spacing-card)] ${className}`}>{children}</div>;
 }
 
 function SectionCardTitle({ children, className = "" }) {
@@ -15,7 +15,7 @@ function SectionCardDescription({ children, className = "" }) {
 }
 
 function SectionCardActions({ children, className = "" }) {
-  return <div className={`flex items-center gap-2 ${className}`}>{children}</div>;
+  return <div className={`flex items-center gap-[var(--spacing-control)] ${className}`}>{children}</div>;
 }
 
 function SectionCardBody({ children, className = "" }) {
@@ -23,12 +23,12 @@ function SectionCardBody({ children, className = "" }) {
 }
 
 function SectionCardFooter({ children, className = "" }) {
-  return <div className={`mt-4 pt-3 border-t border-gray-100 ${className}`}>{children}</div>;
+  return <div className={`mt-[var(--spacing-card)] pt-[var(--spacing-toolbar)] border-t border-gray-100 ${className}`}>{children}</div>;
 }
 
 export default function SectionCard({ title, subtitle, actions, children, className = "" }) {
   return (
-    <div className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm ${className}`}>
+    <div className={`bg-white border border-gray-200 rounded-[var(--radius-surface)] p-5 shadow-[var(--shadow-sm)] ${className}`}>
       {(title || actions) && (
         <SectionCardHeader>
           <div>

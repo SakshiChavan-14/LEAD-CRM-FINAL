@@ -5,6 +5,7 @@ import DashboardShell from "@/components/layout/DashboardShell";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 import { useUpdateFollowup, useCompleteFollowup } from "@/features/telecaller/hooks/useFollowupMutations";
 import { useFollowupWorkspace } from "@/features/telecaller/hooks/useFollowupWorkspace";
+import { useTelecallerLeads } from "@/features/telecaller/hooks/useMyLeads";
 
 import FollowupListView from "@/features/telecaller/followups/components/FollowupListView";
 import FollowupCalendarView from "@/features/telecaller/followups/components/FollowupCalendarView";
@@ -22,6 +23,15 @@ export default function FollowUpsPage() {
   // Fetch data
   const { data: allFollowupsData, isLoading } = useFollowups("all");
   const allFollowups = Array.isArray(allFollowupsData) ? allFollowupsData : [];
+  
+  const { data: leadsData } = useTelecallerLeads({}, 0, 100);
+  const telecallerLeads = Array.isArray(leadsData?.content) 
+    ? leadsData.content 
+    : Array.isArray(leadsData?.leads) 
+    ? leadsData.leads 
+    : Array.isArray(leadsData) 
+    ? leadsData 
+    : [];
   
   const { mutate: completeFollowup } = useCompleteFollowup();
 
@@ -219,6 +229,7 @@ export default function FollowUpsPage() {
         defaultDate={scheduleDefaultDate}
         existingFollowups={workspace.filteredFollowups.filter(f => f.scheduledDate === scheduleDefaultDate)}
         allFollowups={allFollowups}
+        leads={telecallerLeads}
       />
     </div>
   );

@@ -2,11 +2,11 @@ import React from "react";
 
 export default function DetailSectionCard({ title, icon, action, children }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-[20px] shadow-sm overflow-hidden flex flex-col h-fit">
+    <div className="bg-white border border-gray-100 rounded-[var(--radius-surface-lg)] shadow-[var(--shadow-sm)] overflow-hidden flex flex-col h-fit">
       <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-[var(--spacing-content)]">
           {icon && (
-            <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[var(--radius-control)] bg-gray-50 flex items-center justify-center">
               {icon}
             </div>
           )}
@@ -14,7 +14,7 @@ export default function DetailSectionCard({ title, icon, action, children }) {
         </div>
         {action && <div>{action}</div>}
       </div>
-      <div className="p-5 flex-1 flex flex-col gap-5 text-sm text-gray-700">
+      <div className="p-5 flex-1 flex flex-col gap-[var(--spacing-card)] text-sm text-gray-700">
         {children}
       </div>
     </div>

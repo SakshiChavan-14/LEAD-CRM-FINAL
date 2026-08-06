@@ -17,6 +17,7 @@ import UserPagination from "../ui/UserPagination";
 export default function UsersTable() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   const {
     data,
@@ -29,6 +30,7 @@ export default function UsersTable() {
   } = useInfiniteUsers({
     size: 10,
     search,
+    status,
   });
 
   const usersData = useMemo(() => {
@@ -53,7 +55,12 @@ export default function UsersTable() {
     <div className="p-page-padding space-y-section-gap font-body-sm">
       <UserKPICards users={usersData} totalResults={totalResults} />
       
-      <UserToolbar search={search} onSearchChange={setSearch} />
+      <UserToolbar 
+        search={search} 
+        onSearchChange={setSearch} 
+        status={status}
+        onStatusChange={setStatus}
+      />
       
       <TableCard>
         <UserDirectoryTable 

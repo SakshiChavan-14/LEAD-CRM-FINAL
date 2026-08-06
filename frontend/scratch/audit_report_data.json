@@ -1,0 +1,1063 @@
+{
+  "componentCounts": {
+    "Button": {
+      "imported": 27,
+      "JSXUsed": 43
+    },
+    "Input": {
+      "imported": 8,
+      "JSXUsed": 43
+    },
+    "Select": {
+      "imported": 5,
+      "JSXUsed": 9
+    },
+    "Textarea": {
+      "imported": 4,
+      "JSXUsed": 4
+    },
+    "Modal": {
+      "imported": 11,
+      "JSXUsed": 12
+    },
+    "Badge": {
+      "imported": 5,
+      "JSXUsed": 9
+    },
+    "Avatar": {
+      "imported": 4,
+      "JSXUsed": 3
+    },
+    "Checkbox": {
+      "imported": 1,
+      "JSXUsed": 1
+    },
+    "ConfirmDialog": {
+      "imported": 1,
+      "JSXUsed": 1
+    },
+    "PageHeader": {
+      "imported": 4,
+      "JSXUsed": 4
+    },
+    "SectionCard": {
+      "imported": 1,
+      "JSXUsed": 0
+    },
+    "ContentSection": {
+      "imported": 8,
+      "JSXUsed": 7
+    },
+    "FilterToolbar": {
+      "imported": 2,
+      "JSXUsed": 2
+    },
+    "PageToolbar": {
+      "imported": 0,
+      "JSXUsed": 0
+    },
+    "KPIGrid": {
+      "imported": 6,
+      "JSXUsed": 7
+    },
+    "KPICard": {
+      "imported": 11,
+      "JSXUsed": 28
+    },
+    "DashboardSection": {
+      "imported": 7,
+      "JSXUsed": 8
+    },
+    "ActivityCard": {
+      "imported": 1,
+      "JSXUsed": 0
+    },
+    "DashboardSkeleton": {
+      "imported": 2,
+      "JSXUsed": 2
+    },
+    "EmptyState": {
+      "imported": 8,
+      "JSXUsed": 11
+    },
+    "DataTable": {
+      "imported": 7,
+      "JSXUsed": 7
+    },
+    "TableCard": {
+      "imported": 3,
+      "JSXUsed": 3
+    },
+    "ActionMenu": {
+      "imported": 4,
+      "JSXUsed": 3
+    },
+    "StatusBadge": {
+      "imported": 1,
+      "JSXUsed": 1
+    },
+    "PriorityBadge": {
+      "imported": 1,
+      "JSXUsed": 1
+    },
+    "TablePagination": {
+      "imported": 5,
+      "JSXUsed": 5
+    }
+  },
+  "bypasses": 150,
+  "bypassList": [
+    {
+      "file": "src\\features\\auth\\components\\LoginHeader.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "mt-2 text-2xl md:text-3xl lg:text-4xl leading-tight font-bold text-[var(--gmu-text)] font-sans tracking-tight"
+    },
+    {
+      "file": "src\\features\\callReports\\components\\CallFilterDrawer.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#6F1D28] focus:ring-offset-1"
+    },
+    {
+      "file": "src\\features\\callReports\\components\\filters\\StitchFilterToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[24px] main-shadow border border-outline-variant/50 flex flex-wrap lg:flex-nowrap items-center gap-6"
+    },
+    {
+      "file": "src\\features\\callReports\\components\\tables\\StitchCallReportTable.jsx",
+      "type": "Card Bypass",
+      "classes": "flex flex-col flex-1 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden min-h-0"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\ActivityTimeline.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\AdminQuickActions.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] p-6 shadow-sm h-full flex flex-col hover:shadow-md transition-shadow"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\AdmissionSummaryCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col justify-between h-full"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\FollowUpsCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-3xl border border-gray-100 shadow-sm p-5 xl:p-6 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\MonthlyAdmissionTrendCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col relative h-full"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\PipelineChart.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-3xl p-8 xl:p-10 shadow-sm h-full flex flex-col border border-gray-100"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\PipelineChart.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-2xl font-bold text-gray-900 mb-8 xl:mb-10"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\RecentLeadsTable.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-[24px] border border-gray-200 shadow-sm p-6 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\RecentLeadsTable.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-2xl font-bold text-gray-900 tracking-tight"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\SourceAnalytics.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\TelecallerPerformanceCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-lg p-6 shadow-sm border border-gray-100 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\leads\\components\\details\\DetailSectionCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-[var(--radius-surface-lg)] shadow-[var(--shadow-sm)] overflow-hidden flex flex-col h-fit"
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\AssignLeadsModal.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-[#6F1D28]/30 transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\ImportLeadsDialog.jsx",
+      "type": "Card Bypass",
+      "classes": "p-2 bg-white rounded-lg border border-gray-200 text-[#6F1D28]"
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\ImportLeadsDialog.jsx",
+      "type": "Card Bypass",
+      "classes": "w-4 h-4 text-[#6F1D28] bg-white border-gray-300 rounded focus:ring-[#6F1D28] focus:ring-2 accent-[#6F1D28] cursor-pointer"
+    },
+    {
+      "file": "src\\features\\leads\\components\\documents\\LeadDocumentsTab.jsx",
+      "type": "Card Bypass",
+      "classes": "w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 mb-4"
+    },
+    {
+      "file": "src\\features\\leads\\components\\filters\\AdvancedFiltersSection.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-semibold transition-colors border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6F1D28] focus:ring-offset-1"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\LeadHeaderCard.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 bg-white text-error border border-error font-label-lg px-4 py-3 rounded-[12px] flex items-center justify-center gap-2 hover:bg-error-container active:scale-95 transition-all"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\LeadHeaderCard.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 bg-white text-primary border border-primary font-label-lg px-4 py-3 rounded-[12px] flex items-center justify-center gap-2 hover:bg-surface-container-low active:scale-95 transition-all"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileHero.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 mb-6 w-full"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileHero.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-200 text-[12px] font-semibold text-gray-600 bg-white shadow-sm hover:bg-gray-50 cursor-pointer transition-colors"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileHero.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-gray-200 text-[12px] font-semibold text-gray-600 bg-white shadow-sm hover:bg-gray-50 cursor-pointer transition-colors"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileHero.jsx",
+      "type": "Card Bypass",
+      "classes": "justify-center whitespace-nowrap bg-white border-slate-300 text-gray-800 hover:bg-slate-50 font-semibold rounded-lg shadow-sm px-4 py-2 text-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileHero.jsx",
+      "type": "Card Bypass",
+      "classes": "justify-center whitespace-nowrap bg-white border-red-300 text-red-600 hover:bg-red-50 font-semibold rounded-lg shadow-sm px-4 py-2 text-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileSkeleton.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between gap-6"
+    },
+    {
+      "file": "src\\features\\leads\\components\\profile\\ProfileSkeleton.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-2xl border border-gray-200 shadow-sm min-h-[400px]"
+    },
+    {
+      "file": "src\\features\\leads\\components\\statistics\\QuickStatsRow.jsx",
+      "type": "Card Bypass",
+      "classes": "absolute right-4 bottom-5 w-8 h-8 rounded-full border border-white/30 flex items-center justify-center group-hover:bg-white/10 transition-colors"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadsDataTable.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-[#6F1D28] transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadsOverviewTable.jsx",
+      "type": "Card Bypass",
+      "classes": "px-4 py-1.5 text-sm bg-white border border-[#8B0D16]/30 text-[#8B0D16] font-medium rounded-lg shadow-sm hover:bg-[#8B0D16]/10 transition-colors cursor-pointer"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "py-10 flex flex-col items-center justify-center text-red-500 bg-white rounded-xl border border-gray-200"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-50 hover:text-[#6F1D28] transition-all text-sm font-medium text-gray-700 shadow-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "absolute inset-0 bg-white/50 backdrop-blur-[1px] z-30 flex items-center justify-center pointer-events-none rounded-[22px]"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-3 rounded-full shadow-lg border border-gray-100 flex items-center justify-center"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "absolute inset-0 bg-white/70 backdrop-blur-[1px] z-30 flex items-center justify-center rounded-[22px]"
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-xl shadow-xl border border-red-100 flex flex-col items-center max-w-sm text-center"
+    },
+    {
+      "file": "src\\features\\leads\\components\\timeline\\LeadTimelineTab.jsx",
+      "type": "Card Bypass",
+      "classes": "p-5 bg-white rounded-xl border border-gray-100 shadow-sm"
+    },
+    {
+      "file": "src\\features\\leads\\components\\toolbars\\LeadsFilterToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-semibold transition-colors border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#6F1D28] focus:ring-offset-1 h-10"
+    },
+    {
+      "file": "src\\features\\leads\\components\\toolbars\\SelectionToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 rounded-full border border-gray-200 bg-white/90 px-6 py-3 shadow-xl backdrop-blur-md"
+    },
+    {
+      "file": "src\\features\\leads\\components\\toolbars\\SelectionToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "h-9 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-[#6F1D28] focus:outline-none focus:ring-1 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\features\\leads\\components\\ui\\LeadsHeader.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all"
+    },
+    {
+      "file": "src\\features\\leads\\components\\ui\\LeadsHeader.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+    },
+    {
+      "file": "src\\features\\leads\\components\\views\\LeadActivityTab.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\CallQueue.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-slate-100 rounded-[20px] shadow-sm p-6 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\LogCallModal.jsx",
+      "type": "Card Bypass",
+      "classes": "rounded-[20px] border-[#E8EDF4] bg-white text-slate-900 focus:border-[#8F111B] focus:ring-[#8F111B]/10"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\LogCallModal.jsx",
+      "type": "Card Bypass",
+      "classes": "rounded-[28px] border border-[#E8EDF4] bg-white p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\LogCallModal.jsx",
+      "type": "Card Bypass",
+      "classes": "rounded-full border border-[#E8EDF4] bg-white px-4 py-2 text-sm text-[#8F111B] transition duration-150 hover:-translate-y-0.5 hover:bg-[#FFF2F4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8F111B]/30"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\NextCallsCard.jsx",
+      "type": "Card Bypass",
+      "classes": "flex flex-col p-4 rounded-xl border border-gray-200 bg-white mb-3"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\NextCallsCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\NextCallsCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\NextCallsCard.jsx",
+      "type": "Card Bypass",
+      "classes": "flex flex-col p-5 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all group"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\RecentActivity.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[220px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\RecentActivity.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[220px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\components\\DashboardEmpty.jsx",
+      "type": "Card Bypass",
+      "classes": "p-4 rounded-xl border border-gray-200 bg-white shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\components\\DashboardError.jsx",
+      "type": "Card Bypass",
+      "classes": "p-4 rounded-xl border border-gray-200 bg-white shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\components\\PerformanceCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-slate-100 rounded-[20px] shadow-sm p-6 h-full flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\AnalyticsTrends.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-2xl shadow-[0_2px_12px_rgba(15,23,42,0.06)] p-5 flex flex-col h-full min-h-[250px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\AnalyticsTrends.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-2xl shadow-[0_2px_12px_rgba(15,23,42,0.06)] hover:shadow-md transition-all duration-300 p-5 flex flex-col h-full min-h-[250px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\DashboardHeader.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-3xl font-bold text-gray-900 tracking-tight leading-tight"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\PipelineSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[260px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\PipelineSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[260px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\QuickActions.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 text-gray-700 rounded-full shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer h-full"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\QuickActions.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col gap-4"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\QuickActions.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col gap-4"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\QuickTaskManagement.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col h-full"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\QuickTaskManagement.jsx",
+      "type": "Card Bypass",
+      "classes": "px-4 py-2 bg-white border border-gray-200 text-gray-900 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 transition-colors tracking-wide"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\TodayGoalGauge.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-200 rounded-2xl shadow-sm p-4 flex flex-col h-full w-full justify-center"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\TodayGoalGauge.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-4 flex flex-col justify-between h-auto min-h-[110px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\TodaysFocus.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-between p-3 rounded-xl border border-transparent bg-white"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\TodaysFocus.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\TodaysFocus.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\WeeklyPerformance.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[220px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\dashboard\\components\\WeeklyPerformance.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col min-h-[220px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\DayAgendaItem.jsx",
+      "type": "Card Bypass",
+      "classes": "flex flex-col bg-white border border-[#ECECEC] rounded-xl shadow-sm hover:shadow-md hover:border-slate-300 transition-all p-3.5 group"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\DayAgendaItem.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 flex items-center justify-center gap-1.5 h-8 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\FollowupCard.jsx",
+      "type": "Card Bypass",
+      "classes": "flex flex-col sm:flex-row justify-between bg-white border border-[#ECECEC] rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 transition-all p-5 gap-5 group w-full"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\TodaysFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-gray-100 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] flex flex-col h-full"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\UpcomingFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-between p-3 bg-white rounded-2xl border border-gray-100 shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\UpcomingFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col h-full"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\UpcomingFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\UpcomingFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow hover:border-gray-200 transition-all group-hover:-translate-y-0.5 cursor-pointer"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\UpcomingFollowups.jsx",
+      "type": "Card Bypass",
+      "classes": "text-[#8B1538] bg-white border border-gray-200 hover:bg-[#8B1538] hover:text-white hover:border-[#8B1538] rounded-full px-4 shadow-sm transition-all"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\WorkspaceControls.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-between min-w-0 h-10 px-3 bg-white border border-[#ECECEC] rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\WorkspaceControls.jsx",
+      "type": "Card Bypass",
+      "classes": "absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden transform origin-top-right transition-all"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\WorkspaceControls.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 h-9 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\WorkspaceControls.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full pl-9 pr-4 py-2 bg-white border border-[#ECECEC] rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#7A1F2B] transition-shadow placeholder:text-slate-400 h-10"
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\WorkspaceControls.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center justify-center gap-2 h-10 px-4 bg-white border border-[#ECECEC] hover:bg-slate-50 rounded-xl text-sm font-medium text-slate-700 transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\leads\\components\\MyLeadsTable.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col gap-3"
+    },
+    {
+      "file": "src\\features\\telecaller\\leads\\components\\TelecallerNotesTab.jsx",
+      "type": "Card Bypass",
+      "classes": "p-5 bg-white rounded-xl border border-gray-100 shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\leads\\components\\TelecallerTimelineTab.jsx",
+      "type": "Card Bypass",
+      "classes": "p-5 bg-white rounded-xl border border-gray-100 shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\ActiveCallCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\AnalyticsCards.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\AudioTestModal.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\CallControls.jsx",
+      "type": "Card Bypass",
+      "classes": "w-11 h-11 rounded-xl bg-white border border-[#ECECEC] text-gray-900 font-[600] text-base hover:bg-gray-100 active:bg-gray-200 transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\CallControls.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-1.5 px-4 py-2.5 rounded-full text-[12px] font-[600] border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 transition-all flex-1 justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\CallDialog.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\details\\tabs\\RecordingTab.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\details\\tabs\\RecordingTab.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\details\\tabs\\RecordingTab.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\DeviceSettingsModal.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\DeviceStatusCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\DeviceStatusCard.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\DeviceStatusCard.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\IncomingCallToast.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-80 flex flex-col gap-4"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\QuickDialCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\QuickDialCard.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\QuickDialCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-xl shadow-lg max-h-[160px] overflow-y-auto"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\QuickDialCard.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all font-mono"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\QuickDialCard.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all font-mono"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\RecentCallsTable.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\RecentCallsTable.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\RecentCallsTable.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-4 flex flex-col max-h-[500px] md:h-[500px]"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\TimelineCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\TimelineCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\TimelineCard.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white border border-[#ECECEC] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\VoiceHeader.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\VoiceHeader.jsx",
+      "type": "Card Bypass",
+      "classes": "inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\AssignedLeadsSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-sm flex flex-col h-[500px] items-center justify-center"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\AssignedLeadsSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col h-[500px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\charts\\CallOutcomeChart.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full flex flex-col min-h-[300px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\charts\\CallsTrendChart.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full flex flex-col min-h-[300px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\charts\\LeadPipelineChart.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full flex flex-col min-h-[300px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\charts\\LeadPipelineChart.jsx",
+      "type": "Card Bypass",
+      "classes": "w-10 h-10 rounded-full border-4 border-[#801B1B] bg-white flex items-center justify-center ring-4 ring-white transition-transform group-hover:scale-110"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\charts\\LeadPipelineChart.jsx",
+      "type": "Card Bypass",
+      "classes": "w-10 h-10 rounded-full border-4 border-[#e5e7eb] bg-white flex items-center justify-center ring-4 ring-white transition-transform group-hover:scale-110"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\ProfileSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\RecentCallLogsSection.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col min-h-[400px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\TelecallerHeader.jsx",
+      "type": "Card Bypass",
+      "classes": "bg-white px-6 py-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)]"
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\TelecallerHeader.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-2xl font-bold text-gray-900 leading-tight"
+    },
+    {
+      "file": "src\\features\\users\\components\\directory\\UserToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-12 pl-12 pr-16 bg-white border border-[#E8EAF2] rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-table-body text-on-surface outline-none"
+    },
+    {
+      "file": "src\\features\\users\\components\\directory\\UserToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "appearance-none h-12 pl-5 pr-10 bg-white border border-[#E8EAF2] rounded-xl font-table-body text-on-surface focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer min-w-[140px]"
+    },
+    {
+      "file": "src\\features\\users\\components\\directory\\UserToolbar.jsx",
+      "type": "Card Bypass",
+      "classes": "flex items-center gap-2 h-12 px-6 bg-white border border-[#E8EAF2] rounded-xl font-table-body text-on-surface hover:bg-surface-container-low transition-all"
+    },
+    {
+      "file": "src\\app\\dashboard\\management\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:border-[#6F1D28] hover:shadow-md"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "lg:w-[40%] w-full bg-white border border-[#ECECEC] rounded-2xl p-4 shadow-sm"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "lg:w-[60%] w-full bg-white border border-[#ECECEC] rounded-2xl p-4 shadow-sm flex flex-col"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\follow-ups\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full h-10 px-3 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#6F1D28]"
+    },
+    {
+      "file": "src\\app\\telecaller\\leads\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary text-gray-800"
+    },
+    {
+      "file": "src\\app\\telecaller\\leads\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "flex-1 px-4 py-2.5 border border-gray-200 bg-white text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+    },
+    {
+      "file": "src\\app\\telecaller\\leads\\[enquiryNo]\\TelecallerLeadDetailsClient.jsx",
+      "type": "Card Bypass",
+      "classes": "justify-center w-fit whitespace-nowrap bg-white border-slate-300 text-gray-800 hover:bg-slate-50 font-semibold rounded-lg shadow-sm px-4 py-2 text-sm"
+    },
+    {
+      "file": "src\\app\\telecaller\\leads\\[enquiryNo]\\TelecallerLeadDetailsClient.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-2xl font-bold text-gray-900 mb-2"
+    },
+    {
+      "file": "src\\app\\telecaller\\leads\\[enquiryNo]\\TelecallerLeadDetailsClient.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-2xl font-bold text-gray-900 mb-2"
+    },
+    {
+      "file": "src\\app\\telecaller\\profile\\page.jsx",
+      "type": "Card Bypass",
+      "classes": "rounded-xl border bg-white p-6 shadow-sm"
+    },
+    {
+      "file": "src\\app\\telecaller\\profile\\page.jsx",
+      "type": "PageHeader/Heading Bypass",
+      "classes": "text-3xl font-bold"
+    }
+  ],
+  "dialogs": [
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\AssignLeadsModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\CreateLeadDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\EditLeadDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\ImportLeadsDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\leads\\components\\dialogs\\TransferLeadDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\calls\\components\\LogCallModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\RescheduleModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\followups\\components\\ScheduleFollowupModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\AudioTestModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\details\\CallDetailsModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\DeviceSettingsModal.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\users\\components\\dialogs\\AddUserDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\features\\users\\components\\dialogs\\EditUserDialog.jsx",
+      "hasModalImport": true,
+      "hasConfirmDialog": false,
+      "closeBtn": true
+    },
+    {
+      "file": "src\\app\\layout.jsx",
+      "hasModalImport": false,
+      "hasConfirmDialog": true,
+      "closeBtn": false
+    }
+  ],
+  "tables": [
+    {
+      "file": "src\\features\\callReports\\components\\tables\\CallReportsTable.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": true
+    },
+    {
+      "file": "src\\features\\callReports\\components\\tables\\StitchCallReportTable.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\callReports\\components\\tables\\TelecallerPerformanceTable.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\RecentLeadsTable.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\dashboard\\components\\widgets\\TelecallerPerformanceCard.jsx",
+      "usesDataTable": false,
+      "usesRawTable": true,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\dashboard\\constants\\dashboardTables.js",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\leads\\components\\information\\LeadInfoTab.jsx",
+      "usesDataTable": false,
+      "usesRawTable": true,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadsDataTable.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadsOverviewTable.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\leads\\components\\tables\\LeadTableSection.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": true
+    },
+    {
+      "file": "src\\features\\leads\\components\\toolbars\\TableActions.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\telecaller\\leads\\components\\MyLeadsTable.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\telecaller\\leads\\components\\TelecallerOverviewTab.jsx",
+      "usesDataTable": false,
+      "usesRawTable": true,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\telecaller\\voice\\components\\RecentCallsTable.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\AssignedLeadsSection.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\users\\components\\details\\RecentCallLogsSection.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\users\\components\\directory\\UserDirectoryTable.jsx",
+      "usesDataTable": true,
+      "usesRawTable": false,
+      "hasPagination": false
+    },
+    {
+      "file": "src\\features\\users\\components\\directory\\UsersTable.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": true
+    },
+    {
+      "file": "src\\features\\users\\components\\ui\\UserTableActions.jsx",
+      "usesDataTable": false,
+      "usesRawTable": false,
+      "hasPagination": false
+    }
+  ]
+}

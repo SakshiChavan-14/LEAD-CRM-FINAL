@@ -57,7 +57,7 @@ export default function LeadHeaderCard({ viewModel, rawData, actions, onDelete, 
         </div>
 
         {(actions || onDelete || onEdit) && (
-          <div className="flex flex-row flex-wrap gap-2 w-full md:w-auto">
+          <div className="flex flex-row flex-wrap gap-3 w-full md:w-auto">
             {actions}
             {onDelete && (
               <button onClick={onDelete} className="flex-1 bg-white text-error border border-error font-label-lg px-4 py-3 rounded-[12px] flex items-center justify-center gap-2 hover:bg-error-container active:scale-95 transition-all">

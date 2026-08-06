@@ -81,10 +81,10 @@ export default function ConfirmDialog() {
       title={null} // Custom header
       footer={null} // Custom footer
     >
-      <div className="flex flex-col items-center text-center p-2 sm:p-4">
+      <div className="flex flex-col items-center text-center p-2 sm:p-[var(--spacing-card)]">
         
         {/* Icon */}
-        <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full ${config.iconBg} mb-4`}>
+        <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-[var(--radius-pill)] ${config.iconBg} mb-[var(--spacing-card)]`}>
           <Icon className={`h-8 w-8 ${config.iconColor}`} aria-hidden="true" />
         </div>
         
@@ -101,7 +101,7 @@ export default function ConfirmDialog() {
         )}
 
         {/* Actions */}
-        <div className="flex w-full flex-col sm:flex-row gap-3 mt-4">
+        <div className="flex w-full flex-col sm:flex-row gap-[var(--spacing-content)] mt-4">
           <Button
             variant="secondary"
             onClick={handleCancel}
@@ -116,7 +116,7 @@ export default function ConfirmDialog() {
             onClick={handleConfirm}
             disabled={isConfirming}
             className={`
-              flex-1 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-[15px] font-semibold transition-all duration-200
+              flex-1 inline-flex items-center justify-center rounded-[var(--radius-control)] px-[var(--spacing-card)] py-2.5 text-[15px] font-semibold transition-all duration-200
               disabled:opacity-50 disabled:cursor-not-allowed
               ${config.buttonClass}
             `}

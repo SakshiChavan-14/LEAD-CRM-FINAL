@@ -3,8 +3,8 @@ import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export const KpiCardSkeleton = () => (
-  <div className="bg-white border border-gray-200 rounded-[20px] p-[24px] shadow-sm flex flex-col h-[156px] w-full">
-    <div className="w-[60px] h-[28px] rounded-full bg-gray-100 animate-pulse mb-auto"></div>
+  <div className="bg-white border border-gray-200 rounded-[var(--radius-surface-lg)] p-[var(--spacing-section)] shadow-[var(--shadow-sm)] flex flex-col h-[156px] w-full">
+    <div className="w-[60px] h-[28px] rounded-[var(--radius-pill)] bg-gray-100 animate-pulse mb-auto"></div>
     <div className="w-24 h-8 bg-gray-100 animate-pulse rounded mb-2"></div>
     <div className="w-16 h-4 bg-gray-100 animate-pulse rounded mb-1"></div>
     <div className="w-32 h-3 bg-gray-100 animate-pulse rounded mt-1"></div>
@@ -69,13 +69,13 @@ export function KpiCard({
 
   const CardContent = (
     <div 
-      className={`bg-white border border-gray-200 rounded-[20px] p-[24px] shadow-sm flex flex-col h-[156px] w-full transition-all duration-200 
-      ${(onClick || href) ? 'cursor-pointer hover:-translate-y-[2px] hover:shadow-md' : ''} ${className}`}
+      className={`bg-white border border-gray-200 rounded-[var(--radius-surface-lg)] p-[var(--spacing-section)] shadow-[var(--shadow-sm)] flex flex-col h-[156px] w-full transition-all duration-200 
+      ${(onClick || href) ? 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[var(--shadow-md)]' : ''} ${className}`}
       onClick={onClick}
     >
       <div className="flex items-start justify-between mb-auto">
         {Icon && (
-          <div className={`w-[60px] h-[28px] rounded-full flex items-center justify-center shrink-0 ${getVariantStyles()}`}>
+          <div className={`w-[60px] h-[28px] rounded-[var(--radius-pill)] flex items-center justify-center shrink-0 ${getVariantStyles()}`}>
             <Icon size={18} strokeWidth={2} />
           </div>
         )}
@@ -94,7 +94,7 @@ export function KpiCard({
   );
 
   if (href) {
-    return <Link href={href} className="block w-full outline-none focus:ring-2 focus:ring-primary rounded-[20px]">{CardContent}</Link>;
+    return <Link href={href} className="block w-full outline-none focus:ring-2 focus:ring-primary rounded-[var(--radius-surface-lg)]">{CardContent}</Link>;
   }
 
   return CardContent;
