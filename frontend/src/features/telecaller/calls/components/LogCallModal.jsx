@@ -59,8 +59,8 @@ function ModalHeader({ enquiryNo }) {
         <Phone size={22} />
       </div>
       <div>
-        <h3 className="text-2xl font-semibold text-slate-900 font-outfit">Log Interaction</h3>
-        <p className="text-sm text-slate-500">Lead #{enquiryNo}</p>
+        <h3 className="text-heading-2 font-semibold text-slate-900 font-sans">Log Interaction</h3>
+        <p className="text-body-sm text-slate-500 font-sans">Lead #{enquiryNo}</p>
       </div>
     </div>
   );
@@ -69,7 +69,7 @@ function ModalHeader({ enquiryNo }) {
 function OutcomeSelector({ selected, onSelect, error }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-900 mb-4">Call Outcome</label>
+      <label className="block text-label font-semibold text-slate-900 font-sans mb-4">Call Outcome</label>
       <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
         {CALL_OUTCOMES.map((outcome) => {
           const active = selected === outcome.value;

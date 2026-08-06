@@ -53,7 +53,7 @@ export default function Button({
         rounded-xl
         px-4
         py-2.5
-        text-[15px]
+        text-label
         font-semibold
         transition-all
         duration-200

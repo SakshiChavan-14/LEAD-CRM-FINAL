@@ -12,8 +12,8 @@ export default function PageHeader({
   actions,
   children,
   className = "",
-  titleClassName = "text-4xl font-bold font-outfit text-slate-900",
-  descriptionClassName = "mt-2 text-gray-500",
+  titleClassName = "text-heading-1 font-bold font-sans text-slate-900",
+  descriptionClassName = "mt-2 text-subtitle text-gray-500 font-sans",
 }) {
   return (
     <div className={`flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 ${className}`}>

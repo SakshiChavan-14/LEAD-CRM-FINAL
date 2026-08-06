@@ -7,11 +7,11 @@ function SectionCardHeader({ children, className = "" }) {
 }
 
 function SectionCardTitle({ children, className = "" }) {
-  return <h3 className={`font-semibold text-gray-900 ${className}`}>{children}</h3>;
+  return <h3 className={`text-heading-3 font-semibold font-sans text-gray-900 ${className}`}>{children}</h3>;
 }
 
 function SectionCardDescription({ children, className = "" }) {
-  return <p className={`text-xs text-gray-500 mt-0.5 ${className}`}>{children}</p>;
+  return <p className={`text-body-sm text-gray-500 mt-0.5 font-sans ${className}`}>{children}</p>;
 }
 
 function SectionCardActions({ children, className = "" }) {

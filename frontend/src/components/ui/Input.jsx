@@ -20,7 +20,7 @@ export default function Input({
             {label && (
                 <label
                     htmlFor={name}
-                    className="block text-[14px] font-medium text-gray-700 font-inter"
+                    className="block text-label font-semibold text-gray-700 font-sans"
                 >
                     {label}
                     {required && <span className="ml-1 text-red-500">*</span>}
@@ -51,12 +51,12 @@ export default function Input({
                         border
                         ${icon ? "pl-11 pr-4" : "px-4"}
                         py-3
-                        text-[16px]
+                        text-body
                         placeholder:text-gray-400
                         outline-none
                         transition-all
                         duration-200
-                        font-inter
+                        font-sans
                         ${
                             error
                                 ? "border-red-400 focus:ring-2 focus:ring-red-200"
@@ -67,7 +67,7 @@ export default function Input({
                 />
             </div>
 
-            <div className="min-h-[20px] text-[12px] text-red-500 font-inter">
+            <div className="min-h-[20px] text-caption text-red-500 font-sans">
                 {error && <p id={errorId}>{error}</p>}
             </div>
         </div>

@@ -19,11 +19,11 @@ export default function ManagementHeader({
 
         <div>
 
-          <h1 className="text-4xl font-bold font-outfit text-slate-900">
+          <h1 className="text-heading-1 font-bold font-sans text-slate-900">
             {title}
           </h1>
 
-          <p className={`text-gray-500 transition-all duration-300 ease-in-out ${isScrolled ? "mt-1" : "mt-2"}`}>
+          <p className={`text-subtitle text-gray-500 font-sans transition-all duration-300 ease-in-out ${isScrolled ? "mt-1" : "mt-2"}`}>
             {description}
           </p>
 

@@ -60,7 +60,7 @@ export function KpiCard({
     }
 
     return (
-      <div className={`flex items-center gap-1 text-[12px] font-medium ${trendColors}`}>
+      <div className={`flex items-center gap-1 text-caption font-semibold font-sans ${trendColors}`}>
         <TrendIcon size={12} strokeWidth={2.5} />
         <span>{trend}</span>
       </div>
@@ -82,11 +82,11 @@ export function KpiCard({
       </div>
 
       <div className="flex flex-col mt-auto">
-        <p className="text-[32px] font-semibold text-gray-900 leading-none mb-1 truncate">{displayValue}</p>
-        <h3 className="text-[14px] font-medium text-gray-700 leading-tight mb-0.5 truncate">{title}</h3>
+        <p className="text-kpi font-bold text-gray-900 leading-none mb-1 truncate font-sans">{displayValue}</p>
+        <h3 className="text-label font-semibold text-gray-700 leading-tight mb-0.5 truncate font-sans">{title}</h3>
         
         <div className="flex items-center justify-between mt-1">
-          <p className="text-[12px] text-gray-500 font-normal truncate max-w-[70%]">{subtitle}</p>
+          <p className="text-caption text-gray-500 font-normal truncate max-w-[70%] font-sans">{subtitle}</p>
           {trend ? renderTrend() : <div className="h-[18px]"></div>}
         </div>
       </div>

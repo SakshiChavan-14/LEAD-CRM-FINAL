@@ -16,7 +16,7 @@ export default function Textarea({
       {label && (
         <label
           htmlFor={name}
-          className="block text-[14px] font-medium text-gray-700 font-inter"
+          className="block text-label font-semibold text-gray-700 font-sans"
         >
           {label}
         </label>
@@ -37,6 +37,8 @@ export default function Textarea({
           border
           px-4
           py-3
+          text-body
+          font-sans
           outline-none
           resize-none
           transition-all
@@ -51,7 +53,7 @@ export default function Textarea({
         {...props}
       />
 
-      <div id={errorId} className="min-h-[20px] text-[12px] text-red-500">
+      <div id={errorId} className="min-h-[20px] text-caption text-red-500 font-sans">
         {error}
       </div>
     </div>
