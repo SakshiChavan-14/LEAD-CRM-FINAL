@@ -33,7 +33,7 @@ export function useVoicePermissions() {
       // Immediately stop the stream since we just wanted permission
       stream.getTracks().forEach((track) => track.stop());
       return true;
-    } catch (error) {
+    } catch {
       setPermission(PERMISSION_STATES.DENIED);
       return false;
     }

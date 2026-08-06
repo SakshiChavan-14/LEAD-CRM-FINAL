@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Edit2, UserCheck, UserX, Loader2, Mail, Phone as PhoneIcon, Building, Calendar } from "lucide-react";
+import { Edit2, UserCheck, UserX, Mail, Phone as PhoneIcon, Building, Calendar } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { env } from "@/config/env";
 import EditUserDialog from "../dialogs/EditUserDialog";
 import useUpdateTelecallerStatus from "@/features/users/hooks/useUpdateTelecallerStatus";
 import useUploadTelecallerAvatar from "@/features/users/hooks/useUploadTelecallerAvatar";

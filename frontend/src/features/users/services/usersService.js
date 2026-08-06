@@ -93,9 +93,11 @@ const toggleUserStatus = async (slNo) => {
   return normalizeUser(raw);
 };
 
-export default {
+const usersService = {
   getUsers,
   createUser,
   updateUser,
   toggleUserStatus,
 };
+
+export default usersService;

@@ -5,7 +5,7 @@ import Badge from "@/components/ui/Badge";
 
 // ── Column Definitions ──
 
-const getColumns = (onView) => [
+const getColumns = (_onView) => [
   {
     key: "index",
     label: "SL No",

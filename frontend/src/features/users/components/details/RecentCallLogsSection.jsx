@@ -69,7 +69,6 @@ const columns = [
 ];
 
 export default function RecentCallLogsSection({ userId }) {
-  const router = useRouter();
   const [filters] = useState({ page: 0, size: 5 });
 
   const { data, isError, isLoading } = useTelecallerCallLogs(userId, filters);

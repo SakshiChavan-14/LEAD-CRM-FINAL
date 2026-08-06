@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { voiceManager } from "../utils/VoiceManager";
-import { DEVICE_EVENTS, CALL_EVENTS, VOICE_STATES, mapTwilioError } from "../utils/twilioEvents";
+import { DEVICE_EVENTS, CALL_EVENTS, mapTwilioError } from "../utils/twilioEvents";
 
 export function useVoiceEvents() {
   const [voiceState, setVoiceState] = useState(voiceManager.state);
