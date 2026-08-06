@@ -1,5 +1,6 @@
 import React from "react";
 import { KPICard } from "@/components/dashboard-ui/KPICard";
+import { KPIGrid } from "@/components/management";
 import { Users, UserCheck, UserPlus, Clock, Percent, Headphones, GraduationCap } from "lucide-react";
 
 const getIconForTitle = (title) => {
@@ -15,12 +16,9 @@ const getIconForTitle = (title) => {
   }
 };
 
-
-
 export default function DashboardStats({ stats = [] }) {
-  // Use a 6-column grid on desktop as specified (since there are 7 items, it will wrap naturally, or we can use 3/4 cols)
   return (
-    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+    <KPIGrid className="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
       {stats.map((item) => {
         const Icon = getIconForTitle(item.title);
         
@@ -36,6 +34,6 @@ export default function DashboardStats({ stats = [] }) {
           />
         );
       })}
-    </div>
+    </KPIGrid>
   );
 }

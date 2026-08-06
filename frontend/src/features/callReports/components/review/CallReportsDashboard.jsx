@@ -1,6 +1,6 @@
 "use client";
 
-import ContentSection from "@/components/management/ContentSection";
+import { ContentSection } from "@/components/management";
 import TelecallerPerformanceTable from "../tables/TelecallerPerformanceTable";
 
 export default function CallReportsDashboard() {

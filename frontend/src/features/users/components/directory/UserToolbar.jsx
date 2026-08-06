@@ -1,8 +1,9 @@
 import React from "react";
+import { FilterToolbar } from "@/components/management";
 
 export default function UserToolbar({ search, onSearchChange }) {
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <FilterToolbar className="flex-wrap items-center gap-4">
       <div className="relative w-full max-w-[560px]">
         <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60">search</span>
         <input 
@@ -26,6 +27,6 @@ export default function UserToolbar({ search, onSearchChange }) {
         <span>More Filters</span>
         <span className="material-symbols-outlined text-lg">expand_more</span>
       </button>
-    </div>
+    </FilterToolbar>
   );
 }
