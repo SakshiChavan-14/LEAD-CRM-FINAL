@@ -18,7 +18,7 @@ const toTitleCase = (str) => {
 
 // Stitch Components
 import "@/features/telecaller/leads/components/stitch-myleads-theme.css";
-import MyLeadsHeader from "@/features/telecaller/leads/components/MyLeadsHeader";
+import { PageHeader } from "@/components/management";
 import MyLeadsKPISection from "@/features/telecaller/leads/components/MyLeadsKPISection";
 import MyLeadsFilterToolbar from "@/features/telecaller/leads/components/MyLeadsFilterToolbar";
 import MyLeadsTable from "@/features/telecaller/leads/components/MyLeadsTable";
@@ -100,9 +100,20 @@ export default function TelecallerLeadsPage() {
     <div className="stitch-myleads h-full overflow-y-auto">
       <main className="max-w-[1440px] mx-auto px-4 md:px-container-margin py-8">
         
-        <MyLeadsHeader 
-          assignedLeadsCount={totalItems}
-          lastSynced="just now"
+        <PageHeader
+          className="md:items-end mb-8"
+          title="My Leads"
+          titleClassName="text-[42px] font-bold leading-tight tracking-tight text-on-surface"
+          description={
+            <div className="flex items-center gap-3 mt-1">
+              <span className="flex items-center gap-1.5 text-body-md text-on-surface-variant">
+                <span className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(0,57,20,0.4)]"></span>
+                {totalItems} assigned {totalItems === 1 ? 'lead' : 'leads'}
+              </span>
+              <span className="text-outline-variant">•</span>
+              <span className="text-body-md text-on-surface-variant">Last synced just now</span>
+            </div>
+          }
         />
 
         <MyLeadsKPISection kpiData={kpiData} />
