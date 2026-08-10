@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import Modal from "@/components/ui/Modal";
-import SearchBar from "@/components/management/SearchBar";
+import SearchBar from "@/components/ui/SearchBar";
 import Avatar from "@/components/ui/Avatar";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useAllLeadsForWorkload } from "@/features/leads/hooks/useAllLeadsForWorkload";

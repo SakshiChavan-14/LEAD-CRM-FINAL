@@ -1,9 +1,8 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import { IMAGES } from "@/constants/images";
-import QuoteBadge from "./QuoteBadge";
-import CurvedDivider from "./CurvedDivider";
-import BackgroundOverlay from "./BackgroundOverlay";
 
 export default function LoginHero() {
   return (
@@ -18,8 +17,13 @@ export default function LoginHero() {
         className="object-cover object-[center_35%]"
       />
 
-      {/* Dark maroon overlay from new component */}
-      <BackgroundOverlay />
+      {/* Dark maroon overlay */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          background: 'linear-gradient(rgba(45,10,15,0.45), rgba(25,5,10,0.75))'
+        }}
+      />
 
       {/* Decorative dots top right */}
       <div 
@@ -32,7 +36,15 @@ export default function LoginHero() {
         style={{ backgroundImage: 'radial-gradient(circle, #D4AF37 1.5px, transparent 1.5px)', backgroundSize: '16px 16px' }} 
       />
 
-      <CurvedDivider />
+      {/* Curved Divider SVG */}
+      <svg
+        className="absolute right-0 top-0 h-full w-24 md:w-32 lg:w-48 z-30 drop-shadow-[-10px_0_15px_rgba(0,0,0,0.1)] translate-x-[1px]"
+        preserveAspectRatio="none"
+        viewBox="0 0 100 100"
+      >
+        <path d="M0,0 C100,20 100,80 0,100 L100,100 L100,0 Z" fill="#FDFCF9" />
+        <path d="M0,0 C100,20 100,80 0,100" fill="none" stroke="#D4AF37" strokeWidth="1.5" />
+      </svg>
 
       <div className="relative z-20 flex flex-col h-full justify-between">
         {/* Header / Logo */}
@@ -62,8 +74,14 @@ export default function LoginHero() {
             The official lead management platform built for admissions, telecalling, and administrative workflows.
           </p>
           
+          {/* Quote Badge */}
           <div className="mt-[28px]">
-            <QuoteBadge />
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl border border-[var(--gmu-gold,#D4AF37)] bg-black/30 backdrop-blur-sm w-fit">
+              <span className="text-[var(--gmu-gold,#D4AF37)] text-lg">☆</span>
+              <span className="text-white text-sm font-medium tracking-wide">
+                Innovating Minds, Inspiring Tomorrow™
+              </span>
+            </div>
           </div>
         </div>
       </div>

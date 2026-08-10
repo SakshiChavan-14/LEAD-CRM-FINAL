@@ -1,6 +1,6 @@
 "use client";
 
-import SearchBar from "./SearchBar";
+import SearchBar from "@/components/ui/SearchBar";
 import { useTableScroll } from "@/providers/TableScrollProvider";
 
 export default function ManagementHeader({

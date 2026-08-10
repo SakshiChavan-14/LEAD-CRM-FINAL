@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardSidebar from "../dashboard/DashboardSidebar";
+import DashboardSidebar from "./DashboardSidebar";
 import DashboardNavbar from "./DashboardNavbar";
 
 import navigation from "@/config/navigation";
