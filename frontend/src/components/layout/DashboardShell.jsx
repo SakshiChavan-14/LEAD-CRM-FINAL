@@ -56,9 +56,7 @@ export default function DashboardShell({ children }) {
           isSidebarOpen={sidebarOpen}
         />
 
-        <main
-          className="flex-1 overflow-y-auto p-4 sm:p-6"
-        >
+        <main className="flex-1 overflow-y-auto crm-scroll">
           {children}
         </main>
       </div>

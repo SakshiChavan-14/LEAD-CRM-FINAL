@@ -18,11 +18,13 @@ const toTitleCase = (str) => {
 
 // Stitch Components
 import "@/features/telecaller/leads/components/stitch-myleads-theme.css";
+import PageContainer from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/management";
 import MyLeadsKPISection from "@/features/telecaller/leads/components/MyLeadsKPISection";
 import MyLeadsFilterToolbar from "@/features/telecaller/leads/components/MyLeadsFilterToolbar";
 import MyLeadsTable from "@/features/telecaller/leads/components/MyLeadsTable";
 import TablePagination from "@/components/table/TablePagination";
+import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 
 export default function TelecallerLeadsPage() {
   const router = useRouter();
@@ -40,17 +42,28 @@ export default function TelecallerLeadsPage() {
     error,
   } = useTelecallerLeads({ search: searchTerm }, page, size);
 
-  const uniqueOptions = {
+  const voiceCtx = useVoice();
+
+  const uniqueOptions = useMemo(() => ({
     status: [...new Set((data?.leads || []).map(l => l.status).filter(Boolean))],
     course: [...new Set((data?.leads || []).map(l => l.course).filter(Boolean))],
     source: [...new Set((data?.leads || []).map(l => l.source).filter(Boolean))],
     opinion: [...new Set((data?.leads || []).map(l => l.opinion).filter(Boolean))],
     location: [...new Set((data?.leads || []).map(l => l.city || l.district).filter(Boolean))],
     calls: [...new Set((data?.leads || []).map(l => (l.callCount || 0).toString()))],
-  };
+  }), [data?.leads]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    setPage(0);
+  };
+
+  const handleClearFilter = (key) => {
+    setFilters(prev => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
     setPage(0);
   };
 
@@ -97,39 +110,44 @@ export default function TelecallerLeadsPage() {
   }
 
   return (
-    <div className="stitch-myleads h-full overflow-y-auto">
-      <main className="max-w-[1440px] mx-auto px-4 md:px-container-margin py-8">
-        
-        <PageHeader
-          className="md:items-end mb-8"
-          title="My Leads"
-          titleClassName="text-[42px] font-bold leading-tight tracking-tight text-on-surface"
-          description={
-            <div className="flex items-center gap-3 mt-1">
-              <span className="flex items-center gap-1.5 text-body-md text-on-surface-variant">
-                <span className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(0,57,20,0.4)]"></span>
-                {totalItems} assigned {totalItems === 1 ? 'lead' : 'leads'}
-              </span>
-              <span className="text-outline-variant">•</span>
-              <span className="text-body-md text-on-surface-variant">Last synced just now</span>
-            </div>
-          }
-        />
-
-        <MyLeadsKPISection kpiData={kpiData} />
-
-        <MyLeadsFilterToolbar 
-          hasActiveFilters={hasActiveFilters}
-          activeFiltersCount={activeFilterKeys.length}
-          onOpenFilters={() => setIsFilterOpen(true)}
-        />
-
-        <div className="bg-surface-container-lowest premium-shadow rounded-xl overflow-hidden flex flex-col mb-12">
-          <MyLeadsTable 
-            data={allLeads} 
-            isLoading={isLoading} 
-            onRowClick={handleRowClick}
+    <div className="bg-[#F8FAFC] min-h-screen">
+      <PageContainer size="wide" className="stitch-myleads pt-4 pb-8 max-w-[1440px] mx-auto space-y-5">
+          
+          <PageHeader
+            className="md:items-end mb-4"
+            title="My Leads"
+            titleClassName="text-[42px] font-bold leading-tight tracking-tight text-on-surface"
+            description={
+              <div className="flex items-center gap-3 mt-1">
+                <span className="flex items-center gap-1.5 text-body-md text-on-surface-variant">
+                  <span className="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(0,57,20,0.4)]"></span>
+                  {totalItems} assigned {totalItems === 1 ? 'lead' : 'leads'}
+                </span>
+                <span className="text-outline-variant">•</span>
+                <span className="text-body-md text-on-surface-variant">Live</span>
+              </div>
+            }
           />
+
+          <MyLeadsKPISection kpiData={kpiData} />
+
+          <MyLeadsFilterToolbar 
+            hasActiveFilters={hasActiveFilters}
+            activeFiltersCount={activeFilterKeys.length}
+            onOpenFilters={() => setIsFilterOpen(true)}
+            uniqueOptions={uniqueOptions}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilter={handleClearFilter}
+          />
+
+          <div className="bg-white premium-shadow rounded-2xl border border-gray-200 overflow-hidden flex flex-col mb-12 shadow-sm">
+            <MyLeadsTable 
+              data={allLeads} 
+              isLoading={isLoading} 
+              onRowClick={handleRowClick}
+              onCall={(number) => voiceCtx?.startCall(null, number)}
+            />
 
           {!isLoading && allLeads.length > 0 && (
             <TablePagination
@@ -194,7 +212,7 @@ export default function TelecallerLeadsPage() {
             </div>
           </div>
         )}
-      </main>
+      </PageContainer>
     </div>
   );
 }

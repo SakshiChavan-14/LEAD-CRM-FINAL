@@ -210,9 +210,9 @@ export default function DashboardSidebar({
               {user.userGroup.replace('_', '-')}
             </p>
           </div>
-          <button className="text-[#6B7280] hover:text-[#111827] pr-1 transition-colors hover:rotate-90 duration-300">
+          <Link href={user.userGroup === ROLES.TELE_CALLER ? "/telecaller/profile" : "#"} className="text-[#6B7280] hover:text-[#111827] pr-1 transition-colors hover:rotate-90 duration-300" onClick={onClose}>
             <Settings size={16} />
-          </button>
+          </Link>
         </div>
         
         <button 

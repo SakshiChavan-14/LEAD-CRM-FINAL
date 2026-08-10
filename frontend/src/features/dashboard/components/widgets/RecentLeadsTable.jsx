@@ -1,14 +1,25 @@
 import { Users } from "lucide-react";
 import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 
-// Status badge colors matching Stitch design
 const STATUS_STYLES = {
-  Contacted: "bg-[#f8e7e7] text-[#711a1a]",
-  Interested: "bg-[#fef3c7] text-[#92400e]",
-  New: "bg-blue-50 text-blue-700",
-  Converted: "bg-green-50 text-green-700",
-  Closed: "bg-gray-100 text-gray-600",
+  ENQUIRY: "bg-blue-50 text-blue-700 border border-blue-100",
+  NEW: "bg-blue-50 text-blue-700 border border-blue-100",
+  INTERESTED: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+  CONTACTED: "bg-amber-50 text-amber-700 border border-amber-100",
+  CONVERTED: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+  CLOSED: "bg-slate-100 text-slate-600 border border-slate-200",
+  "NOT INTERESTED": "bg-slate-100 text-slate-600 border border-slate-200",
+  COMPLETED: "bg-slate-800 text-white border border-slate-900",
 };
+
+const SOURCE_COLORS = {
+  Website: "bg-[#2563EB]", // Blue dot
+  Instagram: "bg-[#0EA5E9]", // Cyan dot
+  Referral: "bg-[#10B981]", // Emerald dot
+  "Walk-in": "bg-[#F59E0B]", // Amber dot
+};
+
+const cardClass = "rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 h-full flex flex-col font-outfit justify-between";
 
 export default function RecentLeadsTable({ recentLeads }) {
   if (recentLeads?.error) {
@@ -21,77 +32,96 @@ export default function RecentLeadsTable({ recentLeads }) {
 
   const data = recentLeads?.data || [];
 
-  // Helper: get initials from name
-  const getInitials = (name) => {
-    if (!name) return "?";
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-    return name.charAt(0).toUpperCase();
-  };
-
   return (
-    <div className="bg-white rounded-[24px] border border-gray-200 shadow-sm p-6 h-full flex flex-col">
+    <div className={cardClass}>
       {/* Header */}
       <header className="flex justify-between items-center mb-6 px-1">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Recent Leads</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900">Recent Leads</h2>
+          <p className="text-xs text-slate-500 mt-1">Recently acquired leads entering the pipeline</p>
+        </div>
         <a
-          className="flex items-center gap-1 text-[#711a1a] text-sm font-semibold hover:underline"
-          href="#"
+          className="text-[#7F1D1D] text-xs font-semibold hover:underline"
+          href="/dashboard/management/leads"
         >
-          View All Leads
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          View All
         </a>
       </header>
 
-      {/* Lead List */}
-      <div className="space-y-4 flex-1">
+      {/* Leads Table Container with overflow-x-auto */}
+      <div className="overflow-x-auto flex-grow border border-slate-100 rounded-xl">
         {data.length === 0 ? (
           <div className="py-8">
             <EmptyState title="No recent leads" description="There are no recent leads in your pipeline." icon={Users} />
           </div>
         ) : (
-          data.map((lead, index) => (
-            <article
-              key={lead.id || index}
-              className={`flex items-center justify-between p-3 rounded-[16px] transition-colors ${
-                index % 2 === 0
-                  ? "border border-gray-100 bg-white"
-                  : "bg-transparent"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                {/* Avatar */}
-                <div className="w-11 h-11 flex items-center justify-center rounded-[10px] bg-[#f5e4e4] text-[#711a1a] font-bold text-base shrink-0">
-                  {getInitials(lead.student)}
-                </div>
-                {/* Name + Subtitle */}
-                <div className="flex flex-col">
-                  <span className="font-bold text-lg leading-tight text-[#3e1212]">
-                    {lead.student || "Unknown"}
-                  </span>
-                  <span className="text-[#6b7280] text-sm font-medium mt-0.5">
-                    {lead.course || "N/A"}{lead.source ? ` • ${lead.source} Source` : ""}
-                  </span>
-                </div>
-              </div>
+          <table className="w-full text-left align-middle border-collapse min-w-[700px]">
+            <thead>
+              <tr className="bg-slate-50 text-[10px] tracking-wider text-slate-500 font-bold uppercase border-b border-slate-200">
+                <th className="py-3 px-4 text-left">Lead</th>
+                <th className="py-3 px-4 text-left hidden lg:table-cell">Mobile</th>
+                <th className="py-3 px-4 text-left">Source</th>
+                <th className="py-3 px-4 text-left">Status</th>
+                <th className="py-3 px-4 text-left">Assigned To</th>
+                <th className="py-3 px-4 text-left">Last Activity</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white">
+              {data.map((lead, index) => {
+                const statusKey = (lead.status || "ENQUIRY").toUpperCase();
+                const statusClass = STATUS_STYLES[statusKey] || "bg-slate-100 text-slate-600 border border-slate-200";
+                
+                // Dot color mapping for source
+                const dotColor = SOURCE_COLORS[lead.source] || "bg-slate-400";
 
-              {/* Status Badge + Time */}
-              <div className="flex flex-col items-end gap-2 shrink-0">
-                <span
-                  className={`px-3 py-1 rounded-md text-xs font-semibold ${
-                    STATUS_STYLES[lead.status] || "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  {lead.status || "Unknown"}
-                </span>
-                {lead.time && (
-                  <time className="text-xs text-gray-500 font-medium">{lead.time}</time>
-                )}
-              </div>
-            </article>
-          ))
+                return (
+                  <tr key={lead.id || index} className="h-[68px] hover:bg-slate-50/50 transition-colors">
+                    {/* Lead Cell: Stacked Name & Mobile (Mobile hidden on lg screen) */}
+                    <td className="px-4">
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-slate-800 text-sm truncate">
+                          {lead.student || "Unknown"}
+                        </span>
+                        <span className="text-[11px] text-slate-400 font-mono mt-0.5 leading-none lg:hidden">
+                          {lead.mobile || "—"}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Mobile Column (shown only on screens >= lg) */}
+                    <td className="px-4 text-slate-600 text-sm font-mono hidden lg:table-cell">
+                      {lead.mobile || "—"}
+                    </td>
+
+                    {/* Source Pill: Neutral with colored dot */}
+                    <td className="px-4">
+                      <span className="bg-slate-50 border border-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
+                        <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                        {lead.source || "Direct"}
+                      </span>
+                    </td>
+
+                    {/* Status Badge */}
+                    <td className="px-4">
+                      <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase inline-block ${statusClass}`}>
+                        {lead.status || "Enquiry"}
+                      </span>
+                    </td>
+
+                    {/* Assigned Telecaller */}
+                    <td className="px-4 text-slate-700 text-sm font-semibold truncate max-w-[120px]">
+                      {lead.assignedTo || "Unassigned"}
+                    </td>
+
+                    {/* Last Activity */}
+                    <td className="px-4 text-slate-500 text-xs font-semibold">
+                      {lead.lastActivity || "Just Now"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

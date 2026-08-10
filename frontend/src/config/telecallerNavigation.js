@@ -32,6 +32,22 @@ const telecallerNavigation = [
     path: "/telecaller/calls",
     icon: PhoneCall,
     roles: [ROLES.TELE_CALLER],
+    subItems: [
+      {
+        title: "Dashboard",
+        path: "/telecaller/calls",
+      },
+      {
+        title: "Recent Calls",
+        path: "/telecaller/calls/history",
+      },
+    ],
+  },
+  {
+    title: "Profile",
+    path: "/telecaller/profile",
+    icon: User,
+    roles: [ROLES.TELE_CALLER],
   },
 ];
 

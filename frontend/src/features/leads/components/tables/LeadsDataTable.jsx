@@ -75,7 +75,7 @@ const COLUMNS = [
     label: "Student",
     width: "260px",
     render: (value, row) => (
-      <div className="flex items-center gap-3 min-w-[140px]">
+      <div className="flex items-center gap-3">
         <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(row.name)}`}>
           {getInitials(row.name)}
         </div>
@@ -102,7 +102,7 @@ const COLUMNS = [
     label: "Course",
     width: "140px",
     render: (value, row) => (
-      <div className="flex flex-col min-w-[80px]">
+      <div className="flex flex-col">
         <span className="text-sm font-medium text-gray-800">{value || row.course || row?.education?.course || row.programme || "-"}</span>
         <span className="text-xs text-gray-400">Session {new Date().getFullYear()}</span>
       </div>
@@ -141,7 +141,7 @@ const COLUMNS = [
       const assignedName = row.callerName || "Unassigned";
       
       return (
-        <div className="flex items-center gap-2 min-w-[110px]">
+        <div className="flex items-center gap-2">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(assignedName)}`}>
             {getInitials(assignedName)}
           </div>
@@ -190,6 +190,8 @@ export default function LeadsDataTable({
       onRowClick={onRowClick}
       selectable={true}
       loading={loading}
+      tableClassName="min-w-[1200px]"
+      stickyActions={true}
       renderRowActions={(row) => (
         <button
           onClick={(e) => {

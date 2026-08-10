@@ -23,7 +23,7 @@ export default function useLogin() {
       try {
         // Delay slightly to prevent race condition where /auth/me fires before Set-Cookie is fully processed
         await new Promise((resolve) => setTimeout(resolve, 150));
-        
+
         const response = await userService.getCurrentUser();
 
         const user = response.data;
@@ -63,7 +63,7 @@ export default function useLogin() {
       } else {
         toast.error(
           error.response?.data?.message ||
-            "An unexpected error occurred."
+          "An unexpected error occurred."
         );
       }
     },

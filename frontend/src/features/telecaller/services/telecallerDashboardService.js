@@ -98,7 +98,9 @@ export const telecallerDashboardService = {
         pipeline,
         analytics,
         weeklyPerformance,
-        activities
+        activities,
+        leads,
+        followups
       };
     } catch (error) {
       console.error("Dashboard calculation failed:", error);

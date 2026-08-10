@@ -10,7 +10,6 @@ import DashboardHeader from "@/features/telecaller/dashboard/components/Dashboar
 // KPI
 import KPISection from "@/features/telecaller/dashboard/components/KPISection";
 import TodaysFocus from "@/features/telecaller/dashboard/components/TodaysFocus";
-import TodayGoalGauge from "@/features/telecaller/dashboard/components/TodayGoalGauge";
 
 // Actions
 import NextCallsCard from "@/features/telecaller/calls/components/NextCallsCard";
@@ -24,11 +23,19 @@ import WeeklyPerformance from "@/features/telecaller/dashboard/components/Weekly
 import UpcomingFollowups from "@/features/telecaller/followups/components/UpcomingFollowups";
 import RecentActivity from "@/features/telecaller/calls/components/RecentActivity";
 
+// Advanced Analytics (NEW)
+import TelecallerAdvancedAnalytics from "@/features/telecaller/dashboard/components/analytics/TelecallerAdvancedAnalytics";
+
 // Modals
 import LogCallModal from "@/features/telecaller/calls/components/LogCallModal";
 
+import { useTelecallerLeads } from "@/features/telecaller/hooks/useMyLeads";
+
 export default function TelecallerDashboard() {
-  const { data, isLoading, error } = useTelecallerDashboard();
+  const { data: dashboardData, isLoading: dashboardLoading, error } = useTelecallerDashboard();
+  const { data: leadsData, isLoading: leadsLoading } = useTelecallerLeads({}, 0, 5000);
+  
+  const isLoading = dashboardLoading || leadsLoading;
   const [isLogCallOpen, setIsLogCallOpen] = useState(false);
   const [selectedEnquiryNo, setSelectedEnquiryNo] = useState(null);
   
@@ -64,74 +71,74 @@ export default function TelecallerDashboard() {
 
   return (
     <div 
-      className="bg-[#FFFFFF] -m-4 sm:-m-6 p-4 sm:p-6 lg:p-8 space-y-6 animate-in fade-in duration-500 min-h-screen" 
+      className="bg-[#FFFFFF] min-h-screen" 
       style={{ fontFamily: "var(--font-outfit), sans-serif" }}
     >
-      {/* ── HEADER GRID (12 Cols) ─────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-        <div className="lg:col-span-8">
-          <DashboardHeader />
-        </div>
-        <div className="lg:col-span-4">
-          <TodayGoalGauge 
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 lg:py-8 space-y-6 animate-in fade-in duration-500">
+        {/* ── HEADER SECTION ────────────────────────────────────────────────── */}
+        <DashboardHeader isLoading={isLoading} summary={dashboardData?.summary} />
+
+        {/* ── KPI GRID (6 Cols) ─────────────────────────────────────────────── */}
+        <KPISection 
+          isLoading={isLoading} 
+          summary={dashboardData?.summary} 
+        />
+
+        {/* ── CONTENT GRID 1 (3 Cols) ───────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr] gap-6 items-stretch">
+          <NextCallsCard 
             isLoading={isLoading} 
-            summary={data?.summary} 
+            nextCalls={dashboardData?.nextCalls} 
+            onLogCall={(enquiryNo) => {
+              setSelectedEnquiryNo(enquiryNo);
+              setIsLogCallOpen(true);
+            }} 
+          />
+          <TodaysFocus 
+            isLoading={isLoading} 
+            focus={dashboardData?.todaysFocus} 
+            leads={leadsData?.leads}
+          />
+          <UpcomingFollowups 
+            isLoading={isLoading} 
+            followups={dashboardData?.nextCalls}
+            leads={leadsData?.leads}
           />
         </div>
+
+        {/* ── CONTENT GRID 2 (3 Cols) ───────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          <PipelineSection 
+            isLoading={isLoading} 
+            pipeline={dashboardData?.pipeline} 
+          />
+          <WeeklyPerformance 
+            isLoading={isLoading} 
+            weeklyPerformance={dashboardData?.weeklyPerformance} 
+            summary={dashboardData?.summary}
+          />
+          <RecentActivity 
+            isLoading={isLoading} 
+            activities={dashboardData?.activities} 
+          />
+        </div>
+
+        {/* ── ADVANCED ANALYTICS (NEW) ────────────────────────────────────── */}
+        <TelecallerAdvancedAnalytics 
+          dashboardData={dashboardData}
+          leadsData={leadsData}
+          isLoading={isLoading}
+        />
+
+        {/* ── MODALS ────────────────────────────────────────────────────────── */}
+        {isLogCallOpen && (
+          <LogCallModal 
+            open={isLogCallOpen} 
+            onClose={handleCloseLogCall} 
+            enquiryNo={selectedEnquiryNo} 
+          />
+        )}
       </div>
-
-      {/* ── KPI GRID (6 Cols) ─────────────────────────────────────────────── */}
-      <KPISection 
-        isLoading={isLoading} 
-        summary={data?.summary} 
-      />
-
-      {/* ── CONTENT GRID 1 (3 Cols) ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-        <NextCallsCard 
-          isLoading={isLoading} 
-          nextCalls={data?.nextCalls} 
-          onLogCall={(enquiryNo) => {
-            setSelectedEnquiryNo(enquiryNo);
-            setIsLogCallOpen(true);
-          }} 
-        />
-        <TodaysFocus 
-          isLoading={isLoading} 
-          focus={data?.todaysFocus} 
-        />
-        <UpcomingFollowups 
-          isLoading={isLoading} 
-          followups={data?.nextCalls}
-        />
-      </div>
-
-      {/* ── CONTENT GRID 2 (3 Cols) ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-        <PipelineSection 
-          isLoading={isLoading} 
-          pipeline={data?.pipeline} 
-        />
-        <WeeklyPerformance 
-          isLoading={isLoading} 
-          weeklyPerformance={data?.weeklyPerformance} 
-        />
-        <RecentActivity 
-          isLoading={isLoading} 
-          activities={data?.activities} 
-        />
-      </div>
-
-
-
-      {/* ── MODALS ────────────────────────────────────────────────────────── */}
-      {isLogCallOpen && (
-        <LogCallModal 
-          open={isLogCallOpen} 
-          onClose={handleCloseLogCall} 
-          enquiryNo={selectedEnquiryNo} 
-        />
-      )}
     </div>
   );
 }

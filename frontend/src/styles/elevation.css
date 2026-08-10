@@ -1,0 +1,26 @@
+/* Sprint 18 — Semantic Elevation Mappings */
+@import "./foundation/elevation.css";
+
+.elevation-card {
+  box-shadow: var(--shadow-card);
+}
+
+.elevation-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.elevation-dropdown {
+  box-shadow: var(--shadow-dropdown);
+}
+
+.elevation-dialog {
+  box-shadow: var(--shadow-dialog);
+}
+
+.elevation-popover {
+  box-shadow: var(--shadow-popover);
+}
+
+.elevation-tooltip {
+  box-shadow: var(--shadow-tooltip);
+}

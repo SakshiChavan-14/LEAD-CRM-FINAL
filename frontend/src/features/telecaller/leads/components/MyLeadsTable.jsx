@@ -1,98 +1,114 @@
 import React from "react";
 import DataTable from "@/components/table/DataTable";
 import Badge from "@/components/ui/Badge";
-import ActionMenu from "@/components/table/ActionMenu";
-import { Phone, PhoneForwarded, PhoneOff, Link as LinkIcon, Users, Search, Globe, Share2, MessageCircle, HelpCircle } from "lucide-react";
+import { Phone, PhoneForwarded, PhoneOff, Globe, Share2, Users, MessageCircle, Search, Link as LinkIcon, HelpCircle, User } from "lucide-react";
 
-const getAvatarColor = (str) => {
-  const colors = [
-    "bg-red-500",
-    "bg-pink-500",
-    "bg-purple-500",
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-yellow-500",
-    "bg-orange-500",
-  ];
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return colors[Math.abs(hash) % colors.length];
-};
-
-const getSourceIcon = (source) => {
-  const s = (source || "").toLowerCase();
-  if (s.includes("instagram")) return { icon: <Share2 size={14} />, color: "text-pink-600", bg: "bg-pink-50" };
-  if (s.includes("facebook")) return { icon: <Users size={14} />, color: "text-blue-600", bg: "bg-blue-50" };
-  if (s.includes("google") || s.includes("seo") || s.includes("web")) return { icon: <Globe size={14} />, color: "text-emerald-600", bg: "bg-emerald-50" };
-  if (s.includes("whatsapp")) return { icon: <MessageCircle size={14} />, color: "text-green-600", bg: "bg-green-50" };
-  if (s.includes("justdial") || s.includes("sulekha")) return { icon: <Search size={14} />, color: "text-orange-600", bg: "bg-orange-50" };
-  if (s.includes("referral") || s.includes("friend")) return { icon: <LinkIcon size={14} />, color: "text-purple-600", bg: "bg-purple-50" };
-  
-  return { icon: <HelpCircle size={14} />, color: "text-gray-500", bg: "bg-gray-50" };
+const formatDistanceToNow = (date) => {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " years ago";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " months ago";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " days ago";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + " hours ago";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " minutes ago";
+  return Math.floor(seconds) + " seconds ago";
 };
 
 const toTitleCase = (str) => {
   if (!str) return "-";
-  return str
-    .toLowerCase()
-    .split(/[\s_]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  return str.toLowerCase().split(/[\s_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 };
 
 const getInitials = (name) => {
   if (!name) return "?";
   const parts = name.trim().split(" ");
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return parts[0].substring(0, 2).toUpperCase();
 };
 
 const getStatusVariant = (status) => {
   const s = (status || "").toUpperCase();
   if (s.includes("NEW") || s.includes("ENQUIRY")) return "blue";
-  if (s.includes("NOT INTERESTED") || s.includes("COLD")) return "neutral";
-  if (s.includes("INTERESTED") || s.includes("WARM")) return "success";
-  if (s.includes("ADMISSION") || s.includes("ENROLLED")) return "purple";
-  if (s.includes("FOLLOW") || s.includes("PROGRESS")) return "orange";
+  if (s.includes("NOT INTERESTED") || s.includes("COLD")) return "neutral"; // Gray
+  if (s.includes("INTERESTED") || s.includes("WARM")) return "success"; // Green
+  if (s.includes("ADMISSION") || s.includes("ENROLLED") || s.includes("CONVERTED")) return "purple"; // Emerald requested, but purple is close. Let's use custom class if needed. Wait, badge variant has predefined. We can stick to success for converted, or add emerald.
+  if (s.includes("FOLLOW") || s.includes("PROGRESS")) return "warning"; // Amber
   return "neutral";
 };
 
-const getOpinionVariant = (opinion) => {
-  const s = (opinion || "").toUpperCase();
-  if (s.includes("NOT INTERESTED")) return "neutral";
-  if (s.includes("INTERESTED")) return "success";
-  if (s.includes("PENDING") || s.includes("TIME")) return "yellow";
-  if (s.includes("CALLBACK") || s.includes("WARM") || s.includes("HOT")) return "orange";
-  return "neutral";
+const getSourceOutlinedStyle = (source) => {
+  const s = (source || "").toLowerCase();
+  if (s.includes("instagram")) return { icon: <Share2 size={12} />, border: "border-gray-200 text-gray-600" };
+  if (s.includes("referral") || s.includes("friend")) return { icon: <LinkIcon size={12} />, border: "border-purple-200 text-purple-700" };
+  if (s.includes("web")) return { icon: <Globe size={12} />, border: "border-emerald-200 text-emerald-700" };
+  if (s.includes("walk-in") || s.includes("walkin")) return { icon: <User size={12} />, border: "border-gray-200 text-gray-600" };
+  return { icon: <HelpCircle size={12} />, border: "border-gray-200 text-gray-500" };
 };
 
-const getColumns = (onRowClick) => [
+const getFollowupIndicator = (row) => {
+  // If nextFollowup exists, compare with today
+  if (!row.nextFollowup) return { color: "bg-gray-200", title: "No follow-up" }; // None
+  const followupDate = new Date(row.nextFollowup);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const fDate = new Date(followupDate);
+  fDate.setHours(0, 0, 0, 0);
+
+  if (fDate < today) return { color: "bg-rose-500", title: "Overdue" }; // Overdue
+  if (fDate.getTime() === today.getTime()) return { color: "bg-amber-400", title: "Due Today" }; // Today
+  return { color: "bg-emerald-500", title: "Upcoming" }; // Upcoming
+};
+
+const getLastActivity = (row) => {
+  const activityDate = row.lastInteractionAt || row.updatedAt || row.followupUpdatedAt || row.createdAt;
+  if (!activityDate) return "—";
+  try {
+    return formatDistanceToNow(new Date(activityDate), { addSuffix: true });
+  } catch (e) {
+    return "—";
+  }
+};
+
+const commonHeaderProps = {
+  headerClassName: "!h-[44px] !py-2 !bg-gray-50 !text-gray-500 !uppercase !tracking-wide !text-[12px]",
+  cellClassName: "!py-3 !min-h-[72px]"
+};
+
+const getColumns = (onCall) => [
   {
     key: "enquiryNo",
-    label: "Enquiry No",
+    label: "Enquiry",
     width: "90px",
+    ...commonHeaderProps,
     render: (value, row) => (
-      <span className="text-sm font-bold text-[#8B0D16]">#{row.enquiryNo || row.id}</span>
+      <span className="text-sm font-semibold text-gray-900">#{row.enquiryNo || row.id}</span>
     ),
   },
   {
     key: "name",
     label: "Lead",
-    width: "260px",
+    width: "240px",
+    ...commonHeaderProps,
     render: (value, row) => {
       const nameTitleCase = toTitleCase(row.name);
+      const indicator = getFollowupIndicator(row);
       return (
         <div className="flex items-center gap-3 min-w-[140px]">
-          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(nameTitleCase)}`}>
-            {getInitials(nameTitleCase)}
+          <div className="relative shrink-0">
+            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold bg-[#8B1023]`}>
+              {getInitials(nameTitleCase)}
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-bold text-gray-900 m-0">{nameTitleCase}</p>
-            <p className="text-xs text-gray-400 m-0">{row.email || (row.name ? row.name.toLowerCase().replace(/\s/g, '.') + '@gmail.com' : '')}</p>
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${indicator.color}`} title={indicator.title}></span>
+              <p className="text-[14px] font-semibold text-gray-900 m-0 truncate">{nameTitleCase}</p>
+            </div>
+            <p className="text-[12px] text-gray-500 m-0 truncate">{row.email || "-"}</p>
           </div>
         </div>
       );
@@ -101,92 +117,116 @@ const getColumns = (onRowClick) => [
   {
     key: "mobileNo",
     label: "Mobile No",
-    width: "170px",
-    render: (value, row) => (
-      <div className="flex items-center gap-1.5 text-gray-600">
-        <Phone size={14} className="text-[#8B0D16]" />
-        <span className="text-sm">{value || row.mobileNo || "-"}</span>
-      </div>
-    ),
+    width: "150px",
+    ...commonHeaderProps,
+    render: (value, row) => {
+      const number = value || row.mobileNo;
+      return (
+        <div className="flex items-center gap-2">
+          {number ? (
+            <button
+              onClick={(e) => { e.stopPropagation(); onCall && onCall(number); }}
+              role="button"
+              tabIndex={0}
+              aria-label={`Call ${row.name || number}`}
+              className="w-7 h-7 rounded-full bg-gray-50 hover:bg-[#8B1023]/10 flex items-center justify-center text-gray-400 hover:text-[#8B1023] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8B1023]/30"
+            >
+              <Phone size={13} />
+            </button>
+          ) : (
+            <span className="w-7 h-7"></span>
+          )}
+          <span className="text-[13px] font-medium text-gray-700">{number || "-"}</span>
+        </div>
+      );
+    },
   },
   {
     key: "course",
     label: "Course",
     width: "100px",
-    render: (value, row) => {
-      const courseText = value ? (['MCA', 'BCA', 'MBA', 'BTECH', 'MTECH', 'BBA'].includes(value.toUpperCase()) ? value.toUpperCase() : toTitleCase(value)) : "-";
-      return <span className="text-sm text-gray-700">{courseText}</span>;
-    },
+    ...commonHeaderProps,
+    render: (value) => (
+      <span className="text-[13px] text-gray-700 font-medium">
+        {value ? (['MCA', 'BCA', 'MBA', 'BTECH', 'MTECH', 'BBA'].includes(value.toUpperCase()) ? value.toUpperCase() : toTitleCase(value)) : "-"}
+      </span>
+    ),
   },
   {
     key: "status",
     label: "Status",
-    width: "140px",
-    render: (value) => (
-      <Badge variant={getStatusVariant(value)} dot>
-        {value || "NEW"}
-      </Badge>
-    ),
+    width: "120px",
+    ...commonHeaderProps,
+    render: (value) => {
+      const s = (value || "").toUpperCase();
+      let colorClass = "bg-gray-100 text-gray-700";
+      if (s.includes("NEW") || s.includes("ENQUIRY")) colorClass = "bg-blue-50 text-blue-700 border border-blue-200";
+      else if (s.includes("PROGRESS") || s.includes("FOLLOW")) colorClass = "bg-amber-50 text-amber-700 border border-amber-200";
+      else if (s.includes("INTERESTED") && !s.includes("NOT")) colorClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
+      else if (s.includes("NOT INTERESTED") || s.includes("COLD")) colorClass = "bg-gray-50 text-gray-600 border border-gray-200";
+      else if (s.includes("CONVERTED") || s.includes("ADMISSION") || s.includes("ENROLLED")) colorClass = "bg-emerald-100 text-emerald-800 border border-emerald-300";
+
+      return (
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider ${colorClass}`}>
+          {value || "NEW"}
+        </span>
+      );
+    },
   },
   {
     key: "opinion",
-    label: "Opinion",
-    width: "140px",
+    label: "Interest",
+    width: "120px",
+    ...commonHeaderProps,
     render: (value) => (
-      <Badge variant={getOpinionVariant(value)} dot>
-        {value || "-"}
-      </Badge>
+      <span className="text-[13px] text-gray-600">{toTitleCase(value) || "-"}</span>
     ),
   },
   {
     key: "callCount",
     label: "Calls",
-    width: "90px",
+    width: "80px",
+    headerClassName: "!h-[44px] !py-2 !bg-gray-50 !text-gray-500 !uppercase !tracking-wide !text-[12px] text-center",
+    cellClassName: "!py-3 !min-h-[72px] text-center",
     render: (value, row) => {
       const count = value || row.callCount || 0;
       return (
-        <div className={`flex items-center gap-2 ${count > 0 ? "text-gray-900" : "text-gray-400"}`}>
-          {count > 0 ? <PhoneForwarded size={14} /> : <PhoneOff size={14} />}
-          <span className="font-bold text-sm">{count}</span>
+        <div className={`inline-flex items-center gap-1.5 ${count > 0 ? "text-gray-900" : "text-gray-400"}`}>
+          {count > 0 ? <PhoneForwarded size={12} className="text-gray-400" /> : <PhoneOff size={12} className="text-gray-300" />}
+          <span className="font-bold text-[13px]">{count}</span>
         </div>
       );
     },
   },
   {
-    key: "district",
-    label: "District",
-    width: "140px",
-    render: (value, row) => {
-      const districtMain = row.city || row.district || "Unknown";
-      const districtSub = row.state || "";
-      return (
-        <div>
-          <p className="text-sm font-semibold text-gray-900 m-0">{toTitleCase(districtMain)}</p>
-          {districtSub && <p className="text-xs text-gray-400 m-0">{toTitleCase(districtSub)}</p>}
-        </div>
-      );
-    },
+    key: "lastActivity",
+    label: "Last Activity",
+    width: "120px",
+    ...commonHeaderProps,
+    render: (value, row) => (
+      <span className="text-[13px] text-gray-500">{getLastActivity(row)}</span>
+    ),
   },
   {
     key: "source",
     label: "Source",
-    width: "140px",
+    width: "120px",
+    ...commonHeaderProps,
     render: (value) => {
-      const sourceData = getSourceIcon(value);
+      const style = getSourceOutlinedStyle(value);
       return (
-        <div className={`inline-flex items-center gap-1.5 border border-gray-200 px-2.5 py-1 rounded-lg ${sourceData.bg}`}>
-          <span className={`${sourceData.color}`}>{sourceData.icon}</span>
-          <span className="text-xs font-medium text-gray-600">{toTitleCase(value || "Unknown")}</span>
+        <div className={`inline-flex items-center gap-1.5 border px-2 py-1 rounded-full bg-transparent ${style.border}`}>
+          {style.icon}
+          <span className="text-[11px] font-semibold uppercase tracking-wider">{toTitleCase(value || "Unknown")}</span>
         </div>
       );
     },
   },
 ];
 
-export default function MyLeadsTable({ data = [], onRowClick, isLoading }) {
-  const columns = getColumns(onRowClick);
+export default function MyLeadsTable({ data = [], onRowClick, isLoading, onCall }) {
+  const columns = getColumns(onCall);
 
-  // Replicate mobile card view matching TelecallerLeadsTable layout
   const renderMobileCard = (row, index) => {
     return (
       <div
@@ -200,20 +240,19 @@ export default function MyLeadsTable({ data = [], onRowClick, isLoading }) {
           </div>
           <div className="text-right flex flex-col items-end gap-2 shrink-0">
             {columns.find(c => c.key === 'status')?.render(row.status, row)}
-            <span className="text-xs font-semibold text-gray-400">#{row.enquiryNo}</span>
+            <span className="text-[11px] font-semibold text-gray-400">#{row.enquiryNo}</span>
           </div>
         </div>
-
         <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50 mt-1">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Course</span>
-            <span className="text-sm font-medium text-gray-700 truncate">
+            <span className="text-[13px] font-medium text-gray-700 truncate">
               {columns.find(c => c.key === 'course')?.render(row.course, row)}
             </span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Opinion</span>
-            <span className="text-sm truncate">
+            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Interest</span>
+            <span className="text-[13px] truncate">
               {columns.find(c => c.key === 'opinion')?.render(row.opinion, row)}
             </span>
           </div>
@@ -231,16 +270,6 @@ export default function MyLeadsTable({ data = [], onRowClick, isLoading }) {
       onRowClick={onRowClick}
       loading={isLoading}
       renderMobileCard={renderMobileCard}
-      renderRowActions={(row) => (
-        <ActionMenu
-          actions={[
-            {
-              label: "View Lead",
-              onClick: () => onRowClick && onRowClick(row),
-            },
-          ]}
-        />
-      )}
     />
   );
 }

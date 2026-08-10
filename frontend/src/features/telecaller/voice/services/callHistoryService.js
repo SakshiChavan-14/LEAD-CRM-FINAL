@@ -6,9 +6,13 @@ export const callHistoryService = {
    * Fetch call history for the authenticated telecaller.
    * @returns {Promise<Array>} Array of interaction records.
    */
-  getCallHistory: async ({ page = 0, size = 100 } = {}) => {
+  getCallHistory: async ({ page = 0, size = 100, search = "" } = {}) => {
     try {
-      const response = await axios.get(`${API_ENDPOINTS.TELECALLER.CALLS}?page=${page}&size=${size}`);
+      let url = `${API_ENDPOINTS.TELECALLER.CALLS}?page=${page}&size=${size}`;
+      if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
+      }
+      const response = await axios.get(url);
       const resData = response.data?.data || response.data;
       return Array.isArray(resData) ? resData : (resData?.content || resData?.calls || []);
     } catch (error) {

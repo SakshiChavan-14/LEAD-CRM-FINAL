@@ -16,6 +16,8 @@ export const useAssignLeads = (onSuccessCallback) => {
       queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
       queryClient.invalidateQueries({ queryKey: LEAD_KEYS.counts() });
       queryClient.invalidateQueries({ queryKey: LEAD_KEYS.details() }); // Also update the detail view
+      queryClient.invalidateQueries({ queryKey: ["allLeadsForWorkload"] }); // Temporary workload dataset invalidation
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       if (onSuccessCallback) onSuccessCallback();
     },
     onError: (error) => {

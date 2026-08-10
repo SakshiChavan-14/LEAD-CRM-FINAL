@@ -1,74 +1,61 @@
-import { Users, PhoneCall, Heart, CheckCircle2, Target, TrendingUp, TrendingDown } from "lucide-react";
-import Link from "next/link";
+import { Users, PhoneCall, Heart, CheckCircle2, Target } from "lucide-react";
 
 import { KPICard, KPICardSkeleton } from "@/components/dashboard-ui/KPICard";
 
 export default function KPISection({ isLoading, summary }) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+      <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {[...Array(6)].map((_, i) => <KPICardSkeleton key={i} />)}
-      </div>
+      </section>
     );
   }
 
   if (!summary) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-      <KPICard 
-        title="Assigned" 
-        value={summary.assigned} 
-        icon={Users} 
-        trend="+12% today"
-        trendDirection="up"
-        variant="blue"
+    <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+      <KPICard
+        title="Assigned"
+        value={summary.assigned}
+        icon={Users}
+        variant="primary"
         href="/telecaller/leads?status=ALL"
       />
-      <KPICard 
-        title="Calls Today" 
-        value={summary.callsToday} 
-        icon={PhoneCall} 
-        trend="+18% today"
-        trendDirection="up"
-        variant="primary"
+      <KPICard
+        title="Calls Today"
+        value={summary.callsToday}
+        icon={PhoneCall}
+        variant="info"
         href="/telecaller/calls?date=today"
       />
-      <KPICard 
-        title="Connected" 
-        value={summary.connected} 
-        icon={PhoneCall} 
-        trend="+5% today"
-        trendDirection="up"
+      <KPICard
+        title="Connected"
+        value={summary.connected}
+        icon={PhoneCall}
         variant="success"
         href="/telecaller/calls?status=CONNECTED"
       />
-      <KPICard 
-        title="Interested" 
-        value={summary.interested} 
-        icon={Heart} 
-        trend="+5% today"
-        trendDirection="up"
-        variant="purple"
+      <KPICard
+        title="Interested"
+        value={summary.interested}
+        icon={Heart}
+        variant="success"
         href="/telecaller/leads?status=INTERESTED"
       />
-      <KPICard 
-        title="Admissions" 
-        value={summary.admissions} 
-        icon={CheckCircle2} 
-        trend="+2 today"
-        trendDirection="up"
-        variant="warning"
+      <KPICard
+        title="Admissions"
+        value={summary.admissions}
+        icon={CheckCircle2}
+        variant="primary"
         href="/telecaller/leads?status=ADMISSION"
       />
-      <KPICard 
-        title="Goal %" 
-        value={`${summary.goal}%`} 
-        icon={Target} 
-        trend="On Track"
-        trendDirection="neutral"
-        variant="cyan"
+      <KPICard
+        title="Goal %"
+        value={`${summary.goal}%`}
+        icon={Target}
+        variant="neutral"
       />
-    </div>
+    </section>
   );
 }

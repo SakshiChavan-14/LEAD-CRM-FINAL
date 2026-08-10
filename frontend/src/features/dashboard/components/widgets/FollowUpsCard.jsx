@@ -1,20 +1,20 @@
 import { Calendar, Phone, MessageCircle } from "lucide-react";
 import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 
-// Priority badge styles matching Stitch design
 const PRIORITY_STYLES = {
   High: { bg: "bg-[#FDF2F2]", text: "text-[#DE6B6B]", label: "HIGH PRIORITY" },
   Medium: { bg: "bg-[#FEF9EC]", text: "text-[#E9B35C]", label: "MEDIUM PRIORITY" },
   Low: { bg: "bg-blue-50", text: "text-blue-500", label: "LOW PRIORITY" },
 };
 
-// Icon colors per Stitch: first item maroon, second item blue
 const ICON_COLORS = [
-  "text-[#5D1717]",
-  "text-[#4A69BD]",
-  "text-[#5D1717]",
-  "text-[#4A69BD]",
+  "text-[#2563EB]", // Blue
+  "text-[#10B981]", // Emerald
+  "text-[#8B5CF6]", // Violet
+  "text-[#F59E0B]", // Amber
 ];
+
+const cardClass = "rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 h-[320px] flex flex-col justify-between font-outfit";
 
 export default function FollowUpsCard({ followups }) {
   const upcomingError = followups?.upcoming?.error;
@@ -34,11 +34,11 @@ export default function FollowUpsCard({ followups }) {
     );
   }
 
-  // Choose icon based on index (alternating phone/chat per Stitch)
+  // Choose icon based on index
   const getIcon = (idx) => {
     return idx % 2 === 0
-      ? <Phone size={20} />
-      : <MessageCircle size={20} />;
+      ? <Phone size={18} />
+      : <MessageCircle size={18} />;
   };
 
   // Get priority style
@@ -50,34 +50,36 @@ export default function FollowUpsCard({ followups }) {
   };
 
   return (
-    <article className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 xl:p-6 h-full flex flex-col">
+    <article className={cardClass}>
       {/* Header */}
-      <header className="flex justify-between items-center mb-6 xl:mb-8">
-        <h2 className="text-[22px] xl:text-[26px] font-bold text-gray-900">Today&apos;s Follow-ups</h2>
+      <header className="flex justify-between items-center mb-3 shrink-0">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900">Today&apos;s Follow-ups</h2>
+          <p className="text-xs text-slate-500 mt-1">Pending tasks for today</p>
+        </div>
         <a
-          className="text-[#5D1717] font-semibold flex items-center gap-1 hover:underline text-sm xl:text-base"
-          href="#"
+          className="text-[#7F1D1D] font-semibold hover:underline text-xs"
+          href="/dashboard/management/leads"
         >
-          View Calendar
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          Calendar
         </a>
       </header>
 
       {/* Follow-ups List with Timeline */}
       {data.length === 0 ? (
-        <div className="py-4 flex-1">
-          <EmptyState title="No follow-ups" description="You have no follow-ups scheduled for today." icon={Calendar} />
+        <div className="flex flex-col items-center justify-center flex-grow text-center text-slate-400 py-6">
+          <Calendar size={32} className="text-slate-300 mb-2" />
+          <p className="text-sm font-semibold text-slate-700">No follow-ups scheduled</p>
+          <p className="text-xs mt-1">All caught up for today!</p>
         </div>
       ) : (
-        <section className="relative flex-1">
+        <div className="flex-grow overflow-y-auto pr-1 relative mt-3 scrollbar-thin">
           {/* Vertical Timeline Stem */}
           {data.length > 1 && (
-            <div className="absolute left-[23px] top-12 bottom-12 w-[1px] bg-gray-100" />
+            <div className="absolute left-[19px] top-6 bottom-6 w-[1px] bg-slate-100" />
           )}
 
-          <div className="space-y-6 xl:space-y-8">
+          <div className="space-y-3 py-1">
             {data.map((item, index) => {
               const priorityStyle = getPriorityStyle(item.priority);
               const iconColor = ICON_COLORS[index % ICON_COLORS.length];
@@ -87,34 +89,34 @@ export default function FollowUpsCard({ followups }) {
                   key={index}
                   className="flex items-center justify-between relative"
                 >
-                  <div className="flex items-center gap-4 xl:gap-6">
-                    {/* Circular Icon Container — Stitch: white bg, bordered circle */}
-                    <div className={`relative z-10 w-12 h-12 flex items-center justify-center bg-white border border-gray-100 rounded-full shadow-sm ${iconColor} shrink-0`}>
+                  <div className="flex items-center gap-3">
+                    {/* Circular Icon Container */}
+                    <div className={`relative z-10 w-10 h-10 flex items-center justify-center bg-white border border-slate-100 rounded-full shadow-sm ${iconColor} shrink-0`}>
                       {getIcon(index)}
                     </div>
 
                     {/* Name + Subtitle */}
-                    <div className="flex flex-col">
-                      <span className="text-lg xl:text-xl font-bold text-[#1A1A1A]">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold text-slate-800 truncate max-w-[140px]">
                         {item.student || "Unknown"}
                       </span>
-                      <span className="text-sm text-gray-400 font-medium mt-0.5">
-                        {item.time || "Scheduled"}{item.assignedTo ? ` • Assigned to ${item.assignedTo}` : ""}
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {item.time || "Scheduled"}{item.assignedTo ? ` • ${item.assignedTo}` : ""}
                       </span>
                     </div>
                   </div>
 
                   {/* Priority Badge */}
-                  <div className="shrink-0 ml-4">
-                    <span className={`px-3 xl:px-4 py-1.5 xl:py-2 rounded-md text-[10px] tracking-wider font-bold ${priorityStyle.bg} ${priorityStyle.text}`}>
-                      {priorityStyle.label}
+                  <div className="shrink-0 ml-2">
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-wider ${priorityStyle.bg} ${priorityStyle.text}`}>
+                      {priorityStyle.label.split(" ")[0]}
                     </span>
                   </div>
                 </div>
               );
             })}
           </div>
-        </section>
+        </div>
       )}
     </article>
   );

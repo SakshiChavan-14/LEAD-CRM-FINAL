@@ -1,6 +1,19 @@
 import axiosInstance from "@/lib/axios";
 import API_ENDPOINTS from "@/utils/apiEndpoints";
 
+const toNumber = (v) => {
+  if (v === undefined || v === null || v === "" || v === "--" || v === "—") return 0;
+  const n = Number(v);
+  return isNaN(n) ? 0 : n;
+};
+
+const toPercent = (v) => {
+  if (v === undefined || v === null || v === "" || v === "--" || v === "—") return "0.0%";
+  const cleanStr = String(v).replace("%", "");
+  const n = Number(cleanStr);
+  return `${(isNaN(n) ? 0 : n).toFixed(1)}%`;
+};
+
 const normalizeStats = (raw) => {
   const overall = raw.overall || {};
   return [
@@ -35,22 +48,22 @@ const normalizeStats = (raw) => {
     {
       id: 5,
       title: "Conversion Rate",
-      value: overall.conversionRate || "--",
-      subtitle: "Pending backend support",
+      value: toPercent(overall.conversionRate),
+      subtitle: "Overall success rate",
       type: "default",
     },
     {
       id: 6,
       title: "Telecallers",
-      value: overall.activeTelecallers || "--",
-      subtitle: "Pending backend support",
+      value: toNumber(overall.activeTelecallers),
+      subtitle: "Active callers online",
       type: "default",
     },
     {
       id: 7,
       title: "Admissions",
-      value: overall.totalAdmissions || "--",
-      subtitle: "Pending backend support",
+      value: toNumber(overall.totalAdmissions),
+      subtitle: "Successful admissions",
       type: "default",
     },
   ];
@@ -77,10 +90,13 @@ const normalizeRecentLeads = (raw) => {
   return raw.leads.map((lead) => ({
     id: lead.enquiryNo,
     student: lead.name || "Unknown",
-    course: lead.course || "--",
+    mobile: lead.mobileNo || lead.phone || "—",
+    source: lead.source || "Direct",
+    course: lead.course || "N/A",
     assignedTo: lead.callerName || "Unassigned",
     status: lead.status || "ENQUIRY",
     priority: lead.opinion === "Interested" || lead.opinion === "Warm" ? "Hot" : "Normal",
+    lastActivity: lead.lastAction || (lead.statusDate ? new Date(lead.statusDate).toLocaleDateString() : "Just Now"),
   }));
 };
 
@@ -89,7 +105,7 @@ const normalizeUpcomingFollowups = (raw) => {
   return raw.map((lead) => ({
     id: lead.enquiryNo,
     student: lead.name || "Unknown",
-    course: lead.course || "--",
+    course: lead.course || "N/A",
     time: lead.followupDate ? new Date(lead.followupDate).toLocaleDateString() : "Today",
     priority: lead.opinion === "Interested" ? "High" : lead.opinion === "Warm" ? "Medium" : "Low",
   }));
@@ -100,7 +116,7 @@ const normalizeOverdueFollowups = (raw) => {
   return raw.map((lead) => ({
     id: lead.enquiryNo,
     student: lead.name || "Unknown",
-    course: lead.course || "--",
+    course: lead.course || "N/A",
     time: lead.followupDate ? new Date(lead.followupDate).toLocaleDateString() : "Overdue",
     priority: lead.opinion === "Interested" ? "High" : lead.opinion === "Warm" ? "Medium" : "Low",
   }));

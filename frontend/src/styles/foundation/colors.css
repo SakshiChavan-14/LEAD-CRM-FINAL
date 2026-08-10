@@ -1,0 +1,54 @@
+/* Sprint 18 — Foundation Color Palette Tokens */
+
+:root {
+  /* Brand Burgundy Primitive Palette */
+  --brand-50: #FDF2F4;
+  --brand-100: #FBE5E8;
+  --brand-200: #F7C6CC;
+  --brand-300: #EE98A3;
+  --brand-400: #E15F72;
+  --brand-500: #CD334A;
+  --brand-600: #8B1538;
+  --brand-700: #7A1F2B; /* Primary Brand Accent Base */
+  --brand-800: #6F1D28; /* Primary Action Button Base */
+  --brand-900: #5A1620; /* Deep Burgundy Hover State */
+  --brand-active: #8F111B; /* Deep Burgundy Active State */
+
+  /* Neutral Slate Primitive Palette */
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+
+  /* Functional Status Palettes */
+  --green-50: #ECFDF5;
+  --green-100: #D1FAE5;
+  --green-500: #10B981;
+  --green-700: #047857;
+
+  --red-50: #FFF1F2;
+  --red-100: #FFE4E6;
+  --red-500: #EF4444;
+  --red-700: #BE123C;
+
+  --amber-50: #FFFBEB;
+  --amber-100: #FEF3C7;
+  --amber-500: #F59E0B;
+  --amber-700: #B45309;
+
+  --blue-50: #EFF6FF;
+  --blue-100: #DBEAFE;
+  --blue-500: #3B82F6;
+  --blue-700: #1D4ED8;
+
+  --purple-50: #F5F3FF;
+  --purple-100: #EDE9FE;
+  --purple-500: #8B5CF6;
+  --purple-700: #6D28D9;
+}

@@ -10,50 +10,43 @@ const kpiConfig = [
     label: "All Leads",
     icon: Users,
     variant: "blue",
-    trend: "12% vs last month",
-    trendDirection: "up",
-    note: undefined,
+
   },
   {
     key: "new",
     label: "New Leads",
     icon: Zap,
     variant: "orange",
-    trend: undefined,
-    note: "Requires immediate action",
+
+
   },
   {
     key: "hot",
     label: "Hot Leads",
     icon: Flame,
     variant: "danger",
-    trend: undefined,
-    note: "Active nurturing phase",
+
   },
   {
     key: "alloted",
     label: "Alloted",
     icon: CheckCircle2,
     variant: "success",
-    trend: "24% Conversion Rate",
-    trendDirection: "up",
-    note: undefined,
+
   },
   {
     key: "not-consulted",
     label: "Not Consulted",
     icon: PhoneMissed,
     variant: "primary",
-    trend: undefined,
-    note: "Overdue follow-ups",
+
   },
   {
     key: "opinion-reassign",
     label: "Opinion Reassign",
     icon: RefreshCcw,
     variant: "default",
-    trend: undefined,
-    note: "Pending verification",
+
   },
 ];
 

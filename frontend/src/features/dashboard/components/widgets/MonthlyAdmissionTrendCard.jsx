@@ -1,52 +1,91 @@
-"use client";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-import { BarChart3 } from "lucide-react";
+const chartData = [
+  { month: "Jan", admissions: 12, target: 15 },
+  { month: "Feb", admissions: 19, target: 15 },
+  { month: "Mar", admissions: 15, target: 20 },
+  { month: "Apr", admissions: 28, target: 20 },
+  { month: "May", admissions: 22, target: 25 },
+  { month: "Jun", admissions: 30, target: 25 },
+  { month: "Jul", admissions: 42, target: 30 },
+];
+
+const cardClass = "rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 flex flex-col justify-between h-full font-outfit";
 
 export default function MonthlyAdmissionTrendCard() {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
-  const heights = ["h-32", "h-48", "h-56", "h-72", "h-64", "h-80", "h-96"];
-
   return (
-    <section className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col relative h-full">
+    <section className={cardClass}>
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-xl font-bold text-gray-900">Monthly Admission Trend</h2>
-        <div className="flex items-center gap-6">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900">Monthly Admission Trend</h2>
+          <p className="text-xs text-slate-500 mt-1">Monthly enrollment vs set target progress</p>
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#741B1B]"></span>
-            <span className="text-xs text-gray-500">Admissions</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
+            <span className="text-xs text-slate-500 font-semibold">Admissions</span>
           </div>
-          <select className="text-xs font-semibold bg-gray-50 border-none rounded-md py-1.5 pl-3 pr-8 text-gray-700 focus:ring-0">
-            <option>This Year</option>
-            <option>Last Year</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-0.5 border-t-2 border-dashed border-[#10B981]"></span>
+            <span className="text-xs text-slate-500 font-semibold">Target</span>
+          </div>
         </div>
       </div>
 
-      {/* Chart Area */}
-      <div className="flex-grow flex items-end justify-between gap-3 px-2 relative">
-        {/* Placeholder Bars (Faded out) */}
-        <div className="absolute inset-0 flex items-end justify-between gap-3 opacity-30 pointer-events-none">
-          {months.map((month, idx) => {
-            const isLast = idx === months.length - 1;
-            const barBg = isLast ? "bg-[#741B1B] shadow-lg" : "bg-[#f4eaea]";
-            const textColor = isLast ? "text-gray-900 font-extrabold" : "text-gray-400 font-bold";
-
-            return (
-              <div key={month} className="flex-1 flex flex-col items-center group">
-                <div className={`w-full rounded-md ${heights[idx]} mb-3 transition-all ${barBg}`}></div>
-                <span className={`text-[10px] uppercase ${textColor}`}>{month}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Empty State Overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[1px] z-10">
-          <BarChart3 size={32} className="text-gray-300 mb-3" />
-          <p className="font-semibold text-gray-900">No Data Available</p>
-          <p className="text-sm text-gray-500 mt-1">Monthly trend data is pending backend support.</p>
-        </div>
+      {/* Chart Canvas */}
+      <div className="h-[280px] w-full flex-grow mt-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+            <defs>
+              <linearGradient id="colorAdmissions" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#2563EB" stopOpacity={0.15}/>
+                <stop offset="95%" stopColor="#2563EB" stopOpacity={0.0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+            <XAxis 
+              dataKey="month" 
+              stroke="#94A3B8" 
+              fontSize={10} 
+              tickLine={false} 
+              axisLine={false} 
+              dy={10}
+            />
+            <YAxis 
+              stroke="#94A3B8" 
+              fontSize={10} 
+              tickLine={false} 
+              axisLine={false} 
+              dx={-5}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                fontFamily: "var(--font-outfit), sans-serif", 
+                borderRadius: "12px", 
+                borderColor: "#E2E8F0",
+                fontSize: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
+              }} 
+            />
+            <Area 
+              type="monotone" 
+              dataKey="admissions" 
+              stroke="#2563EB" 
+              strokeWidth={2}
+              fillOpacity={1} 
+              fill="url(#colorAdmissions)" 
+            />
+            <Area
+              type="monotone"
+              dataKey="target"
+              stroke="#10B981"
+              strokeWidth={1.5}
+              strokeDasharray="4 4"
+              fill="none"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </section>
   );

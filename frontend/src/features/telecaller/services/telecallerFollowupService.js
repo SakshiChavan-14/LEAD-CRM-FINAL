@@ -42,6 +42,7 @@ export const telecallerFollowupService = {
       "pages"
     );
 
+
     return combined.map(mapFollowup);
   },
 

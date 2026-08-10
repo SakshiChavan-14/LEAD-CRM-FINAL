@@ -33,28 +33,24 @@ export default function StitchKPISection({ data, isLoading }) {
       <KPICard
         title="Total Calls"
         value={totalCalls}
-        subtitle="Total calls"
         icon={Phone}
         variant="blue"
       />
       <KPICard
         title="Connected Rate"
         value={calcConnectedRate(connectedCalls, totalCalls)}
-        subtitle={`${connectedCalls} / ${totalCalls} Connected`}
         icon={PhoneCall}
         variant="success"
       />
       <KPICard
         title="Avg Duration"
         value={formatAvgDuration(avgDuration)}
-        subtitle="Per call average"
         icon={Clock}
         variant="warning"
       />
       <KPICard
         title="Recordings"
         value={recordingsCount}
-        subtitle="Available recordings"
         icon={Mic}
         variant="purple"
       />

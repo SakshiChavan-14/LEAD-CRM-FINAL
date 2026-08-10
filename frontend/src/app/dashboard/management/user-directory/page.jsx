@@ -1,5 +1,6 @@
 "use client";
 
+import PageContainer from "@/components/layout/PageContainer";
 import { useState } from "react";
 import UsersTable from "@/features/users/components/directory/UsersTable";
 import AddUserDialog from "@/features/users/components/dialogs/AddUserDialog";
@@ -9,7 +10,7 @@ export default function UserDirectoryPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   return (
-    <>
+    <PageContainer size="wide" className="py-8 space-y-6">
       <PageHeader
         className="px-page-padding py-stack-md w-full bg-surface items-center justify-between"
         title="Telecaller Directory"
@@ -41,6 +42,6 @@ export default function UserDirectoryPage() {
         open={isAddOpen}
         onClose={() => setIsAddOpen(false)}
       />
-    </>
+    </PageContainer>
   );
 }

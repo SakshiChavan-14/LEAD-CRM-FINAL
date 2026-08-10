@@ -1,0 +1,21 @@
+/* Sprint 18 — Semantic Motion Mappings */
+@import "./foundation/motion.css";
+
+/* Semantic Motion Utilities & Helpers */
+.transition-standard {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--duration-normal);
+}
+
+.transition-fast {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: var(--ease-standard);
+  transition-duration: var(--duration-fast);
+}
+
+.transition-slow {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: var(--ease-emphasized);
+  transition-duration: var(--duration-slow);
+}

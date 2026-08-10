@@ -3,6 +3,8 @@ import Modal from "@/components/ui/Modal";
 import SearchBar from "@/components/management/SearchBar";
 import Avatar from "@/components/ui/Avatar";
 import { useConfirm } from "@/hooks/useConfirm";
+import { useAllLeadsForWorkload } from "@/features/leads/hooks/useAllLeadsForWorkload";
+import { buildTelecallerWorkload } from "@/features/leads/utils/buildTelecallerWorkload";
 
 export default function AssignLeadsModal({ 
   open, 
@@ -17,10 +19,18 @@ export default function AssignLeadsModal({
   const confirm = useConfirm();
   const [search, setSearch] = useState("");
 
-  const filteredTelecallers = useMemo(() => {
-    if (!telecallers || !Array.isArray(telecallers)) return [];
+  // Temporary single-bulk-request hook to retrieve complete lead dataset when modal opens
+  const { data: completeLeads = [] } = useAllLeadsForWorkload(open);
 
-    let list = telecallers.filter(
+  // Memoized temporary workload aggregation and intelligent sorting
+  const enrichedTelecallers = useMemo(() => {
+    return buildTelecallerWorkload(telecallers, completeLeads);
+  }, [telecallers, completeLeads]);
+
+  const filteredTelecallers = useMemo(() => {
+    if (!enrichedTelecallers || !Array.isArray(enrichedTelecallers)) return [];
+
+    let list = enrichedTelecallers.filter(
       tc => (tc.role || "").toUpperCase() === "TELECALLER" && (tc.status || "").toUpperCase() === "ACTIVE"
     );
 
@@ -38,7 +48,7 @@ export default function AssignLeadsModal({
       );
     }
     return list;
-  }, [telecallers, search, mode, currentTelecallerId]);
+  }, [enrichedTelecallers, search, mode, currentTelecallerId]);
 
   return (
     <Modal open={open} onClose={onClose} title={mode === "reassign" ? "Intelligent Lead Reassignment" : "Intelligent Lead Assignment"} size="md">
@@ -55,7 +65,7 @@ export default function AssignLeadsModal({
         />
         
         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-2">
-          Telecaller Availability
+          Telecaller Availability & Workload
         </h3>
         
         <div className="flex flex-col gap-3 max-h-[50vh] overflow-y-auto pr-2 scrollbar-hide">
@@ -76,8 +86,13 @@ export default function AssignLeadsModal({
                           AVAILABLE
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
-                        <span><strong className="text-gray-700">{tc.activeLeads || 0}</strong> Active Leads</span>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                        <span><strong className="text-gray-700">{tc.assignedLeadCount ?? tc.activeLeads ?? 0}</strong> Assigned Leads</span>
+                        {tc.workloadBadge && (
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${tc.workloadBadge.colorClass}`}>
+                            {tc.workloadBadge.label}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

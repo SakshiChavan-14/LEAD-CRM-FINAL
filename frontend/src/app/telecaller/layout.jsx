@@ -3,6 +3,7 @@ import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import RoleGuard from "@/features/auth/components/RoleGuard";
 import { ROLES } from "@/constants/roles";
 import { VoiceProvider } from "@/features/telecaller/voice/context/VoiceProvider";
+import GlobalQuickCallWidget from "@/features/telecaller/shared/quick-call/GlobalQuickCallWidget";
 
 export default function TelecallerLayout({
   children,
@@ -13,6 +14,7 @@ export default function TelecallerLayout({
         <VoiceProvider>
           <DashboardShell>
             {children}
+            <GlobalQuickCallWidget />
           </DashboardShell>
         </VoiceProvider>
       </RoleGuard>

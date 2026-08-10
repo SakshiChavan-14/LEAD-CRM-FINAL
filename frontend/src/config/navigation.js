@@ -3,6 +3,8 @@ import {
   BriefcaseBusiness,
   LineChart,
   Settings,
+  User,
+  BarChart3
 } from "lucide-react";
 
 import { ROLES } from "@/constants/roles";
@@ -25,19 +27,12 @@ const navigation = [
       { title: "Call Reports", path: "/dashboard/management/call-reports" },
     ]
   },
+
   {
-    title: "Analytics",
-    path: "/dashboard/analytics",
-    icon: LineChart,
+    title: "Reports",
+    path: "/dashboard/reports",
+    icon: BarChart3,
     roles: [ROLES.ADMIN],
-    disabled: true,
-  },
-  {
-    title: "Admin Tools",
-    path: "/dashboard/tools",
-    icon: Settings,
-    roles: [ROLES.ADMIN],
-    disabled: true,
   },
 ];
 

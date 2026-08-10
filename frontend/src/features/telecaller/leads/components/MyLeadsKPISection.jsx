@@ -1,7 +1,20 @@
 import React from "react";
-import { KPICard } from "@/components/dashboard-ui/KPICard";
 import { Users, Zap, Clock, CheckCircle2, XCircle, Star } from "lucide-react";
 import KPIGrid from "@/components/management/KPIGrid";
+
+const CustomKPICard = ({ title, value, icon: Icon, colorClass, bgClass }) => (
+  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col justify-between h-[112px]">
+    <div className="flex justify-between items-start">
+      <h3 className="text-[13px] font-medium text-gray-500">{title}</h3>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${bgClass}`}>
+        <Icon size={16} className={colorClass} strokeWidth={2.5} />
+      </div>
+    </div>
+    <div className="flex items-baseline gap-2 mt-auto">
+      <span className="text-[30px] font-bold text-gray-900 leading-none">{value}</span>
+    </div>
+  </div>
+);
 
 export default function MyLeadsKPISection({ kpiData }) {
   const {
@@ -14,57 +27,50 @@ export default function MyLeadsKPISection({ kpiData }) {
   } = kpiData || {};
 
   return (
-    <div className="overflow-x-auto hide-scrollbar -mx-4 px-4 md:mx-0 md:px-0 mb-8">
-      <KPIGrid className="flex md:grid md:grid-cols-3 lg:grid-cols-6 gap-card-gap min-w-max md:min-w-0">
-        
-        <KPICard
-          title="Total Assigned"
+    <div className="mb-6">
+      <KPIGrid className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <CustomKPICard
+          title="Assigned"
           value={totalAssigned}
-          subtitle="All your assigned leads"
           icon={Users}
-          variant="primary"
+          colorClass="text-red-600"
+          bgClass="bg-red-50"
         />
-
-        <KPICard
+        <CustomKPICard
           title="New Leads"
           value={newLeads}
-          subtitle="Require your attention"
           icon={Zap}
-          variant="orange"
+          colorClass="text-orange-600"
+          bgClass="bg-orange-50"
         />
-
-        <KPICard
+        <CustomKPICard
           title="In Progress"
           value={inProgress}
-          subtitle="Active follow-ups"
           icon={Clock}
-          variant="purple"
+          colorClass="text-amber-600"
+          bgClass="bg-amber-50"
         />
-
-        <KPICard
+        <CustomKPICard
           title="Interested"
           value={interested}
-          subtitle="Showing interest"
           icon={CheckCircle2}
-          variant="success"
+          colorClass="text-emerald-600"
+          bgClass="bg-emerald-50"
         />
-
-        <KPICard
+        <CustomKPICard
           title="Not Interested"
           value={notInterested}
-          subtitle="Not showing interest"
           icon={XCircle}
-          variant="danger"
+          colorClass="text-gray-500"
+          bgClass="bg-gray-100"
         />
-
-        <KPICard
+        <CustomKPICard
           title="Converted"
           value={converted}
-          subtitle="Successfully converted"
           icon={Star}
-          variant="blue"
+          colorClass="text-blue-600"
+          bgClass="bg-blue-50"
         />
-
       </KPIGrid>
     </div>
   );

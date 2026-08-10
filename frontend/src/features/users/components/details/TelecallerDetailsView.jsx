@@ -15,6 +15,7 @@ import { breadcrumbs } from "@/config/breadcrumbs";
 
 import ContentSection from "@/components/management/ContentSection";
 import KPIGrid from "@/components/management/KPIGrid";
+import PageContainer from "@/components/layout/PageContainer";
 
 export default function TelecallerDetailsView({
   userId,
@@ -24,28 +25,32 @@ export default function TelecallerDetailsView({
 }) {
   if (isLoading) {
     return (
-      <div className="mt-6">
-        <DashboardSkeleton />
-      </div>
+      <PageContainer size="wide" className="py-8 space-y-6">
+        <div className="mt-6">
+          <DashboardSkeleton />
+        </div>
+      </PageContainer>
     );
   }
 
   if (isError || !telecaller) {
     return (
-      <div className="mt-6">
-        <ErrorState
-          title="Error Loading Telecaller Details"
-          message="Failed to load telecaller details."
-          onRetry={() => window.location.reload()}
-        />
-      </div>
+      <PageContainer size="wide" className="py-8 space-y-6">
+        <div className="mt-6">
+          <ErrorState
+            title="Error Loading Telecaller Details"
+            message="Failed to load telecaller details."
+            onRetry={() => window.location.reload()}
+          />
+        </div>
+      </PageContainer>
     );
   }
 
   // Performance Snapshot and Profile Section will render below
 
   return (
-    <>
+    <PageContainer size="wide" className="py-8 space-y-6">
       <ManagementHeader
         title="Performance Dashboard"
         description="View telecaller profile, performance analytics, and workload."
@@ -53,7 +58,7 @@ export default function TelecallerDetailsView({
         actions={<div />}
       />
       
-      <ContentSection className="mt-6 pb-10">
+      <ContentSection className="pb-10">
         <TelecallerHeader profile={telecaller.profile} kpi={telecaller.kpi} />
 
         <PerformanceSnapshot kpi={telecaller.kpi} />
@@ -76,6 +81,6 @@ export default function TelecallerDetailsView({
           <RecentCallLogsSection userId={userId} />
         </div>
       </ContentSection>
-    </>
+    </PageContainer>
   );
 }

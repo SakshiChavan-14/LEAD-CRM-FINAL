@@ -128,6 +128,8 @@ export default function UserDirectoryTable({ users = [], onView }) {
       rowKey="empId"
       selectable={false}
       onRowClick={onView}
+      tableClassName="min-w-[900px]"
+      stickyActions={true}
       renderRowActions={(row) => (
         <ActionMenu
           actions={[

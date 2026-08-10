@@ -2,99 +2,106 @@ import React from "react";
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
+const cn = (...classes) => classes.filter(Boolean).join(' ');
+
 export const KpiCardSkeleton = () => (
-  <div className="bg-white border border-gray-200 rounded-[var(--radius-surface-lg)] p-[var(--spacing-section)] shadow-[var(--shadow-sm)] flex flex-col h-[156px] w-full">
-    <div className="w-[60px] h-[28px] rounded-[var(--radius-pill)] bg-gray-100 animate-pulse mb-auto"></div>
-    <div className="w-24 h-8 bg-gray-100 animate-pulse rounded mb-2"></div>
-    <div className="w-16 h-4 bg-gray-100 animate-pulse rounded mb-1"></div>
-    <div className="w-32 h-3 bg-gray-100 animate-pulse rounded mt-1"></div>
+  <div className="bg-white border border-gray-200 rounded-[16px] p-5 flex flex-col min-h-[116px] w-full relative">
+    <div className="absolute top-5 right-5 w-10 h-10 rounded-xl bg-gray-100 animate-pulse"></div>
+    <div className="w-16 h-8 bg-gray-100 animate-pulse rounded mb-2"></div>
+    <div className="w-24 h-4 bg-gray-100 animate-pulse rounded"></div>
   </div>
 );
 
 export { KpiCardSkeleton as KPICardSkeleton };
 
-export function KpiCard({ 
-  title, 
-  value, 
+export function KpiCard({
+  title,
+  value,
   subtitle,
-  icon: Icon, 
-  variant = "default", // default, primary, success, warning, danger, purple, blue, orange, cyan, info
-  trend, 
+  icon,
+  variant = "neutral", // primary, success, warning, danger, info, neutral
+  iconClassName,
+  iconBgClassName,
+  trend,
   trendDirection = "neutral", // "up", "down", "neutral"
   loading = false,
   onClick,
   className = "",
-  href 
+  href
 }) {
   if (loading) return <KpiCardSkeleton />;
+
+  const Icon = icon;
 
   // Display '0' or '—' for empty/invalid values
   const displayValue = (value === undefined || value === null || Number.isNaN(value)) ? "0" : value;
 
   const getVariantStyles = () => {
+    if (iconClassName || iconBgClassName) {
+      return `${iconBgClassName || ''} ${iconClassName || ''}`;
+    }
     switch (variant) {
-      case "primary": return "bg-red-50 text-red-600";
-      case "success": return "bg-emerald-50 text-emerald-600";
-      case "warning":
-      case "yellow": return "bg-yellow-50 text-yellow-600";
-      case "danger": return "bg-rose-50 text-rose-600";
-      case "purple": return "bg-purple-50 text-purple-600";
-      case "info":
-      case "blue": return "bg-blue-50 text-blue-600";
-      case "orange": return "bg-orange-50 text-orange-600";
-      case "cyan": return "bg-cyan-50 text-cyan-600";
-      default: return "bg-gray-50 text-gray-600";
+      case "primary": return "text-[#8B1538] bg-[#8B1538]/10";
+      case "success": return "text-[#16A34A] bg-[#16A34A]/10";
+      case "warning": return "text-[#F59E0B] bg-[#F59E0B]/10";
+      case "danger": return "text-[#EF4444] bg-[#EF4444]/10";
+      case "info": return "text-[#2563EB] bg-[#2563EB]/10";
+      case "neutral":
+      default: return "text-[#64748B] bg-[#F1F5F9]";
     }
   };
 
   const renderTrend = () => {
-    let TrendIcon = TrendingUp;
-    let trendColors = "text-emerald-600";
+    let trendColors = "text-[#16A34A]";
     
     if (trendDirection === "down") {
-      TrendIcon = TrendingDown;
-      trendColors = "text-rose-600";
+      trendColors = "text-[#EF4444]";
     } else if (trendDirection === "neutral") {
-      TrendIcon = Minus;
-      trendColors = "text-gray-500";
+      trendColors = "text-[#64748B]";
     }
 
     return (
-      <div className={`flex items-center gap-1 text-caption font-semibold font-sans ${trendColors}`}>
-        <TrendIcon size={12} strokeWidth={2.5} />
-        <span>{trend}</span>
+      <div className={`text-[12px] font-medium mt-auto ${trendColors}`}>
+        {trend}
       </div>
     );
   };
 
   const CardContent = (
-    <div 
-      className={`bg-white border border-gray-200 rounded-[var(--radius-surface-lg)] p-[var(--spacing-section)] shadow-[var(--shadow-sm)] flex flex-col h-[156px] w-full transition-all duration-200 
-      ${(onClick || href) ? 'cursor-pointer hover:-translate-y-[2px] hover:shadow-[var(--shadow-md)]' : ''} ${className}`}
+    <div
+      className={`relative bg-white border border-gray-200 rounded-[16px] p-5 flex flex-col min-h-[116px] flex-1 w-full transition-all duration-300 ease-out group 
+      ${(onClick || href) ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-sm' : ''} ${className}`}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between mb-auto">
-        {Icon && (
-          <div className={`w-[60px] h-[28px] rounded-[var(--radius-pill)] flex items-center justify-center shrink-0 ${getVariantStyles()}`}>
-            <Icon size={18} strokeWidth={2} />
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col mt-auto">
-        <p className="text-kpi font-bold text-gray-900 leading-none mb-1 truncate font-sans">{displayValue}</p>
-        <h3 className="text-label font-semibold text-gray-700 leading-tight mb-0.5 truncate font-sans">{title}</h3>
-        
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-caption text-gray-500 font-normal truncate max-w-[70%] font-sans">{subtitle}</p>
-          {trend ? renderTrend() : <div className="h-[18px]"></div>}
+      {/* 1. Top-Right Icon */}
+      {Icon && (
+        <div className={`absolute top-5 right-5 flex items-center justify-center w-10 h-10 rounded-xl transition-transform duration-300 group-hover:scale-105 ${getVariantStyles()}`}>
+          <Icon className={cn('h-6 w-6', iconClassName)} />
         </div>
-      </div>
+      )}
+
+      {/* 2. KPI Value (Left Aligned) */}
+      <p className="text-[32px] font-bold text-gray-900 leading-none mb-1.5 truncate pr-12 shrink-0">
+        {displayValue}
+      </p>
+
+      {/* 3. KPI Title (Left Aligned) */}
+      <h3 className="text-[13px] font-medium text-gray-500 leading-tight truncate pr-12 shrink-0">
+        {title}
+      </h3>
+
+      {/* 4. Subtitle / Trend (Bottom-Left) */}
+      {(trend || subtitle) && (
+        <div className="mt-auto">
+          {subtitle && !trend && <span className="text-[12px] text-gray-400">{subtitle}</span>}
+          {trend && renderTrend()}
+        </div>
+      )}
     </div>
   );
 
   if (href) {
-    return <Link href={href} className="block w-full outline-none focus:ring-2 focus:ring-primary rounded-[var(--radius-surface-lg)]">{CardContent}</Link>;
+    return <Link href={href} className="block w-full outline-none focus:ring-2 focus:ring-[#8B1538] rounded-[16px]">{CardContent}</Link>;
   }
 
   return CardContent;

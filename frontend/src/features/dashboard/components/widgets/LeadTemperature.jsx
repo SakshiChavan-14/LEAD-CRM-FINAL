@@ -11,8 +11,6 @@ export default function LeadTemperature({ temperature }) {
         value={hot}
         title="Hot Leads"
         subtitle="Score ≥ 75"
-        trend="+12 Today"
-        trendDirection="up"
         icon={Flame}
         variant="danger"
       />
@@ -20,8 +18,6 @@ export default function LeadTemperature({ temperature }) {
         value={cold}
         title="Cold Leads"
         subtitle="Score < 75"
-        trend="-5 Today"
-        trendDirection="down"
         icon={Snowflake}
         variant="cyan"
       />

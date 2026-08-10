@@ -1,3 +1,12 @@
+const resolveName = (...names) => {
+  for (const name of names) {
+    if (name && typeof name === 'string' && name.trim().length > 0) {
+      return name.trim();
+    }
+  }
+  return "Unknown";
+};
+
 export const mapDashboard = (rawData) => {
   if (!rawData) return null;
 
@@ -25,6 +34,8 @@ export const mapDashboard = (rawData) => {
       admissions: { current: 0, target: 1 }
     },
     activities: Array.isArray(rawData.activities) ? rawData.activities : [],
+    leads: Array.isArray(rawData.leads) ? rawData.leads : [],
+    followups: Array.isArray(rawData.followups) ? rawData.followups : [],
   };
 };
 
@@ -32,7 +43,7 @@ export const mapLeadOverview = (rawLead) => {
   if (!rawLead) return null;
   return {
     enquiryNo: rawLead.enquiryNo,
-    name: rawLead.name || "Unknown",
+    name: resolveName(rawLead.studentName, rawLead.name, rawLead.student?.name, rawLead.fullName),
     mobileNo: rawLead.mobileNo || "N/A",
     course: rawLead.course || "N/A",
     status: rawLead.status || "N/A",
@@ -50,7 +61,7 @@ export const mapLeadDetail = (rawLead) => {
   // Reuse structure expected by existing admin Lead Detail page where applicable
   const mapped = {
     header: {
-      name: rawLead.name || "Unknown",
+      name: resolveName(rawLead.studentName, rawLead.name, rawLead.student?.name, rawLead.fullName),
       course: rawLead.course || "N/A",
       priority: rawLead.temperature || rawLead.priority || null,
     },
@@ -107,7 +118,7 @@ export const mapFollowup = (raw) => {
     id: raw.id,
     leadId: raw.leadId || raw.enquiryNo,
     enquiryNo: raw.enquiryNo || raw.leadId,
-    name: raw.leadName || raw.student || "Unknown Lead",
+    name: resolveName(raw.studentName, raw.leadName, raw.name, raw.student?.name, raw.student),
     phone: raw.mobileNo || raw.phone || raw.mobile || "N/A",
     course: raw.course || "B.Tech",
     priority: raw.priority

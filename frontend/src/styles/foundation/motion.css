@@ -1,0 +1,19 @@
+/* Sprint 18 — Foundation Motion Tokens */
+
+:root {
+  /* Duration Tokens */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* Easing Tokens */
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+  --ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+
+  /* Hover Scale Tokens */
+  --scale-resting: 1;
+  --scale-hover: 1.01;
+  --scale-preview: 1.02;
+  --scale-active: 0.99;
+}

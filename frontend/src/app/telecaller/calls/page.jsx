@@ -6,17 +6,14 @@ import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 
 // Voice Components
 import VoiceHeader from "@/features/telecaller/voice/components/VoiceHeader";
-import DeviceStatusCard from "@/features/telecaller/voice/components/DeviceStatusCard";
+import TodayCallQueue from "@/features/telecaller/calls/components/TodayCallQueue";
 import ActiveCallCard from "@/features/telecaller/voice/components/ActiveCallCard";
 import QuickDialCard from "@/features/telecaller/voice/components/QuickDialCard";
 import AnalyticsCards from "@/features/telecaller/voice/components/AnalyticsCards";
-import RecentCallsTable from "@/features/telecaller/voice/components/RecentCallsTable";
-import TimelineCard from "@/features/telecaller/voice/components/TimelineCard";
 import AudioTestModal from "@/features/telecaller/voice/components/AudioTestModal";
 import DeviceSettingsModal from "@/features/telecaller/voice/components/DeviceSettingsModal";
 
 import ContentSection from "@/components/management/ContentSection";
-import KPIGrid from "@/components/management/KPIGrid";
 
 export default function TelecallerCallsPage() {
   const queryClient = useQueryClient();
@@ -39,26 +36,25 @@ export default function TelecallerCallsPage() {
       style={{ fontFamily: "var(--font-outfit), sans-serif" }}
     >
       {/* ── HEADER ────────────────────────────────────────────────────── */}
-      <VoiceHeader
-        onRefresh={handleRefresh}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-      />
+      <VoiceHeader />
 
-      {/* ── TOP ROW: Device Status | Active Call | Quick Dial ─────────── */}
-      <KPIGrid columns={3} className="grid-cols-1 lg:grid-cols-3 gap-6">
-        <DeviceStatusCard onTestAudio={() => setIsAudioTestOpen(true)} />
-        <ActiveCallCard callNotes={callNotes} setCallNotes={setCallNotes} />
-        <QuickDialCard />
-      </KPIGrid>
+      {/* ── ANALYTICS STRIP (TOP) ──────────────────────────────────────── */}
+      <div className="mb-2">
+        <AnalyticsCards />
+      </div>
 
-      {/* ── ANALYTICS STRIP ──────────────────────────────────────────── */}
-      <AnalyticsCards />
-
-      {/* ── MIDDLE ROW: Recent Calls ──────────────────────────────────── */}
-      <RecentCallsTable />
-
-      {/* ── BOTTOM ROW: Timeline ─────────────────────────────────────── */}
-      <TimelineCard />
+      {/* ── WORKSPACE PANELS (BOTTOM) ──────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+        <div className="flex flex-col h-full">
+          <TodayCallQueue />
+        </div>
+        <div className="flex flex-col h-full">
+          <ActiveCallCard callNotes={callNotes} setCallNotes={setCallNotes} />
+        </div>
+        <div className="flex flex-col h-full">
+          <QuickDialCard />
+        </div>
+      </div>
 
       {/* ── MODALS ────────────────────────────────────────────────────── */}
       <AudioTestModal isOpen={isAudioTestOpen} onClose={() => setIsAudioTestOpen(false)} />

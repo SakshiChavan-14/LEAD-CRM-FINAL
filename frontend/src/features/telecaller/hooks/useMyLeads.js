@@ -8,6 +8,7 @@ export const useTelecallerLeads = (filters = {}, page = 0, size = 10) => {
     queryFn: async () => {
       const rawData = await telecallerLeadService.getMyLeads({ page, size, ...filters });
       
+
       return {
         ...rawData,
         leads: Array.isArray(rawData.leads) ? rawData.leads.map(mapLeadOverview) : []

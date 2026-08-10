@@ -13,7 +13,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "blue",
       value: stats.totalCalls ?? "—",
       trend: undefined,
-      note: "Total volume",
     },
     {
       key: "connectedCalls",
@@ -22,7 +21,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "success",
       value: stats.connectedCalls ?? "—",
       trend: undefined,
-      note: "Answered calls",
     },
     {
       key: "avgDuration",
@@ -31,7 +29,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "orange",
       value: stats.avgDuration ?? "—",
       trend: undefined,
-      note: "Per call avg",
     },
     {
       key: "recordings",
@@ -40,7 +37,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "purple",
       value: stats.recordings ?? "—",
       trend: undefined,
-      note: "Available files",
     },
     {
       key: "successRate",
@@ -49,7 +45,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "primary",
       value: stats.successRate ? `${stats.successRate}%` : "—",
       trend: undefined,
-      note: "Conversion",
     },
     {
       key: "todaysCalls",
@@ -58,7 +53,6 @@ export default function CallReportsStats({ stats = {} }) {
       variant: "danger",
       value: stats.todaysCalls ?? "—",
       trend: undefined,
-      note: "Active today",
     },
   ];
 

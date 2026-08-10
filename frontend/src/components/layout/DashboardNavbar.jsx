@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import {
   Bell,
@@ -9,13 +9,17 @@ import {
   Menu,
   Calendar,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import useAuthStore from "@/store/authStore";
 import useGlobalSearchStore from "@/store/globalSearchStore";
 import { ROLES, ROLE_LABELS } from "@/constants/roles";
 
 import Link from "next/link";
+import { SearchBar } from "@/components/ui/SearchBar";
+import { useSearchController } from "@/hooks/useSearchController";
+import DynamicHeaderDate from "./DynamicHeaderDate";
+import ProfileDropdown from "./ProfileDropdown";
 
 export default function DashboardNavbar({
   breadcrumbs,
@@ -24,7 +28,31 @@ export default function DashboardNavbar({
   isSidebarOpen = false,
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { searchQuery, setSearchQuery } = useGlobalSearchStore();
+  const searchInputRef = useRef(null);
+
+  const searchController = useSearchController({
+    initialValue: searchQuery,
+    syncUrl: false,
+  });
+
+  // Sync back to global store when debounced search changes (if needed by other components)
+  useEffect(() => {
+    setSearchQuery(searchController.debouncedSearch);
+  }, [searchController.debouncedSearch, setSearchQuery]);
+
+  // Global Cmd+K / Ctrl+K hotkey
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const getBreadcrumbArray = () => {
     if (!breadcrumbs) return [{ label: "Dashboard" }];
@@ -133,55 +161,35 @@ export default function DashboardNavbar({
 
       <div className="flex items-center gap-2 sm:gap-4">
 
-        {/* Search */}
-        <div
-          className="
-            hidden
-            lg:flex
-            items-center
-            gap-2
-            rounded-full
-            bg-gray-100
-            hover:bg-gray-200/60
-            transition-colors
-            px-4
-            py-2.5
-            w-[480px]
-          "
-        >
-          <Search size={18} className="text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search leads, names, numbers... (Press Enter)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+        <div className="hidden lg:block w-[480px]">
+          <SearchBar
+            ref={searchInputRef}
+            controller={searchController}
+            placeholder="Search leads, names, numbers... (Cmd+K)"
+            className="w-full bg-gray-100 hover:bg-gray-200/60 rounded-full"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && searchQuery.trim()) {
+              if (e.key === 'Enter' && searchController.search.trim()) {
                 const basePath = pathname.includes('/dashboard') ? '/dashboard/management/leads' : '/telecaller/leads';
-                window.location.href = `${basePath}?search=${encodeURIComponent(searchQuery.trim())}`;
+                router.push(`${basePath}?search=${encodeURIComponent(searchController.search.trim())}`);
               }
             }}
-            className="w-full bg-transparent text-sm outline-none placeholder:text-gray-500"
           />
         </div>
 
-        {/* Icons & Date */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        {/* Icons & Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <button className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 relative text-gray-700 transition-colors">
             <Bell size={20} />
             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
           </button>
+
+          <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1"></div>
+
+          <DynamicHeaderDate />
           
-          <button className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 text-gray-700 transition-colors">
-            <Moon size={20} />
-          </button>
-
-          <div className="hidden sm:block w-px h-6 bg-gray-200 mx-2"></div>
-
-          <div className="hidden sm:flex items-center gap-2 px-2 text-sm font-semibold text-gray-800">
-            20 July 2025
-            <Calendar size={18} className="text-gray-500" />
-          </div>
+          <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1"></div>
+          
+          <ProfileDropdown />
         </div>
       </div>
 

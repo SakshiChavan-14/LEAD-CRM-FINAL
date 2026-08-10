@@ -11,7 +11,12 @@ export const telecallerBreadcrumbs = {
   ],
   calls: [
     { label: "Dashboard", href: "/telecaller" },
-    { label: "Calls" }
+    { label: "Calls", href: "/telecaller/calls" }
+  ],
+  callsHistory: [
+    { label: "Dashboard", href: "/telecaller" },
+    { label: "Calls", href: "/telecaller/calls" },
+    { label: "Recent Calls" }
   ],
   recordings: [
     { label: "Dashboard", href: "/telecaller" },

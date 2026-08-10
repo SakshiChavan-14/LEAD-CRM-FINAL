@@ -41,6 +41,8 @@ export default function DataTable({
   renderMobileCard,
   onScroll,
   className = "",
+  tableClassName = "min-w-[1000px]", // Default maintained for backwards compatibility where not overridden
+  stickyActions = false,
 }) {
   const scrollRef = useRef(null);
 
@@ -88,7 +90,7 @@ export default function DataTable({
       <>
         {/* Desktop skeleton */}
         <div className={`hidden md:block overflow-x-auto ${className}`}>
-          <table className="w-full min-w-[1000px] border-separate border-spacing-0">
+          <table className={`w-full border-separate border-spacing-0 ${tableClassName}`}>
             <thead className="bg-gray-50/80">
               <tr>
                 {selectable && (
@@ -122,7 +124,7 @@ export default function DataTable({
                     </td>
                   ))}
                   {renderRowActions && (
-                    <td className="w-14 px-6 py-4">
+                    <td className={`w-14 px-6 py-4 ${stickyActions ? "sticky right-0 bg-white" : ""}`}>
                       <div className="w-6 h-6 rounded bg-gray-200 animate-pulse" />
                     </td>
                   )}
@@ -200,7 +202,7 @@ export default function DataTable({
           if (onScroll) onScroll(e);
         }}
       >
-        <table className="w-full min-w-[1000px] border-separate border-spacing-0">
+        <table className={`w-full border-separate border-spacing-0 ${tableClassName}`}>
           {/* Sticky header */}
           <thead className="bg-gray-50/80 sticky top-0 z-20">
             <tr>
@@ -236,7 +238,7 @@ export default function DataTable({
 
               {renderRowActions && (
                 <th
-                  className={`w-[64px] text-center ${headerPadding}`}
+                  className={`w-[64px] text-center ${headerPadding} ${stickyActions ? "sticky right-0 bg-gray-50/80 z-20" : ""}`}
                 />
               )}
             </tr>
@@ -297,7 +299,7 @@ export default function DataTable({
                   {/* Actions */}
                   {renderRowActions && (
                     <td
-                      className={`w-[64px] text-center ${cellPadding}`}
+                      className={`w-[64px] text-center ${cellPadding} ${stickyActions ? "sticky right-0 bg-white group-hover:bg-gray-50/60" : ""}`}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {renderRowActions(row)}
