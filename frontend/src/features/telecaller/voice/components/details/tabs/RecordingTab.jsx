@@ -1,103 +1,67 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState } from "react";
 import { Mic, Download, ExternalLink, Copy, CheckCircle2, AlertCircle } from "lucide-react";
 import RecordingPlayer from "@/features/telecaller/voice/components/RecordingPlayer";
-import { useRecording } from "@/features/telecaller/voice/hooks/useRecording";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function RecordingTab({ call, callId }) {
   const [copied, setCopied] = useState(false);
-  const [audioUrl, setAudioUrl] = useState(null);
-
-  const interactionId = call?.interactionId || callId;
-  
-  const hasRecording = call?.recordingUrl || call?.recording_url;
-
-  const { data: recording, isLoading, isError } = useRecording(
-    hasRecording ? interactionId : null
-  );
-
-  useEffect(() => {
-    if (recording) {
-      if (recording instanceof Blob) {
-        const url = URL.createObjectURL(recording);
-        setAudioUrl(url);
-        return () => URL.revokeObjectURL(url);
-      } else if (typeof recording === "string") {
-        setAudioUrl(recording);
-      } else if (recording.url) {
-        setAudioUrl(recording.url);
-      }
-    }
-  }, [recording]);
-
-  if (!call) return null;
-
-  if (!hasRecording) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center bg-gray-50 rounded-xl border border-dashed border-[#ECECEC] mt-4">
-        <AlertCircle size={28} className="text-gray-300 mb-2" />
-        <p className="text-sm font-[500] text-gray-500">No recording available for this call</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center mt-4">
-        <div className="w-8 h-8 border-4 border-[#7A1F2B] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-sm font-[500] text-gray-500">Loading recording...</p>
-      </div>
-    );
-  }
-
-  if (isError || !audioUrl) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center bg-red-50/50 rounded-xl border border-red-100 mt-4">
-        <AlertCircle size={28} className="text-red-400 mb-2" />
-        <p className="text-sm font-[500] text-red-600">Failed to load recording</p>
-      </div>
-    );
-  }
+  const audioUrl = call?.recordingUrl || (callId ? `/api/leads/telecaller/calls/${callId}/recording` : null);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(audioUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (audioUrl) {
+      navigator.clipboard.writeText(audioUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
+  if (!audioUrl) {
+    return (
+      <div className="py-2">
+        <EmptyState title="No Call Recording Available" description="This call session does not have an audio recording on record." />
+      </div>
+    );
+  }
+
   return (
-    <div className="py-4">
-      <h4 className="text-sm font-[700] text-gray-900 mb-4 flex items-center gap-2">
-        <Mic size={16} className="text-gray-400" />
-        Call Recording
-      </h4>
-      <div className="bg-gray-50 border border-[#ECECEC] rounded-xl p-5">
+    <div className="py-2 space-y-4 font-outfit">
+      <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
+        <Mic size={14} className="text-purple-600" />
+        <span>Audio Recording Playback</span>
+      </div>
+
+      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-4">
         <RecordingPlayer 
           src={audioUrl} 
-          duration={call.callDurationSeconds || call.callDuration || call.duration || 0} 
+          duration={call?.callDurationSeconds || call?.callDuration || call?.duration || 195} 
         />
         
-        <div className="flex items-center gap-3 mt-5 pt-5 border-t border-[#ECECEC]">
+        <div className="flex flex-wrap items-center gap-3 pt-2">
           <a
             href={audioUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+            className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95"
           >
-            <ExternalLink size={15} /> Open in new tab
+            <ExternalLink size={14} className="text-slate-400" />
+            <span>Open in Tab</span>
           </a>
           <a
             href={audioUrl}
-            download="recording.mp3"
-            className="flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+            download="call-recording.mp3"
+            className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95"
           >
-            <Download size={15} /> Download Audio
+            <Download size={14} className="text-slate-400" />
+            <span>Download Audio</span>
           </a>
           <button
             onClick={handleCopyLink}
-            className="flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-[600] text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 px-4 py-2.5 rounded-lg transition-colors shadow-sm"
+            className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-95"
           >
-            {copied ? <CheckCircle2 size={15} className="text-emerald-500" /> : <Copy size={15} />} 
-            {copied ? "Copied URL" : "Copy Direct URL"}
+            {copied ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Copy size={14} className="text-slate-400" />} 
+            <span>{copied ? "Copied URL" : "Copy Audio Link"}</span>
           </button>
         </div>
       </div>

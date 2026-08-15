@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 import { useLeadOverview } from "@/features/leads/hooks/useLeadOverview";
 import { useLeadFilterOptions } from "@/features/leads/hooks/useLeadFilterOptions";
@@ -20,6 +21,16 @@ import LeadsFilterPills from "@/features/leads/components/filters/LeadsFilterPil
 import LeadTableSection from "@/features/leads/components/tables/LeadTableSection";
 
 const SPECIAL_FILTER_KEYS = ["state", "district", "taluk"];
+const FILTER_LABELS = {
+  source: "Source",
+  status: "Status",
+  callerName: "Telecaller",
+  course: "Course",
+  opinion: "Opinion",
+  state: "State",
+  district: "District",
+  taluk: "Taluk"
+};
 
 import FilterToolbar from "@/components/management/FilterToolbar";
 
@@ -74,6 +85,16 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
   const pageSize = data?.pageSize || size;
 
   const { data: bucketCounts = {} } = useLeadCounts();
+
+  const displayCounts = useMemo(() => {
+    const updated = { ...bucketCounts };
+    if (type) {
+      updated[type] = totalResults;
+    } else {
+      updated.all = totalResults || bucketCounts.all || 0;
+    }
+    return updated;
+  }, [bucketCounts, type, totalResults]);
 
   // Drawer Handlers
   const handleOpenDrawer = useCallback(() => {
@@ -133,6 +154,31 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
     });
   }, [assignLeads, selectedRows]);
 
+  // Compute active filters to show as removable chips
+  const activeFilters = useMemo(() => {
+    const keys = ["source", "status", "callerName", "course", "opinion", "state", "district", "taluk"];
+    return keys
+      .filter(k => filters[k] !== undefined && filters[k] !== null && filters[k] !== "")
+      .map(k => ({ key: k, value: filters[k], label: FILTER_LABELS[k] || k }));
+  }, [filters]);
+
+  const hasActiveFilters = activeFilters.length > 0;
+
+  const handleRemoveFilter = useCallback((key) => {
+    if (actions.setFilters) {
+      actions.setFilters({ [key]: "" });
+    }
+  }, [actions]);
+
+  const handleClearAllFilters = useCallback(() => {
+    const cleared = {};
+    const keys = ["source", "status", "callerName", "course", "opinion", "state", "district", "taluk"];
+    keys.forEach(k => { cleared[k] = ""; });
+    if (actions.setFilters) {
+      actions.setFilters(cleared);
+    }
+  }, [actions]);
+
   return (
     <>
       <LeadsKPICards counts={bucketCounts} />
@@ -141,25 +187,25 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
         <LeadsFilterPills 
           activeFilter={type} 
           onSelect={actions.setType} 
-          counts={bucketCounts} 
+          counts={displayCounts} 
         />
         
         {/* Bulk Action Bar: shown when rows are selected */}
         {selectedRows.length > 0 && (
-          <div className="flex items-center gap-4 bg-[#8B0D16]/5 border border-[#8B0D16]/20 text-[#8B0D16] px-4 py-2.5 rounded-xl shadow-sm w-full transition-all">
+          <div className="flex items-center gap-4 bg-blue-50/60 border border-blue-200/60 text-blue-700 px-4 py-2.5 rounded-xl shadow-sm w-full transition-all">
             <span className="text-sm font-semibold">
               {selectedRows.length} {selectedRows.length === 1 ? 'Lead' : 'Leads'} Selected
             </span>
             <div className="flex items-center gap-2 ml-auto">
               <button
                 onClick={() => { setAssignMode("assign"); setIsAssignModalOpen(true); }}
-                className="px-4 py-1.5 text-sm bg-white border border-[#8B0D16]/30 text-[#8B0D16] font-medium rounded-lg shadow-sm hover:bg-[#8B0D16]/10 transition-colors cursor-pointer"
+                className="px-4 py-1.5 text-sm bg-white border border-admin-primary-border text-admin-primary-text font-medium rounded-lg shadow-sm hover:bg-admin-primary-subtle transition-colors cursor-pointer"
               >
                 Assign
               </button>
               <button
                 onClick={() => { setAssignMode("reassign"); setIsAssignModalOpen(true); }}
-                className="px-4 py-1.5 text-sm bg-[#9E5A02] text-white font-medium rounded-lg shadow-sm hover:bg-[#824901] transition-colors cursor-pointer"
+                className="px-4 py-1.5 text-sm bg-admin-primary text-white font-medium rounded-lg shadow-sm hover:bg-admin-primary-hover active:bg-admin-primary-active transition-colors cursor-pointer"
               >
                 Reassign
               </button>
@@ -173,6 +219,35 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
           </div>
         )}
       </FilterToolbar>
+
+      {/* Applied Filter Chips */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 mb-4 animate-in fade-in slide-in-from-top-1 duration-200 font-outfit">
+          <span className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mr-1">Active Filters:</span>
+          {activeFilters.map((f) => (
+            <div 
+              key={f.key} 
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold shadow-2xs hover:bg-blue-100/60 hover:border-blue-200 transition-all"
+            >
+              <span className="text-slate-400 font-semibold">{f.label}:</span>
+              <span className="capitalize">{f.value}</span>
+              <button 
+                onClick={() => handleRemoveFilter(f.key)}
+                className="w-4 h-4 rounded-full flex items-center justify-center hover:bg-blue-200 text-blue-500 hover:text-blue-700 transition-colors cursor-pointer shrink-0 ml-0.5"
+                title={`Remove ${f.label} filter`}
+              >
+                <X size={10} strokeWidth={2.5} />
+              </button>
+            </div>
+          ))}
+          <button 
+            onClick={handleClearAllFilters}
+            className="text-xs font-bold text-[#6F1D28] hover:text-[#5a1720] hover:underline ml-2 transition-all cursor-pointer"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
 
       <LeadTableSection
         data={leadsData}
@@ -200,19 +275,13 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
         onClose={handleCloseDrawer}
         onApply={handleApplyFilters}
         onReset={handleResetFilters}
+        primaryButtonClass="bg-admin-primary hover:bg-admin-primary-hover focus:ring-admin-primary/20"
       >
         <LeadFilters 
           values={draftFilters} 
           options={filterOptions} 
           onChange={(key, value) => setDraftFilters(prev => ({ ...prev, [key]: value }))} 
         />
-        <div className="mt-10 pt-6 border-t border-gray-100">
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Saved Views</h3>
-          <div className="p-4 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-center">
-            <span className="text-sm text-gray-500 font-medium">Coming Soon</span>
-            <p className="text-xs text-gray-400 mt-1">Save your favorite filter combinations.</p>
-          </div>
-        </div>
       </ReusableFilterDrawer>
 
       <AssignLeadsModal

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { PhoneCall } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -5,7 +7,7 @@ import CallDialog from "./CallDialog";
 import { useVoice } from "../context/VoiceProvider";
 import { VOICE_STATES } from "../utils/twilioEvents";
 
-export default function CallButton({ enquiryNo, phone, name, variant = "primary", className, iconOnly = false }) {
+export default function CallButton({ enquiryNo, phone, name, variant = "primary", className, iconOnly = false, label = "Call", iconSize = 14 }) {
   const { voiceState, startCall, setErrorMsg } = useVoice();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -39,11 +41,11 @@ export default function CallButton({ enquiryNo, phone, name, variant = "primary"
         <button
           onClick={handleClick}
           disabled={isBusy || voiceState !== VOICE_STATES.READY}
-          className={`w-9 h-9 rounded-full bg-[#7A1F2B]/10 text-[#7A1F2B] hover:bg-[#7A1F2B] hover:text-white flex items-center justify-center transition-colors shrink-0 group-hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+          className={`w-9 h-9 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[#00C853] flex items-center justify-center transition-all duration-200 shrink-0 shadow-xs hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${className}`}
           title={`Call ${name || phone}`}
           aria-label={`Call ${name || phone}`}
         >
-          <PhoneCall size={16} />
+          <PhoneCall size={iconSize} />
         </button>
         {isDialogOpen && (
           <CallDialog
@@ -60,15 +62,18 @@ export default function CallButton({ enquiryNo, phone, name, variant = "primary"
 
   return (
     <>
-      <Button
+      <button
         onClick={handleClick}
         disabled={isBusy || voiceState !== VOICE_STATES.READY}
-        variant={variant === "primary" ? "default" : variant}
-        className={`justify-center font-semibold rounded-lg shadow-sm px-4 py-2 text-sm ${variant === "primary" ? "bg-[#7A1F2B] hover:bg-[#6a1b26] text-white" : ""} ${className}`}
-        icon={<PhoneCall size={14} />}
+        className={`inline-flex items-center justify-center gap-1.5 font-bold rounded-xl shadow-xs px-4 py-2 text-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+          variant === "primary" 
+            ? "bg-[#00C853] hover:bg-[#00b048] text-white shadow-emerald-500/20" 
+            : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+        } ${className}`}
       >
-        Call
-      </Button>
+        <PhoneCall size={iconSize} />
+        <span>{label}</span>
+      </button>
 
       {isDialogOpen && (
         <CallDialog

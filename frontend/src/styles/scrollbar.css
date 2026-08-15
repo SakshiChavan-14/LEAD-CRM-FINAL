@@ -1,27 +1,21 @@
 /* Premium CRM Scrollbar Experience */
-/* Applied to main layout containers via .crm-scroll */
+/* Applied to main layout containers via .crm-scroll, .no-scrollbar, .custom-scrollbar */
 
-/* Firefox */
-.crm-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-/* Chrome, Edge, Safari */
-.crm-scroll::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  background: transparent;
-}
-
-/* Completely hidden scrollbar utility (for sidebars/menus) */
+/* Completely hidden scrollbar utility (for tables, sidebars, lead details) */
+.crm-scroll,
+.no-scrollbar,
+.custom-scrollbar,
 .scrollbar-hidden {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
+.crm-scroll::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar,
 .scrollbar-hidden::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }

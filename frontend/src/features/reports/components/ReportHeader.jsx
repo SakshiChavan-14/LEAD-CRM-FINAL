@@ -27,11 +27,7 @@ export default function ReportHeader({ lastUpdatedAt }) {
         </p>
       </div>
 
-      <div className="hidden lg:flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-2 shadow-sm">
-        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-        <span className="text-sm font-medium text-gray-700">Live</span>
-        <span className="text-sm text-gray-400">{formatRelativeTime(lastUpdatedAt)}</span>
-      </div>
+
     </div>
   );
 }

@@ -13,6 +13,12 @@ const variantConfig = {
     iconBg: "bg-[#fdf8f8]",
     buttonClass: "bg-[#6F1D28] hover:bg-[#5a1620] text-white",
   },
+  "admin-primary": {
+    icon: CheckCircle2,
+    iconColor: "text-admin-primary-text",
+    iconBg: "bg-admin-primary-subtle",
+    buttonClass: "bg-admin-primary hover:bg-admin-primary-hover text-white",
+  },
   danger: {
     icon: Trash2,
     iconColor: "text-red-600",
@@ -101,12 +107,12 @@ export default function ConfirmDialog() {
         )}
 
         {/* Actions */}
-        <div className="flex w-full flex-col sm:flex-row gap-[var(--spacing-content)] mt-4">
+        <div className="flex w-full flex-col sm:flex-row gap-3 mt-4">
           <Button
             variant="secondary"
             onClick={handleCancel}
             disabled={isConfirming}
-            className="flex-1"
+            className="flex-1 rounded-xl"
           >
             {options.cancelText}
           </Button>
@@ -116,7 +122,7 @@ export default function ConfirmDialog() {
             onClick={handleConfirm}
             disabled={isConfirming}
             className={`
-              flex-1 inline-flex items-center justify-center rounded-[var(--radius-control)] px-[var(--spacing-card)] py-2.5 text-[15px] font-semibold transition-all duration-200
+              flex-1 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-[15px] font-semibold transition-all duration-200 cursor-pointer active:scale-95
               disabled:opacity-50 disabled:cursor-not-allowed
               ${config.buttonClass}
             `}

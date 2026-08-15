@@ -15,54 +15,54 @@ const toPercent = (v) => {
 };
 
 const normalizeStats = (raw) => {
-  const overall = raw.overall || {};
+  const overall = raw?.overall || raw || {};
   return [
     {
       id: 1,
       title: "Total Leads",
-      value: overall.total || 0,
+      value: overall.total || overall.totalLeads || overall.total_leads || 0,
       subtitle: "All time",
       type: "success",
     },
     {
       id: 2,
       title: "Active Leads",
-      value: overall.alloted || 0,
+      value: overall.alloted || overall.allotted || overall.active || overall.activeLeads || 0,
       subtitle: "In Pipeline",
       type: "default",
     },
     {
       id: 3,
       title: "New Today",
-      value: overall.recent || 0,
+      value: overall.recent || overall.new || overall.newLeads || overall.recentLeads || 0,
       subtitle: "Recent Leads",
       type: "default",
     },
     {
       id: 4,
       title: "Pending Assign",
-      value: overall.notAlloted || 0,
+      value: overall.notAlloted || overall.notAllotted || overall.pendingAssign || overall.unassigned || overall.not_allotted || 0,
       subtitle: "Requires Action",
       type: "warning",
     },
     {
       id: 5,
       title: "Conversion Rate",
-      value: toPercent(overall.conversionRate),
+      value: toPercent(overall.conversionRate || overall.conversion_rate || overall.conversion),
       subtitle: "Overall success rate",
       type: "default",
     },
     {
       id: 6,
       title: "Telecallers",
-      value: toNumber(overall.activeTelecallers),
+      value: toNumber(overall.activeTelecallers || overall.telecallers || overall.active_telecallers || overall.activeTelecallersCount),
       subtitle: "Active callers online",
       type: "default",
     },
     {
       id: 7,
       title: "Admissions",
-      value: toNumber(overall.totalAdmissions),
+      value: toNumber(overall.totalAdmissions || overall.admissions || overall.admissionsCount || overall.admissions_count),
       subtitle: "Successful admissions",
       type: "default",
     },
@@ -70,10 +70,10 @@ const normalizeStats = (raw) => {
 };
 
 const normalizeTemperature = (raw) => {
-  const overall = raw.overall || {};
+  const overall = raw?.overall || raw || {};
   return {
-    hot: overall.hot || 0,
-    cold: overall.cold || 0,
+    hot: overall.hot || overall.hotLeads || overall.hot_leads || 0,
+    cold: overall.cold || overall.coldLeads || overall.cold_leads || 0,
   };
 };
 
@@ -85,40 +85,29 @@ const normalizeSourceAnalytics = (raw) => {
   }));
 };
 
-const normalizeRecentLeads = (raw) => {
-  if (!raw || !raw.leads) return [];
-  return raw.leads.map((lead) => ({
-    id: lead.enquiryNo,
-    student: lead.name || "Unknown",
-    mobile: lead.mobileNo || lead.phone || "—",
-    source: lead.source || "Direct",
-    course: lead.course || "N/A",
-    assignedTo: lead.callerName || "Unassigned",
-    status: lead.status || "ENQUIRY",
-    priority: lead.opinion === "Interested" || lead.opinion === "Warm" ? "Hot" : "Normal",
-    lastActivity: lead.lastAction || (lead.statusDate ? new Date(lead.statusDate).toLocaleDateString() : "Just Now"),
-  }));
-};
-
 const normalizeUpcomingFollowups = (raw) => {
   if (!Array.isArray(raw)) return [];
   return raw.map((lead) => ({
-    id: lead.enquiryNo,
-    student: lead.name || "Unknown",
-    course: lead.course || "N/A",
-    time: lead.followupDate ? new Date(lead.followupDate).toLocaleDateString() : "Today",
+    id: lead.enquiryNo || lead.id,
+    student: lead.name || "Unknown Student",
+    telecaller: lead.callerName || lead.caller_name || lead.telecallerName || lead.telecaller || "Unassigned",
+    course: lead.course || lead.programme || "N/A",
+    time: lead.followupDate ? new Date(lead.followupDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Today",
     priority: lead.opinion === "Interested" ? "High" : lead.opinion === "Warm" ? "Medium" : "Low",
+    status: "Today",
   }));
 };
 
 const normalizeOverdueFollowups = (raw) => {
   if (!Array.isArray(raw)) return [];
   return raw.map((lead) => ({
-    id: lead.enquiryNo,
-    student: lead.name || "Unknown",
-    course: lead.course || "N/A",
-    time: lead.followupDate ? new Date(lead.followupDate).toLocaleDateString() : "Overdue",
+    id: lead.enquiryNo || lead.id,
+    student: lead.name || "Unknown Student",
+    telecaller: lead.callerName || lead.caller_name || lead.telecallerName || lead.telecaller || "Unassigned",
+    course: lead.course || lead.programme || "N/A",
+    time: lead.followupDate ? new Date(lead.followupDate).toLocaleDateString("en-IN", { month: "short", day: "numeric" }) : "Overdue",
     priority: lead.opinion === "Interested" ? "High" : lead.opinion === "Warm" ? "Medium" : "Low",
+    status: "Overdue",
   }));
 };
 
@@ -135,11 +124,31 @@ const normalizeActivityTimeline = (raw) => {
 
 const extractData = (res) => (res.status === "fulfilled" ? res.value.data.data || res.value.data : null);
 
+const normalizePipeline = (raw) => {
+  const pipelineData = raw.pipeline || raw.statusBreakdown;
+  if (!pipelineData) return [];
+  
+  if (Array.isArray(pipelineData)) {
+    return pipelineData.map(item => ({
+      stage: item.stage || item.status || item.rawStatus || item.name,
+      count: item.count || item.value || item.total || 0
+    }));
+  }
+  
+  if (typeof pipelineData === 'object') {
+    return Object.entries(pipelineData).map(([key, value]) => ({
+      stage: key,
+      count: Number(value) || 0
+    }));
+  }
+  
+  return [];
+};
+
 const dashboardService = {
   getStats: async (params) => {
-    const [statsRes, leadsRes, upcomingRes, overdueRes, activityRes] = await Promise.allSettled([
+    const [statsRes, upcomingRes, overdueRes, activityRes] = await Promise.allSettled([
       axiosInstance.get(API_ENDPOINTS.DASHBOARD.STATS, { params }),
-      axiosInstance.get(API_ENDPOINTS.LEADS.LIST, { params: { ...params, size: 5 } }),
       axiosInstance.get(API_ENDPOINTS.LEADS.UPCOMING, { params }),
       axiosInstance.get(API_ENDPOINTS.LEADS.OVERDUE, { params }),
       axiosInstance.get(API_ENDPOINTS.DASHBOARD.ACTIVITY, { params }),
@@ -150,7 +159,6 @@ const dashboardService = {
       throw new Error("Dashboard stats unavailable");
     }
 
-    const recentData = extractData(leadsRes);
     const upcomingData = extractData(upcomingRes);
     const overdueData = extractData(overdueRes);
     const activityData = extractData(activityRes);
@@ -160,12 +168,17 @@ const dashboardService = {
       temperature: normalizeTemperature(statsData),
       charts: {
         sourceAnalytics: normalizeSourceAnalytics(statsData),
-        pipeline: [], // TODO: Awaiting backend support for stage-based pipeline
+        pipeline: normalizePipeline(statsData),
+        temperatureBreakdown: [
+          { label: "Hot", value: statsData.overall?.hot || statsData.hot || 0 },
+          { label: "Cold", value: statsData.overall?.cold || statsData.cold || 0 }
+        ],
+        monthlyTrend: statsData.monthlyTrend || statsData.trend || [],
       },
       tables: {
         recentLeads: {
-          data: recentData ? normalizeRecentLeads(recentData) : null,
-          error: leadsRes.status === "rejected" ? leadsRes.reason : null,
+          data: [],
+          error: null,
         },
         followups: {
           upcoming: {

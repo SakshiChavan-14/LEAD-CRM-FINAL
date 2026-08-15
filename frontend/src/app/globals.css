@@ -8,6 +8,19 @@
 @import "../styles/shadow.css";
 @import "../styles/scrollbar.css";
 
+/* ─── Global: Hide OS scrollbar everywhere, keep scroll functionality ─── */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+
   :root {
   --primary: #5C1D24;
   --gold: #D1A14E;
@@ -148,7 +161,15 @@
   --text-subtitle: 18px;
   --text-subtitle--line-height: 1.5;
   --text-subtitle--font-weight: 500;
+
+  --color-admin-primary: var(--admin-primary);
+  --color-admin-primary-hover: var(--admin-primary-hover);
+  --color-admin-primary-active: var(--admin-primary-active);
+  --color-admin-primary-subtle: var(--admin-primary-subtle);
+  --color-admin-primary-border: var(--admin-primary-border);
+  --color-admin-primary-text: var(--admin-primary-text);
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -184,15 +205,17 @@ body {
   z-index: 0;
   transform: translateY(-50%);
 }
+.no-scrollbar,
+.custom-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar,
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #dfbfbd;
-  border-radius: 10px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 .standard-shadow { box-shadow: 0 10px 40px rgba(15,23,42,0.05); }

@@ -10,6 +10,7 @@ const SIZE_MAP = {
   lg: "w-12 h-12 text-base",
   xl: "w-16 h-16 text-xl",
   "2xl": "w-24 h-24 text-2xl",
+  "3xl": "w-28 h-28 text-3xl",
 };
 
 export default function Avatar({
@@ -17,7 +18,7 @@ export default function Avatar({
   name,
   size = "md",
   className = "",
-  colorClass = "bg-[#7A1F2B] text-white", // Default to brand color
+  colorClass = "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white", // Default to enterprise blue/indigo gradient
   onClick,
   isLoading = false,
 }) {
@@ -27,6 +28,7 @@ export default function Avatar({
     if (!nameStr) return null;
     return nameStr
       .split(" ")
+      .filter(Boolean)
       .map((n) => n[0])
       .join("")
       .toUpperCase()
@@ -50,10 +52,6 @@ export default function Avatar({
       resolved = filesUrl ? `${filesUrl}${src}` : src;
     }
 
-    console.log("Avatar raw src:", src);
-    console.log("Files URL:", env.NEXT_PUBLIC_FILES_URL);
-    console.log("Resolved avatar URL:", resolved);
-
     return resolved;
   }, [src]);
 
@@ -65,9 +63,9 @@ export default function Avatar({
     <div
       onClick={onClick}
       className={`
-        relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-[700]
+        relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-[800]
         ${sizeClasses}
-        ${!showImage ? colorClass : "bg-gray-100"}
+        ${!showImage ? colorClass : "bg-slate-100"}
         ${onClick ? "cursor-pointer hover:opacity-90 transition-opacity" : ""}
         ${isLoading ? "opacity-70 animate-pulse" : ""}
         ${className}
@@ -77,7 +75,7 @@ export default function Avatar({
         <img
           src={resolvedSrc}
           alt={name || "Avatar"}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover rounded-full"
           onError={() => setHasError(true)}
         />
       ) : initials ? (

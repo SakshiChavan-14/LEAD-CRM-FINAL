@@ -3,7 +3,7 @@
 import React from "react";
 
 function PageHeaderActions({ children, className = "" }) {
-  return <div className={`flex flex-wrap items-center gap-[var(--spacing-toolbar)] ${className}`}>{children}</div>;
+  return <div className={`flex flex-wrap items-center gap-3 ${className}`}>{children}</div>;
 }
 
 export default function PageHeader({

@@ -1,24 +1,36 @@
 export const mapProfile = (raw) => {
   if (!raw) return null;
+  const phoneVal = raw.phoneNo || raw.phone || raw.mobile || raw.mobileNo || "";
   return {
-    id: raw.id || "",
+    id: raw.id || raw.slNo || "",
     empId: raw.empId || raw.employeeId || "N/A",
     name: raw.name || raw.fullName || "Unknown User",
     username: raw.username || "N/A",
     email: raw.email || "N/A",
-    mobile: raw.mobile || raw.phone || "N/A",
+    mobile: phoneVal || "N/A",
+    phone: phoneVal || "N/A",
+    phoneNo: phoneVal || "N/A",
     role: raw.userGroup || raw.role || "Telecaller",
     department: raw.department || "Sales",
     status: raw.status || "ACTIVE",
-    avatarUrl: raw.avatar || raw.profilePicture || null,
+    avatarUrl: raw.avatar || raw.profilePicture || raw.photo || null,
   };
 };
 
 export const mapProfileUpdate = (formData) => {
+  const phoneVal = (formData.mobile || formData.phone || formData.phoneNo || "").trim();
+  const nameVal = (formData.name || formData.fullName || "").trim();
+  const emailVal = (formData.email || "").trim();
+
   return {
-    name: formData.name,
-    mobile: formData.mobile,
-    email: formData.email,
+    name: nameVal,
+    fullName: nameVal,
+    phone: phoneVal,
+    phoneNo: phoneVal,
+    phoneNumber: phoneVal,
+    mobile: phoneVal,
+    mobileNo: phoneVal,
+    email: emailVal || null,
   };
 };
 

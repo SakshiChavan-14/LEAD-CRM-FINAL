@@ -2,7 +2,7 @@
 
 import React from "react";
 import { KPICard } from "@/components/dashboard-ui/KPICard";
-import { Users, Zap, Flame, CheckCircle2, PhoneMissed, RefreshCcw } from "lucide-react";
+import { Users, Snowflake, Flame, CheckCircle2, PhoneMissed, RefreshCcw } from "lucide-react";
 
 const kpiConfig = [
   {
@@ -13,10 +13,10 @@ const kpiConfig = [
 
   },
   {
-    key: "new",
-    label: "New Leads",
-    icon: Zap,
-    variant: "orange",
+    key: "cold",
+    label: "Cold Leads",
+    icon: Snowflake,
+    variant: "blue",
 
 
   },

@@ -1,7 +1,10 @@
 import ChartCard from "./ChartCard";
 import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function PerformanceTrendChart({ data, isLoading }) {
+  const hasData = Array.isArray(data) && data.length > 0;
+
   return (
     <ChartCard 
       title="Monthly Performance Trend" 
@@ -9,7 +12,7 @@ export default function PerformanceTrendChart({ data, isLoading }) {
       isLoading={isLoading}
       skeletonHeight="320px"
     >
-      {data && (
+      {hasData ? (
         <div className="w-full h-[320px] mt-2">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
@@ -72,6 +75,10 @@ export default function PerformanceTrendChart({ data, isLoading }) {
               />
             </ComposedChart>
           </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-[320px] flex items-center justify-center">
+          <EmptyState title="No trend data available" description="Monthly admission trend statistics will appear here when aggregate services start." />
         </div>
       )}
     </ChartCard>

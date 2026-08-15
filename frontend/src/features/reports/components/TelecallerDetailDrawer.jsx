@@ -1,41 +1,84 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { X, User, Download, CheckCircle2, PhoneCall, Heart, Clock, Target, Calendar, StickyNote } from "lucide-react";
-import { exportTelecallerPDF } from "../utils/exportReport";
-
-const MOCK_CALLS = [
-  { lead: "Naruto", course: "MCA", duration: "08:12", outcome: "Connected", time: "Today, 09:41 AM" },
-  { lead: "Pooja Verma", course: "Cybersecurity", duration: "05:44", outcome: "Interested", time: "Today, 08:56 AM" },
-  { lead: "Rahul Sharma", course: "MBA", duration: "02:18", outcome: "Follow-up", time: "Yesterday, 05:12 PM" },
-  { lead: "Harsha B", course: "MCA", duration: "00:46", outcome: "No Response", time: "Yesterday, 03:40 PM" },
-  { lead: "Meghana Singh", course: "BCA", duration: "06:31", outcome: "Connected", time: "Yesterday, 11:22 AM" },
-];
-
-const MOCK_FOLLOWUPS = [
-  { lead: "Pooja Verma", course: "Cybersecurity", due: "Today • 04:30 PM", priority: "High" },
-  { lead: "Rahul Sharma", course: "MBA", due: "Tomorrow • 10:00 AM", priority: "Medium" },
-  { lead: "Divya Kulkarni", course: "BCA", due: "Tomorrow • 03:15 PM", priority: "Medium" },
-  { lead: "Deepak Jain", course: "MCA", due: "12 Aug • 11:45 AM", priority: "Low" },
-];
-
-const MOCK_TIMELINE = [
-  { type: "conversion", title: "Admission completed for Naruto", description: "MCA • ₹25,000 fee confirmed", time: "Today, 10:14 AM" },
-  { type: "followup", title: "Follow-up scheduled", description: "Pooja Verma • Cybersecurity", time: "Today, 09:02 AM" },
-  { type: "call", title: "Outbound call connected", description: "Rahul Sharma • 06m 12s", time: "Yesterday, 05:18 PM" },
-  { type: "interested", title: "Lead marked Interested", description: "Divya Kulkarni • BCA", time: "Yesterday, 03:47 PM" },
-  { type: "note", title: "Note added", description: "Discuss scholarship options", time: "Yesterday, 11:20 AM" },
-];
-
-const MOCK_CONVERSION = {
-  assigned: 842,
-  connected: 561,
-  interested: 103,
-  followups: 74,
-  converted: 6,
-};
+import { useTelecallerCallLogs } from "@/features/callReports/hooks/useCallReports";
+import { useTelecallerReport } from "@/features/reports/hooks/useTelecallerReport";
+import EmptyState from "@/components/ui/EmptyState";
+import { useTelecallerTimeline, useTelecallerFollowups } from "@/features/reports/hooks/useReportsQueries";
+import FollowupCard from "@/features/telecaller/followups/components/FollowupCard";
+import TimelineItem from "@/components/crm/TimelineItem";
 
 export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) {
   const [isExporting, setIsExporting] = useState(false);
   const [activeTab, setActiveTab] = useState('Overview');
+
+  // Use empId for admin endpoints as required by backend
+  const tcId = telecaller?.empId;
+
+  console.log("Selected telecaller", telecaller);
+  console.log("Using empId", telecaller?.empId);
+
+  // Fetch performance report stats
+  const { data: reportData, isLoading: isReportLoading } = useTelecallerReport(
+    tcId,
+    'this-month',
+    { enabled: isOpen && !!tcId }
+  );
+
+  // Fetch real call logs
+  const { data: callsData, isLoading: isCallsLoading } = useTelecallerCallLogs(
+    tcId,
+    {},
+    0,
+    20,
+    { enabled: isOpen && !!tcId && activeTab === 'Calls' }
+  );
+
+  // Follow-ups state
+  const [followupStatus, setFollowupStatus] = useState("ALL");
+  const [followupPage, setFollowupPage] = useState(0);
+
+  // Timeline state
+  const [timelinePage, setTimelinePage] = useState(0);
+
+  // Fetch follow-ups
+  const { data: followupsData, isLoading: isFollowupsLoading } = useTelecallerFollowups(
+    tcId, 
+    followupStatus, 
+    followupPage, 
+    20
+  );
+
+  // Fetch timeline
+  const { data: timelineData, isLoading: isTimelineLoading } = useTelecallerTimeline(
+    tcId,
+    timelinePage,
+    20
+  );
+
+  const [followupsList, setFollowupsList] = useState([]);
+  const [timelineList, setTimelineList] = useState([]);
+
+  useEffect(() => {
+    if (followupsData?.items) {
+      if (followupPage === 0) setFollowupsList(followupsData.items);
+      else setFollowupsList(prev => [...prev, ...followupsData.items]);
+    }
+  }, [followupsData, followupPage]);
+
+  useEffect(() => {
+    setFollowupPage(0);
+  }, [followupStatus, tcId]);
+
+  useEffect(() => {
+    if (timelineData?.items) {
+      if (timelinePage === 0) setTimelineList(timelineData.items);
+      else setTimelineList(prev => [...prev, ...timelineData.items]);
+    }
+  }, [timelineData, timelinePage]);
+
+  useEffect(() => {
+    setTimelinePage(0);
+  }, [tcId]);
 
   if (!isOpen) return null;
 
@@ -43,36 +86,42 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
     if (!telecaller) return;
     setIsExporting(true);
     try {
-      // Mock action only
       await new Promise(res => setTimeout(res, 1000));
     } finally {
       setIsExporting(false);
     }
   };
 
-  const name = telecaller?.name || "Sakshi Chavan";
-  const rank = telecaller?.rank || 1;
+  const name = telecaller?.name || reportData?.telecaller?.name || "Telecaller";
+  const rank = telecaller?.rank || reportData?.telecaller?.rank || "—";
   
   const getOutcomeColor = (outcome) => {
-    switch (outcome) {
-      case "Connected": return "bg-green-50 text-green-700";
-      case "Interested": return "bg-emerald-50 text-emerald-700";
-      case "Follow-up": return "bg-amber-50 text-amber-700";
-      case "No Response": return "bg-gray-50 text-gray-700";
-      default: return "bg-slate-50 text-slate-700";
-    }
+    const norm = String(outcome).toLowerCase();
+    if (norm.includes("connect")) return "bg-green-50 text-green-700";
+    if (norm.includes("interest")) return "bg-emerald-50 text-emerald-700";
+    if (norm.includes("follow")) return "bg-amber-50 text-amber-700";
+    if (norm.includes("no") || norm.includes("miss")) return "bg-gray-50 text-gray-700";
+    return "bg-slate-50 text-slate-700";
   };
 
-  const getTimelineIcon = (type) => {
-    switch (type) {
-      case "conversion": return { icon: <CheckCircle2 size={16} />, color: "bg-emerald-50 text-emerald-600" };
-      case "followup": return { icon: <Clock size={16} />, color: "bg-amber-50 text-amber-600" };
-      case "call": return { icon: <PhoneCall size={16} />, color: "bg-blue-50 text-blue-600" };
-      case "interested": return { icon: <Heart size={16} />, color: "bg-violet-50 text-violet-600" };
-      case "note": return { icon: <StickyNote size={16} />, color: "bg-slate-100 text-slate-600" };
-      default: return { icon: <CheckCircle2 size={16} />, color: "bg-slate-50 text-slate-600" };
-    }
-  };
+  const calls = callsData?.content || [];
+  const callsCount = reportData?.kpi?.callsMade?.value || 0;
+  const connectedCount = reportData?.kpi?.connected?.value || 0;
+  const interestedCount = reportData?.kpi?.interested?.value || 0;
+  const followupsCount = reportData?.kpi?.followups?.value || 0;
+  const admissionsCount = reportData?.kpi?.admissions?.value || 0;
+  const conversionRate = reportData?.kpi?.conversion?.value || "0.0%";
+
+  const funnelStages = reportData?.funnel || [
+    { name: "Assigned", value: 0 },
+    { name: "Connected", value: 0 },
+    { name: "Interested", value: 0 },
+    { name: "Follow-up", value: 0 },
+    { name: "Converted", value: 0 }
+  ];
+
+  const funnelColors = ["bg-blue-100", "bg-cyan-100", "bg-violet-100", "bg-amber-100", "bg-emerald-100"];
+  const maxFunnelVal = Math.max(1, funnelStages[0]?.value || 0);
 
   return (
     <>
@@ -87,7 +136,7 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
             <X size={20} />
           </button>
         </div>
-
+ 
         {telecaller ? (
           <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
             
@@ -100,13 +149,11 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
                 <h3 className="text-xl font-bold text-slate-900 leading-tight">{name}</h3>
                 <p className="text-[13px] text-slate-600 font-medium mt-1">Senior Telecaller • Admissions</p>
                 <div className="flex items-center gap-2 mt-1.5 text-[12px] text-slate-500 font-medium">
-                  <span className="text-amber-600">Rank #{rank} of 5</span>
-                  <span>•</span>
-                  <span>Joined Jul 2025</span>
+                  <span className="text-amber-600">Rank #{rank}</span>
                 </div>
               </div>
             </div>
-
+ 
             {/* Tabs */}
             <div className="flex gap-6 border-b border-slate-100 overflow-x-auto shrink-0 hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
               {['Overview', 'Calls', 'Follow-ups', 'Conversions', 'Timeline'].map(tab => (
@@ -123,19 +170,19 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
                 </button>
               ))}
             </div>
-
+ 
             {/* Tab Content */}
             <div className="flex-1">
               {activeTab === 'Overview' && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { label: "Calls Made", value: "842" },
-                      { label: "Connected", value: "561" },
-                      { label: "Interested", value: "103" },
-                      { label: "Follow-ups", value: "74" },
-                      { label: "Admissions", value: "6" },
-                      { label: "Conversion", value: "18.2%" },
+                      { label: "Calls Made", value: callsCount },
+                      { label: "Connected", value: connectedCount },
+                      { label: "Interested", value: interestedCount },
+                      { label: "Follow-ups", value: followupsCount },
+                      { label: "Admissions", value: admissionsCount },
+                      { label: "Conversion", value: conversionRate },
                     ].map((stat, i) => (
                       <div key={i} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
                         <p className="text-[13px] font-medium text-slate-500 mb-1">{stat.label}</p>
@@ -145,138 +192,137 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
                   </div>
                   
                   <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100/50">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[14px] font-bold text-slate-900">Monthly Target</span>
-                      <span className="text-[13px] font-semibold text-blue-700">75%</span>
-                    </div>
-                    <div className="h-2 w-full bg-blue-100 rounded-full overflow-hidden mb-2">
-                      <div className="h-full bg-blue-600 rounded-full w-[75%]"></div>
-                    </div>
-                    <p className="text-[13px] font-medium text-slate-600">6 / 8 admissions achieved</p>
+                    <p className="text-[13px] font-semibold text-slate-700">{admissionsCount} admissions achieved this period</p>
                   </div>
                 </div>
               )}
-
+ 
               {activeTab === 'Calls' && (
                 <div className="space-y-3 animate-in fade-in duration-200">
-                  {MOCK_CALLS.length === 0 ? (
-                    <div className="p-6 text-center text-[14px] text-slate-500 bg-slate-50 rounded-2xl border border-slate-100">No activity available for this period.</div>
-                  ) : MOCK_CALLS.map((call, i) => (
+                  {isCallsLoading ? (
+                    <div className="p-6 text-center text-[13px] text-slate-400">Loading call history...</div>
+                  ) : calls.length === 0 ? (
+                    <EmptyState title="No recent calls" description="This telecaller has not logged any calls yet." />
+                  ) : calls.map((call, i) => (
                     <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
                       <div>
-                        <p className="text-[14px] font-bold text-slate-900">{call.lead}</p>
-                        <p className="text-[12px] font-medium text-slate-500 mt-0.5">{call.course} • {call.time}</p>
+                        <p className="text-[14px] font-bold text-slate-900">{call.leadName || "Student"}</p>
+                        <p className="text-[12px] font-medium text-slate-500 mt-0.5">{call.course || "B.Tech"} • {call.callDateTime ? new Date(call.callDateTime).toLocaleDateString() : "Today"}</p>
                       </div>
                       <div className="text-right">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider mb-1 ${getOutcomeColor(call.outcome)}`}>
-                          {call.outcome}
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider mb-1 ${getOutcomeColor(call.outcome || call.callOutcome)}`}>
+                          {call.outcome || call.callOutcome || "Connected"}
                         </span>
-                        <p className="text-[12px] font-medium text-slate-600">{call.duration}</p>
+                        <p className="text-[12px] font-medium text-slate-600">{call.duration || "00:00"}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-
+ 
               {activeTab === 'Follow-ups' && (
-                <div className="space-y-3 animate-in fade-in duration-200">
-                  {MOCK_FOLLOWUPS.length === 0 ? (
-                    <div className="p-6 text-center text-[14px] text-slate-500 bg-slate-50 rounded-2xl border border-slate-100">No activity available for this period.</div>
-                  ) : MOCK_FOLLOWUPS.map((f, i) => (
-                    <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                      <div>
-                        <p className="text-[14px] font-bold text-slate-900">{f.lead}</p>
-                        <p className="text-[12px] font-medium text-slate-500 mt-0.5">{f.course}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[13px] font-semibold text-slate-700">{f.due}</p>
-                        <p className="text-[12px] font-medium text-slate-500 mt-0.5">{f.priority} Priority</p>
-                      </div>
+                <div className="space-y-4 animate-in fade-in duration-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    {["ALL", "PENDING", "COMPLETED"].map(status => (
+                      <button
+                        key={status}
+                        onClick={() => { setFollowupStatus(status); setFollowupPage(0); }}
+                        className={`px-3 py-1 text-[11px] font-bold rounded-full transition-colors ${
+                          followupStatus === status ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+
+                  {isFollowupsLoading && followupPage === 0 ? (
+                    <div className="p-6 text-center text-[13px] text-slate-400">Loading follow-ups...</div>
+                  ) : followupsList.length > 0 ? (
+                    <div className="space-y-3">
+                      {followupsList.map((followup, index) => (
+                        <FollowupCard key={followup.id || index} followup={followup} />
+                      ))}
+                      {followupsData?.currentPage < (followupsData?.totalPages - 1) && (
+                        <button 
+                          onClick={() => setFollowupPage(p => p + 1)}
+                          disabled={isFollowupsLoading}
+                          className="w-full py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl disabled:opacity-50"
+                        >
+                          {isFollowupsLoading ? "Loading..." : "Load More"}
+                        </button>
+                      )}
                     </div>
-                  ))}
+                  ) : (
+                    <EmptyState title="No follow-ups found" description={`No ${followupStatus.toLowerCase()} follow-ups recorded for this telecaller.`} />
+                  )}
                 </div>
               )}
-
+ 
               {activeTab === 'Conversions' && (
                 <div className="space-y-6 animate-in fade-in duration-200">
                   <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm space-y-4">
                     <h3 className="text-[14px] font-bold text-slate-900">Conversion Funnel</h3>
                     <div className="space-y-3">
-                      {[
-                        { label: "Assigned Leads", value: MOCK_CONVERSION.assigned, color: "bg-blue-100" },
-                        { label: "Connected", value: MOCK_CONVERSION.connected, color: "bg-cyan-100" },
-                        { label: "Interested", value: MOCK_CONVERSION.interested, color: "bg-violet-100" },
-                        { label: "Follow-ups", value: MOCK_CONVERSION.followups, color: "bg-amber-100" },
-                        { label: "Converted", value: MOCK_CONVERSION.converted, color: "bg-emerald-100" },
-                      ].map((stage, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                          <div className={`h-8 rounded-md ${stage.color}`} style={{ width: `${Math.max(10, (stage.value / MOCK_CONVERSION.assigned) * 100)}%` }}></div>
-                          <span className="text-[13px] font-bold text-slate-900 w-12">{stage.value}</span>
-                          <span className="text-[12px] font-medium text-slate-500 w-24">{stage.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                      <p className="text-[12px] font-medium text-slate-500 mb-1">Conversion Rate</p>
-                      <p className="text-xl font-bold text-emerald-600">18.2%</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                      <p className="text-[12px] font-medium text-slate-500 mb-1">Avg Call Duration</p>
-                      <p className="text-xl font-bold text-slate-900">05:14</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                      <p className="text-[12px] font-medium text-slate-500 mb-1">Best Source</p>
-                      <p className="text-[14px] font-bold text-slate-900">Referral</p>
-                    </div>
-                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                      <p className="text-[12px] font-medium text-slate-500 mb-1">Best Course</p>
-                      <p className="text-[14px] font-bold text-slate-900">MCA</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'Timeline' && (
-                <div className="animate-in fade-in duration-200">
-                  {MOCK_TIMELINE.length === 0 ? (
-                    <div className="p-6 text-center text-[14px] text-slate-500 bg-slate-50 rounded-2xl border border-slate-100">No activity available for this period.</div>
-                  ) : (
-                    <div className="relative pl-4 space-y-0">
-                      <div className="absolute left-[31px] top-4 bottom-4 w-px bg-slate-200"></div>
-                      {MOCK_TIMELINE.map((item, i) => {
-                        const { icon, color } = getTimelineIcon(item.type);
+                      {funnelStages.map((stage, i) => {
+                        const pct = Math.max(10, ((stage.value || 0) / maxFunnelVal) * 100);
                         return (
-                          <div key={i} className="relative flex items-start gap-4 h-[72px]">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${color}`}>
-                              {icon}
-                            </div>
-                            <div className="flex-1 min-w-0 pt-1">
-                              <p className="text-[14px] font-bold text-slate-900 leading-tight">{item.title}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <p className="text-[13px] font-medium text-slate-600 truncate">{item.description}</p>
-                                <span className="text-[12px] text-slate-400 shrink-0 mx-1">•</span>
-                                <p className="text-[12px] font-medium text-slate-400 shrink-0">{item.time}</p>
-                              </div>
-                            </div>
+                          <div key={i} className="flex items-center gap-3">
+                            <div className={`h-8 rounded-md ${funnelColors[i % funnelColors.length]}`} style={{ width: `${pct}%` }}></div>
+                            <span className="text-[13px] font-bold text-slate-900 w-12">{stage.value || 0}</span>
+                            <span className="text-[12px] font-medium text-slate-500 w-24">{stage.name}</span>
                           </div>
                         );
                       })}
                     </div>
+                  </div>
+ 
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                      <p className="text-[12px] font-medium text-slate-500 mb-1">Conversion Rate</p>
+                      <p className="text-xl font-bold text-emerald-600">{conversionRate}</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                      <p className="text-[12px] font-medium text-slate-500 mb-1">Admissions Achieved</p>
+                      <p className="text-xl font-bold text-slate-900">{admissionsCount}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+ 
+              {activeTab === 'Timeline' && (
+                <div className="animate-in fade-in duration-200">
+                  {isTimelineLoading && timelinePage === 0 ? (
+                    <div className="p-6 text-center text-[13px] text-slate-400">Loading timeline...</div>
+                  ) : timelineList.length > 0 ? (
+                    <div className="space-y-0">
+                      {timelineList.map((event, index) => (
+                        <TimelineItem key={event.id || index} event={event} />
+                      ))}
+                      {timelineData?.currentPage < (timelineData?.totalPages - 1) && (
+                        <button 
+                          onClick={() => setTimelinePage(p => p + 1)}
+                          disabled={isTimelineLoading}
+                          className="w-full mt-4 py-2 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl disabled:opacity-50"
+                        >
+                          {isTimelineLoading ? "Loading..." : "Load More"}
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <EmptyState title="No activity recorded" description="Timeline progression history is currently unavailable." />
                   )}
                 </div>
               )}
             </div>
-
+ 
           </div>
         ) : (
           <div className="flex-1 p-6 flex items-center justify-center text-[14px] text-slate-400 font-medium">
             No telecaller selected
           </div>
         )}
-
+ 
         {/* Footer */}
         <div className="p-6 border-t border-slate-100 bg-white">
           <button 
@@ -285,10 +331,10 @@ export default function TelecallerDetailDrawer({ isOpen, onClose, telecaller }) 
             className="w-full flex items-center justify-center gap-2 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-colors font-semibold disabled:opacity-50 text-[14px]"
           >
             <Download size={16} />
-            {isExporting ? `Exporting ${name} • This Month performance report...` : "Export Performance Report"}
+            {isExporting ? `Exporting ${name} performance report...` : "Export Performance Report"}
           </button>
         </div>
-
+ 
       </div>
     </>
   );

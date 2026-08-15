@@ -51,4 +51,13 @@
 
   --color-muted-status: var(--gray-700);
   --color-muted-status-bg: var(--gray-100);
+
+  /* Admin Brand Primary Roles */
+  --admin-primary: #0ea5e9; /* Sky 500 */
+  --admin-primary-hover: #0284c7; /* Sky 600 */
+  --admin-primary-active: #0369a1; /* Sky 700 */
+  --admin-primary-subtle: #f0f9ff; /* Sky 50 */
+  --admin-primary-border: rgba(186, 230, 253, 0.8); /* Sky 200/80 */
+  --admin-primary-text: #0369a1; /* Sky 700 */
 }
+

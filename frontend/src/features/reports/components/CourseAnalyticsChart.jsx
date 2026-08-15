@@ -1,25 +1,39 @@
+import React, { useMemo } from "react";
 import ChartCard from "./ChartCard";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, Label } from "recharts";
+import EmptyState from "@/components/ui/EmptyState";
+import { useCourseDistribution } from "@/features/reports/hooks/useReportsQueries";
 
 const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#7C3AED', '#64748B'];
 
-export default function CourseAnalyticsChart({ data, isLoading }) {
-  // Aggregate data: top 4 + Others
-  let chartData = [];
-  let total = 0;
+export default function CourseAnalyticsChart({ data: propData, isLoading: propIsLoading }) {
+  const { data: globalData, isLoading: globalIsLoading } = useCourseDistribution();
 
-  if (data) {
-    const sorted = [...data].sort((a, b) => b.count - a.count);
-    total = sorted.reduce((sum, item) => sum + item.count, 0);
+  const rawData = propData !== undefined ? propData : globalData;
+  const isLoading = propIsLoading !== undefined ? propIsLoading : globalIsLoading;
 
-    if (sorted.length > 4) {
-      const top4 = sorted.slice(0, 4);
-      const othersCount = sorted.slice(4).reduce((sum, item) => sum + item.count, 0);
-      chartData = [...top4, { course: "Others", count: othersCount }];
-    } else {
-      chartData = sorted;
+  const { chartData, total } = useMemo(() => {
+    let result = [];
+    let sum = 0;
+
+    if (rawData && rawData.length > 0) {
+      const mappedData = rawData.map(item => ({
+        ...item,
+        count: item.leadCount !== undefined ? item.leadCount : (item.count || 0)
+      }));
+      const sorted = [...mappedData].sort((a, b) => b.count - a.count);
+      sum = sorted.reduce((acc, item) => acc + item.count, 0);
+
+      if (sorted.length > 4) {
+        const top4 = sorted.slice(0, 4);
+        const othersCount = sorted.slice(4).reduce((acc, item) => acc + item.count, 0);
+        result = [...top4, { course: "Others", count: othersCount }];
+      } else {
+        result = sorted;
+      }
     }
-  }
+    return { chartData: result, total: sum };
+  }, [rawData]);
 
   const renderLegend = (props) => {
     const { payload } = props;
@@ -43,7 +57,7 @@ export default function CourseAnalyticsChart({ data, isLoading }) {
       isLoading={isLoading}
       skeletonHeight="280px"
     >
-      {chartData.length > 0 && (
+      {chartData.length > 0 ? (
         <div className="w-full h-[280px] mt-4 flex flex-col relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -80,6 +94,10 @@ export default function CourseAnalyticsChart({ data, isLoading }) {
               <Legend content={renderLegend} verticalAlign="bottom" />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-[280px] flex items-center justify-center">
+          <EmptyState title="No program data available" description="Course interest aggregates will appear here when configured." />
         </div>
       )}
     </ChartCard>

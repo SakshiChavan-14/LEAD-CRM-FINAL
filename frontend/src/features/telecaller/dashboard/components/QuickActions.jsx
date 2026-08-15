@@ -1,42 +1,45 @@
+"use client";
+
+import React from "react";
 import { PhoneCall, CalendarPlus, UploadCloud, Users } from "lucide-react";
 import Link from "next/link";
 
 const ActionSkeleton = () => (
-  <div className="h-14 w-40 rounded-full bg-gray-50 animate-pulse border border-gray-100 shrink-0"></div>
+  <div className="h-12 w-36 rounded-2xl bg-slate-100 animate-pulse border border-slate-200 shrink-0" />
 );
 
 const PrimaryActionCard = ({ icon: Icon, title, onClick }) => (
   <button 
     onClick={onClick} 
-    className="flex items-center gap-3 px-5 py-3 bg-[#8B1538] text-white rounded-full shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 outline-none focus:ring-4 focus:ring-[#8B1538]/30 group"
+    className="flex items-center gap-2.5 px-4 py-2.5 bg-[#00C853] hover:bg-[#00b048] text-white rounded-xl shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all duration-200 font-bold text-xs cursor-pointer font-outfit"
   >
-    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-      <Icon size={16} strokeWidth={2.5} className="text-white" />
+    <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+      <Icon size={14} className="text-white" />
     </div>
-    <span className="font-semibold text-sm whitespace-nowrap">{title}</span>
+    <span className="whitespace-nowrap">{title}</span>
   </button>
 );
 
-const SecondaryActionCard = ({ icon: Icon, title, link, onClick }) => {
+const SecondaryActionCard = ({ icon: Icon, title, link, onClick, iconColor, bgHover }) => {
   const CardContent = (
-    <div className="flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 text-gray-700 rounded-full shadow-sm hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer h-full">
-      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center shrink-0 group-hover:bg-gray-100 transition-colors">
-        <Icon size={16} strokeWidth={2} className="text-gray-500 group-hover:text-gray-900 transition-colors" />
+    <div className={`flex items-center gap-2.5 px-4 py-2.5 bg-white border border-slate-200/80 text-slate-700 rounded-xl shadow-2xs hover:shadow-sm hover:border-slate-300 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 group cursor-pointer font-outfit text-xs font-bold ${bgHover}`}>
+      <div className={`w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform ${iconColor}`}>
+        <Icon size={14} />
       </div>
-      <span className="font-semibold text-sm whitespace-nowrap group-hover:text-gray-900 transition-colors">{title}</span>
+      <span className="whitespace-nowrap group-hover:text-slate-900 transition-colors">{title}</span>
     </div>
   );
 
   if (link) {
     return (
-      <Link href={link} className="block outline-none focus:ring-4 focus:ring-gray-100 rounded-full">
+      <Link href={link} className="block outline-none">
         {CardContent}
       </Link>
     );
   }
 
   return (
-    <button onClick={onClick} className="block outline-none focus:ring-4 focus:ring-gray-100 rounded-full">
+    <button onClick={onClick} className="block outline-none">
       {CardContent}
     </button>
   );
@@ -45,19 +48,22 @@ const SecondaryActionCard = ({ icon: Icon, title, link, onClick }) => {
 export default function QuickActions({ isLoading, onCallNextLead, onAddFollowup, onUploadDocs }) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col gap-4">
-        <h2 className="text-lg font-semibold text-gray-900 px-1">Quick Actions</h2>
-        <div className="flex flex-wrap gap-4 items-center">
-          {[...Array(4)].map((_, i) => <ActionSkeleton key={i} />)}
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col gap-3 font-outfit">
+        <div className="h-5 w-28 bg-slate-100 rounded" />
+        <div className="flex flex-wrap gap-3 items-center">
+          {[1, 2, 3, 4].map((i) => <ActionSkeleton key={i} />)}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#ECECEC] rounded-[16px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-6 flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-gray-900 px-1">Quick Actions</h2>
-      <div className="flex flex-wrap gap-3 items-center">
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col gap-3 font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-extrabold text-slate-900 leading-none">Quick Actions</h2>
+        <span className="text-[11px] font-semibold text-slate-400">One-click workflow shortcuts</span>
+      </div>
+      <div className="flex flex-wrap gap-3 items-center pt-1">
         <PrimaryActionCard 
           icon={PhoneCall} 
           title="Call Next" 
@@ -67,16 +73,22 @@ export default function QuickActions({ isLoading, onCallNextLead, onAddFollowup,
           icon={CalendarPlus} 
           title="Add Followup" 
           onClick={onAddFollowup}
+          iconColor="text-blue-600"
+          bgHover="hover:border-blue-200"
         />
         <SecondaryActionCard 
           icon={UploadCloud} 
           title="Upload Docs" 
           onClick={onUploadDocs}
+          iconColor="text-purple-600"
+          bgHover="hover:border-purple-200"
         />
         <SecondaryActionCard 
           icon={Users} 
           title="My Leads" 
           link="/telecaller/leads" 
+          iconColor="text-indigo-600"
+          bgHover="hover:border-indigo-200"
         />
       </div>
     </div>

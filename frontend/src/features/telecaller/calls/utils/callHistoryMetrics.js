@@ -1,3 +1,25 @@
+const parseDurationToSeconds = (v) => {
+  if (v === undefined || v === null || v === "") return 0;
+  if (typeof v === "number") return v;
+  
+  const str = String(v).trim();
+  if (!str.includes(":")) {
+    const num = Number(str);
+    return isNaN(num) ? 0 : num;
+  }
+  
+  const parts = str.split(":").map(Number);
+  if (parts.some(isNaN)) return 0;
+  
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  } else if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  
+  return 0;
+};
+
 export function calculateCallMetrics(calls = []) {
   if (!calls || calls.length === 0) {
     return {
@@ -7,7 +29,8 @@ export function calculateCallMetrics(calls = []) {
       busyCalls: 0,
       averageDuration: "0m 0s",
       recordings: 0,
-      connectionRate: "0%"
+      connectionRate: "0%",
+      longestCall: "0m 0s"
     };
   }
 
@@ -21,7 +44,8 @@ export function calculateCallMetrics(calls = []) {
 
   calls.forEach(call => {
     const outcome = call.outcome || call.callOutcome || "Unknown";
-    const duration = Number(call.callDurationSeconds || call.callDuration || call.duration || 0);
+    const normalizedOutcome = String(outcome).toUpperCase();
+    const duration = parseDurationToSeconds(call.callDurationSeconds || call.callDuration || call.duration || 0);
     const hasRecording = call.recordingUrl && call.recordingUrl.trim() !== "";
 
     totalDuration += duration;
@@ -30,11 +54,16 @@ export function calculateCallMetrics(calls = []) {
       maxDuration = duration;
     }
 
-    if (outcome === "Connected") {
+    if (normalizedOutcome === "CONNECTED") {
       connected++;
-    } else if (outcome === "No Answer" || outcome === "Missed" || outcome === "Failed") {
+    } else if (
+      normalizedOutcome === "NO ANSWER" || 
+      normalizedOutcome === "MISSED" || 
+      normalizedOutcome === "FAILED" || 
+      normalizedOutcome === "NO_ANSWER"
+    ) {
       missed++;
-    } else if (outcome === "Busy") {
+    } else if (normalizedOutcome === "BUSY") {
       busy++;
     }
 
@@ -63,3 +92,4 @@ export function calculateCallMetrics(calls = []) {
     longestCall
   };
 }
+

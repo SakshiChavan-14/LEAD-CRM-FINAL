@@ -11,7 +11,7 @@ export default function UserTableActions({
     <div className="flex items-center justify-center gap-2">
       <button
         onClick={() => onEdit(user)}
-        className="rounded-lg p-2 text-blue-600 transition hover:bg-blue-50"
+        className="rounded-lg p-2 text-admin-primary-text transition hover:bg-admin-primary-subtle"
         title="Edit User"
       >
         <Edit2 size={18} />

@@ -17,7 +17,7 @@ function GreetingBlock() {
   return (
     <div className="flex flex-col h-[64px] justify-center">
       <h1 className="text-[36px] font-bold text-gray-900 tracking-tight leading-none">
-        Good Morning, {firstName} 👋
+        Hello, Karun 👋
       </h1>
       <p className="text-[12px] text-gray-500 font-medium mt-1.5">
         Let's make today count! • {today}

@@ -1,178 +1,210 @@
 "use client";
 
+import React, { useMemo } from "react";
 import DashboardStats from "@/features/dashboard/components/sections/DashboardStats";
 import PipelineChart from "@/features/dashboard/components/widgets/PipelineChart";
 import SourceAnalytics from "@/features/dashboard/components/widgets/SourceAnalytics";
-import RecentLeadsTable from "@/features/dashboard/components/widgets/RecentLeadsTable";
 import FollowUpsCard from "@/features/dashboard/components/widgets/FollowUpsCard";
 import TelecallerPerformanceCard from "@/features/dashboard/components/widgets/TelecallerPerformanceCard";
-import AdmissionSummaryCard from "@/features/dashboard/components/widgets/AdmissionSummaryCard";
 import MonthlyAdmissionTrendCard from "@/features/dashboard/components/widgets/MonthlyAdmissionTrendCard";
+import LeadTemperature from "@/features/dashboard/components/widgets/LeadTemperature";
+import ActionRequiredSection from "@/features/dashboard/components/widgets/ActionRequiredSection";
+import CoursePerformanceTable from "@/features/dashboard/components/widgets/CoursePerformanceTable";
+import CallActivityCard from "@/features/dashboard/components/widgets/CallActivityCard";
+import ActivityTimeline from "@/features/dashboard/components/widgets/ActivityTimeline";
+import TopPerformersList from "@/features/dashboard/components/widgets/TopPerformersList";
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
+import useUsers from "@/features/users/hooks/useUsers";
 import { DashboardSkeleton } from "@/components/dashboard-ui/DashboardSkeleton";
 import ErrorState from "@/components/ui/ErrorState";
 import PageContainer from "@/components/layout/PageContainer";
 import { ContentSection } from "@/components/management";
-import { Download } from "lucide-react";
-
-// Local helper component for Pending Actions to keep codebase footprint clean
-function PendingActionsCard({ overdueCount, unassignedCount, verificationCount, callbacksTodayCount }) {
-  const cardClass = "rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 h-full flex flex-col justify-between font-outfit";
-  return (
-    <div className={cardClass}>
-      <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-6">Pending Actions</h2>
-        
-        <div className="space-y-4">
-          {/* Overdue follow-ups */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded bg-rose-50 text-[#F43F5E] flex items-center justify-center font-bold text-sm shrink-0">!</span>
-              <span className="text-slate-500 font-medium">Overdue follow-ups</span>
-            </div>
-            <span className="font-bold text-slate-800 text-base">{overdueCount}</span>
-          </div>
-
-          {/* Unassigned leads */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded bg-blue-50 text-[#2563EB] flex items-center justify-center font-bold text-lg leading-none shrink-0">•</span>
-              <span className="text-slate-500 font-medium">Unassigned leads</span>
-            </div>
-            <span className="font-bold text-slate-800 text-base">{unassignedCount}</span>
-          </div>
-
-          {/* Verification pending */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded bg-emerald-50 text-[#10B981] flex items-center justify-center font-bold text-sm shrink-0">✓</span>
-              <span className="text-slate-500 font-medium">Verification pending</span>
-            </div>
-            <span className="font-bold text-slate-800 text-base">{verificationCount}</span>
-          </div>
-
-          {/* Callbacks today */}
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 h-5 rounded bg-violet-50 text-[#8B5CF6] flex items-center justify-center font-bold text-sm shrink-0">↻</span>
-              <span className="text-slate-500 font-medium">Callbacks today</span>
-            </div>
-            <span className="font-bold text-slate-800 text-base">{callbacksTodayCount}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function DashboardPage() {
   const { data, isLoading, isError, refetch } = useDashboardStats();
+  const { data: usersData } = useUsers({ size: 1000 });
+
+  const greeting = useMemo(() => {
+    const hours = new Date().getHours();
+    if (hours >= 5 && hours < 12) {
+      return "Good Morning, Admin 👋";
+    }
+    if (hours >= 12 && hours < 17) {
+      return "Good Afternoon, Admin 👋";
+    }
+    return "Good Evening, Admin 👋";
+  }, []);
+
+  const stats = useMemo(() => {
+    if (!data?.stats) return [];
+
+    const users = usersData?.users || [];
+    const activeTelecallersCount = users.filter(
+      u => String(u.role || "").toUpperCase() !== "ADMIN" && String(u.status || "").toUpperCase() === "ACTIVE"
+    ).length;
+
+    return data.stats.map(item => {
+      if (item.title === "Telecallers") {
+        return {
+          ...item,
+          value: activeTelecallersCount
+        };
+      }
+      return item;
+    });
+  }, [data, usersData]);
+
+  const cleanNumber = (v) => {
+    if (v === undefined || v === null || v === "" || v === "--" || v === "—") return 0;
+    const n = Number(String(v).replace(/[^0-9.]/g, ""));
+    return isNaN(n) ? 0 : n;
+  };
+
+  const { totalLeads, activeLeads, admissions } = useMemo(() => {
+    let total = 0;
+    let active = 0;
+    let adm = 0;
+
+    if (stats && stats.length > 0) {
+      const totalCard = stats.find(item => item.title === "Total Leads");
+      const activeCard = stats.find(item => item.title === "Active Leads");
+      const admissionsCard = stats.find(item => item.title === "Admissions");
+
+      if (totalCard) total = cleanNumber(totalCard.value);
+      if (activeCard) active = cleanNumber(activeCard.value);
+      if (admissionsCard) adm = cleanNumber(admissionsCard.value);
+    }
+
+    return { totalLeads: total, activeLeads: active, admissions: adm };
+  }, [stats]);
+
+  const pipelineData = useMemo(() => {
+    return data?.charts?.pipeline || [];
+  }, [data]);
+
+  const scaledSourceAnalytics = useMemo(() => {
+    const raw = data?.charts?.sourceAnalytics || [];
+    if (raw.length === 0) return [];
+    if (totalLeads === 0) return [];
+
+    const rawSum = raw.reduce((sum, item) => sum + (item.value || 0), 0);
+    if (rawSum === 0) return [];
+
+    const factor = totalLeads / rawSum;
+    let scaled = raw.map(item => ({
+      ...item,
+      value: Math.round((item.value || 0) * factor)
+    }));
+
+    const scaledSum = scaled.reduce((sum, item) => sum + item.value, 0);
+    const diff = totalLeads - scaledSum;
+    if (diff !== 0 && scaled.length > 0) {
+      let maxIdx = 0;
+      for (let i = 1; i < scaled.length; i++) {
+        if (scaled[i].value > scaled[maxIdx].value) {
+          maxIdx = i;
+        }
+      }
+      scaled[maxIdx].value += diff;
+    }
+    return scaled;
+  }, [data?.charts?.sourceAnalytics, totalLeads]);
+
+  // Derive counts for ActionRequiredSection
+  const overdueCount = useMemo(() => {
+    return data?.tables?.followups?.overdue?.data?.length || 0;
+  }, [data]);
+
+  const unassignedCount = useMemo(() => {
+    const unassignedCard = stats.find(s => s.title === "Pending Assignment" || s.title === "Pending Assign");
+    return unassignedCard ? cleanNumber(unassignedCard.value) : 0;
+  }, [stats]);
+
+  const todayCount = useMemo(() => {
+    return data?.tables?.followups?.upcoming?.data?.length || 0;
+  }, [data]);
 
   return (
     <PageContainer size="wide" className="py-6">
-      <ContentSection className="space-y-6 pb-10 max-w-[1600px] mx-auto px-6">
-        
-        {/* Custom Header with Greeting & Quick Actions */}
+      <ContentSection className="space-y-6 pb-12 max-w-[1600px] mx-auto w-full">
+
+        {/* Header with Greeting */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 font-outfit px-1">
           <div>
-            <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight leading-tight">
-              Good Morning, Admin
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              {greeting}
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Here is what is happening in your CRM pipeline today.
+            <p className="text-sm text-slate-500 mt-1 font-medium">
+              Here&apos;s what is happening in your CRM today.
             </p>
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <button 
-              onClick={() => alert("Report Export started...")}
-              className="flex items-center gap-2 bg-[#7F1D1D] hover:bg-[#991B1B] text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all"
-            >
-              <Download size={16} />
-              Export Report
-            </button>
           </div>
         </header>
 
-      {isLoading ? (
-        <DashboardSkeleton />
-      ) : isError ? (
-        <ErrorState onRetry={refetch} />
-      ) : (
-        <>
-          {/* 7 KPI Cards Grid */}
-          <DashboardStats stats={data?.stats} />
+        {isLoading ? (
+          <DashboardSkeleton />
+        ) : isError ? (
+          <ErrorState onRetry={refetch} />
+        ) : (
+          <div className="space-y-6">
+            {/* 1. Executive KPI Row */}
+            <DashboardStats stats={stats} />
 
-          {/* Hot / Cold Leads Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 font-outfit">
-            {/* Hot Leads */}
-            <div className="bg-white border border-slate-200 rounded-[24px] px-6 h-[88px] flex items-center gap-4 shadow-sm">
-              <div className="w-11 h-11 rounded-full bg-rose-50 flex items-center justify-center text-xl shrink-0">🔥</div>
-              <div className="flex flex-col">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Hot Leads</span>
-                <span className="text-xl font-bold text-slate-800 mt-0.5 leading-none">
-                  {data?.temperature?.hot || 0} <span className="text-xs text-slate-400 font-semibold font-sans">leads</span>
-                </span>
+            {/* 2. Action Required Row */}
+            <ActionRequiredSection 
+              overdueCount={overdueCount} 
+              unassignedCount={unassignedCount} 
+              todayCount={todayCount} 
+            />
+
+            {/* 3. Pipeline & Lead Temperature Row */}
+            <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+              <div className="lg:col-span-7 flex flex-col">
+                <PipelineChart pipeline={pipelineData} />
+              </div>
+              <div className="lg:col-span-5 flex flex-col">
+                <LeadTemperature temperatureBreakdown={data?.charts?.temperatureBreakdown || []} />
               </div>
             </div>
 
-            {/* Cold Leads */}
-            <div className="bg-white border border-slate-200 rounded-[24px] px-6 h-[88px] flex items-center gap-4 shadow-sm">
-              <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center text-xl shrink-0">❄️</div>
-              <div className="flex flex-col">
-                <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Cold Leads</span>
-                <span className="text-xl font-bold text-slate-800 mt-0.5 leading-none">
-                  {data?.temperature?.cold || 0} <span className="text-xs text-slate-400 font-semibold font-sans">leads</span>
-                </span>
+            {/* 4. Admission Performance & Lead Sources Row */}
+            <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+              <div className="lg:col-span-7 flex flex-col">
+                <MonthlyAdmissionTrendCard />
+              </div>
+              <div className="lg:col-span-5 flex flex-col">
+                <SourceAnalytics sourceAnalytics={scaledSourceAnalytics} />
               </div>
             </div>
-          </div>
-          
-          {/* Admission Funnel (8) & Lead Sources (4) */}
-          <div className="grid gap-6 xl:grid-cols-12">
-            <div className="xl:col-span-8">
-              <PipelineChart pipeline={data?.charts?.pipeline} />
-            </div>
-            <div className="xl:col-span-4">
-              <SourceAnalytics sourceAnalytics={data?.charts?.sourceAnalytics} />
-            </div>
-          </div>
 
-          {/* Telecaller Performance (7) & Monthly Trend (5) */}
-          <div className="grid gap-6 xl:grid-cols-12">
-            <div className="xl:col-span-7">
+            {/* 5. Telecaller Performance Row */}
+            <div className="w-full">
               <TelecallerPerformanceCard />
             </div>
-            <div className="xl:col-span-5">
-              <MonthlyAdmissionTrendCard />
-            </div>
-          </div>
 
-          {/* Recent Leads (8) & Today's Follow-ups (4) */}
-          <div className="grid gap-6 xl:grid-cols-12">
-            <div className="xl:col-span-8">
-              <RecentLeadsTable recentLeads={data?.tables?.recentLeads} />
+            {/* 6. Activity, Call Logs & Followups Row */}
+            <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+              <div className="lg:col-span-4 flex flex-col">
+                <CallActivityCard />
+              </div>
+              <div className="lg:col-span-4 flex flex-col">
+                <FollowUpsCard followups={data?.tables?.followups} />
+              </div>
+              <div className="lg:col-span-4 flex flex-col">
+                <ActivityTimeline timeline={data?.timeline || {}} />
+              </div>
             </div>
-            <div className="xl:col-span-4">
-              <FollowUpsCard followups={data?.tables?.followups} />
-            </div>
-          </div>
 
-          {/* Pending Actions (4) & Today's Admission Summary (8) */}
-          <div className="grid gap-6 xl:grid-cols-12">
-            <div className="xl:col-span-4">
-              <PendingActionsCard 
-                overdueCount={data?.tables?.followups?.overdue?.data?.length || 0}
-                unassignedCount={data?.stats?.find((s) => s.title === "Pending Assign")?.value || 0}
-                verificationCount={3}
-                callbacksTodayCount={data?.tables?.followups?.upcoming?.data?.length || 0}
-              />
-            </div>
-            <div className="xl:col-span-8">
-              <AdmissionSummaryCard />
+            {/* 7. Course/Programme Performance & Top Performers Row */}
+            <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+              <div className="lg:col-span-7 flex flex-col">
+                <CoursePerformanceTable />
+              </div>
+              <div className="lg:col-span-5 flex flex-col">
+                <TopPerformersList />
+              </div>
             </div>
           </div>
-        </>
-      )}
+        )}
       </ContentSection>
     </PageContainer>
   );

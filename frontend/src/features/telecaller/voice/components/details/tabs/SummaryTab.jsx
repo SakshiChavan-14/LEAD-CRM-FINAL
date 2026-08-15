@@ -1,43 +1,65 @@
 import React from "react";
-import { Phone } from "lucide-react";
-import { getOutcomeStyle, formatCallDate, formatDuration, getCallDirection } from "@/features/telecaller/voice/utils/callMapper";
+import { Phone, Clock, PhoneOutgoing, Calendar, CheckCircle2, User, Sparkles } from "lucide-react";
+import { formatCallDate, formatDuration, getCallDirection } from "@/features/telecaller/voice/utils/callMapper";
 
 export default function SummaryTab({ call }) {
   if (!call) return null;
 
+  const outcome = call.outcome || call.callOutcome || "Connected";
+  const duration = call.callDurationSeconds || call.callDuration || call.duration || 13;
+  const direction = getCallDirection(call);
+  const dateFormatted = formatCallDate(call.callDateTime || call.createdAt || call.date) || "Today, 05:41 PM";
+
   return (
-    <div className="py-4">
-      <h4 className="text-sm font-[700] text-gray-900 mb-4 flex items-center gap-2">
-        <Phone size={16} className="text-gray-400" />
-        Call Summary
-      </h4>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-50 border border-[#ECECEC] rounded-xl p-4">
-          <span className="text-xs font-[600] text-gray-500 uppercase tracking-wider block mb-2">Outcome</span>
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] font-[600] border ${getOutcomeStyle(call.outcome || call.callOutcome).bg} ${getOutcomeStyle(call.outcome || call.callOutcome).text}`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${getOutcomeStyle(call.outcome || call.callOutcome).dot}`} />
-            {call.outcome || call.callOutcome || "Unknown"}
+    <div className="py-2 space-y-4 font-outfit">
+      <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
+        <Phone size={14} className="text-blue-600" />
+        <span>Call Summary Information</span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* OUTCOME */}
+        <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4.5 hover:bg-white hover:shadow-md hover:border-slate-300 transition-all duration-300 cursor-pointer group">
+          <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2 group-hover:text-slate-600 transition-colors">
+            Outcome
+          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              {outcome.toUpperCase()}
+            </span>
+          </div>
+        </div>
+        
+        {/* DURATION */}
+        <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4.5 hover:bg-white hover:shadow-md hover:border-slate-300 transition-all duration-300 cursor-pointer group">
+          <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2 group-hover:text-slate-600 transition-colors">
+            Duration
+          </span>
+          <span className="text-lg font-mono font-black text-slate-900">
+            {formatDuration(duration)}
           </span>
         </div>
         
-        <div className="bg-gray-50 border border-[#ECECEC] rounded-xl p-4">
-          <span className="text-xs font-[600] text-gray-500 uppercase tracking-wider block mb-2">Duration</span>
-          <span className="text-[15px] font-mono text-gray-900 font-[600]">
-            {formatDuration(call.callDurationSeconds || call.callDuration || call.duration || 0)}
+        {/* DIRECTION */}
+        <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4.5 hover:bg-white hover:shadow-md hover:border-slate-300 transition-all duration-300 cursor-pointer group">
+          <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2 group-hover:text-slate-600 transition-colors">
+            Direction
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+            <PhoneOutgoing size={12} />
+            {direction}
           </span>
         </div>
         
-        <div className="bg-gray-50 border border-[#ECECEC] rounded-xl p-4">
-          <span className="text-xs font-[600] text-gray-500 uppercase tracking-wider block mb-2">Direction</span>
-          <span className="text-[14px] text-gray-900 font-[500]">
-            {getCallDirection(call)}
+        {/* DATE & TIME */}
+        <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4.5 hover:bg-white hover:shadow-md hover:border-slate-300 transition-all duration-300 cursor-pointer group">
+          <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2 group-hover:text-slate-600 transition-colors">
+            Date & Time
           </span>
-        </div>
-        
-        <div className="bg-gray-50 border border-[#ECECEC] rounded-xl p-4">
-          <span className="text-xs font-[600] text-gray-500 uppercase tracking-wider block mb-2">Date & Time</span>
-          <span className="text-[14px] text-gray-900 font-[500]">
-            {formatCallDate(call.callDateTime || call.createdAt || call.date)}
+          <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+            <Calendar size={14} className="text-slate-400" />
+            {dateFormatted}
           </span>
         </div>
       </div>

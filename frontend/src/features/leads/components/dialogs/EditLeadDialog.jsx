@@ -88,6 +88,7 @@ export default function EditLeadDialog({ open, onClose, lead }) {
           <Button
             type="submit"
             form="edit-lead-form"
+            variant="admin-primary"
             loading={isPending}
             loadingText="Updating..."
           >

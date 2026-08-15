@@ -29,7 +29,7 @@ export default function TransferLeadDialog({ open, onClose, enquiryNo, callers =
         title: "Reassign Lead?",
         description: "Are you sure you want to reassign this lead?",
         confirmText: "Reassign",
-        variant: "warning",
+        variant: "admin-primary",
       });
 
       if (isConfirmed) {
@@ -65,6 +65,7 @@ export default function TransferLeadDialog({ open, onClose, enquiryNo, callers =
           <Button
             type="submit"
             form="transfer-lead-form"
+            variant="admin-primary"
             loading={isPending}
             loadingText="Transferring..."
           >

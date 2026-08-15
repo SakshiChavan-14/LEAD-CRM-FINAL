@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useCallback } from "react";
 import { X, SlidersHorizontal } from "lucide-react";
 
@@ -7,6 +9,7 @@ export default function ReusableFilterDrawer({
   onApply, 
   onReset,
   title = "Refine Results",
+  primaryButtonClass = "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500/20",
   children 
 }) {
   const drawerRef = useRef(null);
@@ -61,7 +64,7 @@ export default function ReusableFilterDrawer({
     <>
       {/* Backdrop */}
       <div 
-        className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 bg-black/30 backdrop-blur-xs z-40 transition-opacity duration-300 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -72,39 +75,39 @@ export default function ReusableFilterDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Filter Results"
-        className={`fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed inset-y-0 right-0 w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col font-outfit ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-2 text-gray-900 font-semibold text-lg">
-            <SlidersHorizontal size={20} className="text-gray-500" />
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex items-center gap-2 text-slate-900 font-extrabold text-base tracking-tight">
+            <SlidersHorizontal size={18} className="text-blue-600" />
             <h2>{title}</h2>
           </div>
           <button 
             onClick={onClose}
             aria-label="Close filters"
-            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#6F1D28]"
+            className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Scrollable Form */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {children}
         </div>
 
         {/* Footer Actions */}
-        <div className="p-5 border-t border-gray-100 bg-white flex items-center gap-3">
+        <div className="p-5 border-t border-slate-100 bg-slate-50/70 flex items-center gap-3">
           <button
             onClick={onReset}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#6F1D28] focus:ring-offset-1"
+            className="flex-1 px-4 py-2.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 shadow-2xs cursor-pointer active:scale-95"
           >
             Reset
           </button>
           <button
             onClick={onApply}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-[#6F1D28] rounded-xl hover:bg-[#5a1720] shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#6F1D28] focus:ring-offset-1"
+            className={`flex-1 px-4 py-2.5 text-xs font-bold text-white rounded-xl shadow-xs transition-all focus:outline-none focus:ring-2 cursor-pointer active:scale-95 ${primaryButtonClass}`}
           >
             Apply Filters
           </button>

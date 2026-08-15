@@ -1,134 +1,158 @@
-import { FilterX } from "lucide-react";
+"use client";
 
-// Progressive color palette matching design guidelines (no maroon)
-const COLORS = [
-  "#2563EB", // Blue
-  "#0EA5E9", // Cyan
+import React, { useState, useMemo, useEffect } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { FilterX, ExternalLink } from "lucide-react";
+import Link from "next/link";
+
+const SOURCE_COLORS = [
+  "#3B82F6", // Blue
   "#10B981", // Emerald
   "#F59E0B", // Amber
+  "#8B5CF6", // Purple
+  "#06B6D4", // Cyan
 ];
 
-const cardClass = "rounded-[24px] border border-slate-200 bg-white shadow-sm p-6 h-[420px] flex flex-col justify-between font-outfit";
+const cardClass = "rounded-[24px] border border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-6 min-h-[480px] h-full flex flex-col justify-between font-outfit overflow-hidden w-full";
 
 export default function SourceAnalytics({ sourceAnalytics }) {
-  const data = sourceAnalytics || [];
-  const total = data.reduce((acc, curr) => acc + (curr.value || 0), 0);
+  const [mounted, setMounted] = useState(false);
 
-  // Get Top 4 sources sorted by value
-  const displayData = [...data]
-    .sort((a, b) => (b.value || 0) - (a.value || 0))
-    .slice(0, 4);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  // Build conic-gradient segments for the donut chart
-  const buildConicGradient = () => {
-    if (total === 0) return "conic-gradient(#E5E7EB 0% 100%)";
-    let segments = [];
-    let cumulative = 0;
+  const rawData = sourceAnalytics || [];
+  const total = useMemo(() => rawData.reduce((acc, curr) => acc + (curr.value || 0), 0), [rawData]);
+
+  // Aggregate Top 5 sources, sorted descending
+  const chartData = useMemo(() => {
+    if (rawData.length === 0) return [];
+
+    const sorted = [...rawData].sort((a, b) => (b.value || 0) - (a.value || 0));
     
-    // Calculate percentages for top 4 and sum of others
-    const totalTop4 = displayData.reduce((acc, curr) => acc + (curr.value || 0), 0);
-    const othersValue = Math.max(0, total - totalTop4);
-    const chartData = [...displayData];
-    if (othersValue > 0) {
-      chartData.push({ label: "Others", value: othersValue });
+    let result = [];
+    if (sorted.length <= 5) {
+      result = sorted.map((s, idx) => ({
+        name: s.label || s.name || `Source ${idx + 1}`,
+        value: s.value || 0,
+        color: SOURCE_COLORS[idx % SOURCE_COLORS.length],
+      }));
+    } else {
+      const top4 = sorted.slice(0, 4).map((s, idx) => ({
+        name: s.label || s.name || `Source ${idx + 1}`,
+        value: s.value || 0,
+        color: SOURCE_COLORS[idx % SOURCE_COLORS.length],
+      }));
+      const othersValue = sorted.slice(4).reduce((sum, curr) => sum + (curr.value || 0), 0);
+      top4.push({
+        name: "Others",
+        value: othersValue,
+        color: "#64748B",
+      });
+      result = top4;
     }
 
-    const chartColors = [...COLORS, "#8B5CF6"]; // Add violet for others
-
-    chartData.forEach((entry, idx) => {
-      const percent = ((entry.value || 0) / total) * 100;
-      const color = chartColors[idx % chartColors.length];
-      segments.push(`${color} ${cumulative}% ${cumulative + percent}%`);
-      cumulative += percent;
-    });
-    return `conic-gradient(${segments.join(", ")})`;
-  };
+    return result;
+  }, [rawData]);
 
   return (
     <div className={cardClass}>
       {/* Header */}
       <div>
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-slate-900">Lead Sources</h2>
-          <a
-            className="text-[#7F1D1D] text-xs font-semibold hover:underline"
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">Lead Sources</h2>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          </div>
+          <Link
             href="/dashboard/management/leads"
+            className="text-blue-600 hover:text-blue-700 text-xs font-bold flex items-center gap-1 transition-colors hover:underline cursor-pointer"
           >
             View All
-          </a>
+            <ExternalLink size={12} />
+          </Link>
         </div>
         <p className="text-xs text-slate-500 mt-1">Lead acquisition by channel performance</p>
       </div>
 
-      {data.length === 0 ? (
+      {rawData.length === 0 || total === 0 ? (
         <div className="flex flex-col items-center justify-center flex-grow text-center text-slate-500 py-6">
           <FilterX size={32} className="text-slate-300 mb-3" />
           <p className="font-semibold text-gray-900">No Data Available</p>
           <p className="text-xs mt-1">Lead sources are currently empty.</p>
         </div>
       ) : (
-        <div className="flex-grow flex flex-col justify-between mt-6 gap-4">
-          
-          {/* Top: Donut Chart Centered (140px size, 14px stroke) */}
-          <div className="flex justify-center shrink-0">
-            <div
-              className="flex items-center justify-center rounded-full shadow-inner"
-              style={{
-                width: "140px",
-                height: "140px",
-                background: buildConicGradient(),
-              }}
-            >
-              {/* Inner white circle for donut hole (112px for 14px stroke width) */}
-              <div className="w-[112px] h-[112px] bg-white rounded-full flex flex-col items-center justify-center z-10 shadow-sm">
-                <div className="text-2xl font-bold text-slate-900 leading-none">
-                  {total.toLocaleString()}
-                </div>
-                <div className="text-[10px] text-slate-400 mt-1 font-semibold uppercase tracking-wider">Total Leads</div>
-              </div>
-            </div>
+        <div className="flex-grow flex flex-col justify-between mt-5 gap-4">
+          {/* Vertical/Horizontal Bar Chart representing sources */}
+          <div className="w-full h-[240px] flex-grow">
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{ top: 10, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#F1F5F9" />
+                  
+                  <XAxis 
+                    type="number" 
+                    stroke="#94A3B8" 
+                    fontSize={10} 
+                    fontWeight={600}
+                    tickLine={false} 
+                    axisLine={false} 
+                  />
+                  
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    stroke="#475569" 
+                    fontSize={10} 
+                    fontWeight={700}
+                    tickLine={false} 
+                    axisLine={false}
+                    width={90}
+                  />
+
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const item = payload[0];
+                        const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : 0;
+                        return (
+                          <div className="bg-slate-900 text-white text-xs px-3 py-1.5 rounded-xl shadow-xl border border-slate-800 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.payload.color }} />
+                            <span className="font-medium">{item.name}:</span>
+                            <span className="font-bold">{item.value.toLocaleString()} ({pct}%)</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+
+                  <Bar 
+                    dataKey="value" 
+                    radius={[0, 6, 6, 0]}
+                    barSize={18}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
-          {/* Bottom: Aligned Legend Rows with mini horizontal progress lines */}
-          <div className="space-y-3 flex-1 flex flex-col justify-end">
-            {displayData.map((entry, index) => {
-              const percentage = total > 0 ? Math.round(((entry.value || 0) / total) * 100) : 0;
-              const color = COLORS[index % COLORS.length];
-              const leads = entry.value || 0;
-
-              return (
-                <div key={index} className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between text-xs">
-                    {/* Aligned Legend row: Bullet + Name */}
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
-                        style={{ backgroundColor: color }}
-                      />
-                      <span className="text-slate-700 font-semibold truncate max-w-[120px]">{entry.label}</span>
-                    </div>
-
-                    {/* Leads count */}
-                    <div className="text-slate-500 font-medium text-right">
-                      <span className="text-slate-800 font-bold">{leads}</span> <span className="text-[10px]">leads</span>
-                    </div>
-                  </div>
-
-                  {/* Small progress line */}
-                  <div className="w-full bg-slate-50 h-1 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-500" 
-                      style={{ 
-                        width: `${percentage}%`,
-                        backgroundColor: color 
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+          {/* Aggregated Total Footer */}
+          <div className="border-t border-slate-100 pt-3.5 flex justify-between items-center text-xs shrink-0">
+            <span className="text-slate-500 font-medium">Aggregate Sources Count:</span>
+            <span className="text-sm font-bold text-slate-800 bg-slate-50 border border-slate-200/80 px-2.5 py-1 rounded-xl">
+              {total.toLocaleString()} Leads
+            </span>
           </div>
-
         </div>
       )}
     </div>

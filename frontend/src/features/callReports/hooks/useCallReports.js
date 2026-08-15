@@ -5,12 +5,13 @@ import callReportsService from "../services/callReportsService";
  * Fetches the telecaller performance summary table.
  * Used by: TelecallerPerformanceTable (Admin)
  */
-export const useCallReportsSummary = (filters = {}, page = 0, size = 10) => {
+export const useCallReportsSummary = (filters = {}, page = 0, size = 10, options = {}) => {
   return useQuery({
     queryKey: ["callReports", "performance", filters, page, size],
     queryFn: () =>
       callReportsService.getTelecallerPerformance({ page, size, ...filters }),
     staleTime: 5 * 60 * 1000,
+    ...options
   });
 };
 

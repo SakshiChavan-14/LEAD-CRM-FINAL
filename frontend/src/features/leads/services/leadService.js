@@ -67,8 +67,13 @@ const leadService = {
   },
 
   getLeadCounts: async () => {
-    const { data } = await axiosInstance.get(API_ENDPOINTS.DASHBOARD.STATS);
-    return data?.data ?? data;
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.LEADS.COUNTS);
+      return data?.data ?? data;
+    } catch (err) {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.DASHBOARD.STATS);
+      return data?.data ?? data;
+    }
   },
 
   getFilterOptions: async () => {

@@ -31,14 +31,14 @@ export default function AssignLeadsModal({
     if (!enrichedTelecallers || !Array.isArray(enrichedTelecallers)) return [];
 
     let list = enrichedTelecallers.filter(
-      tc => (tc.role || "").toUpperCase() === "TELECALLER" && (tc.status || "").toUpperCase() === "ACTIVE"
+      tc => String(tc.role || "").toUpperCase() !== "ADMIN" && String(tc.status || "").toUpperCase() === "ACTIVE"
     );
 
     if (mode === "reassign" && currentTelecallerId) {
       list = list.filter(tc => tc.id !== currentTelecallerId && tc.empId !== currentTelecallerId);
     }
     
-    if (search) {
+    if (search && typeof search === "string") {
       const s = search.toLowerCase();
       list = list.filter(tc => 
         (tc.name || "").toLowerCase().includes(s) ||
@@ -60,7 +60,7 @@ export default function AssignLeadsModal({
 
         <SearchBar 
           value={search} 
-          onChange={setSearch} 
+          onChange={(e) => setSearch(typeof e === "string" ? e : e.target.value)} 
           placeholder="Search telecallers..." 
         />
         
@@ -104,7 +104,7 @@ export default function AssignLeadsModal({
                         title: mode === "reassign" ? "Reassign Selected Leads?" : "Assign Selected Leads?",
                         description: `Selected leads will be ${mode === "reassign" ? "reassigned" : "assigned"} to the chosen telecaller.`,
                         confirmText: mode === "reassign" ? "Reassign" : "Assign",
-                        variant: "primary"
+                        variant: "admin-primary"
                       });
                       
                       if (isConfirmed) {
@@ -112,7 +112,7 @@ export default function AssignLeadsModal({
                       }
                     }}
                     disabled={isAssigning}
-                    className="px-5 py-2 bg-[#9E5A02] hover:bg-[#824901] text-white text-sm font-semibold rounded-lg shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2 shrink-0"
+                    className="px-5 py-2 bg-admin-primary hover:bg-admin-primary-hover active:bg-admin-primary-active text-white text-sm font-semibold rounded-lg shadow-sm transition-colors disabled:opacity-50 flex items-center gap-2 shrink-0"
                   >
                     {isAssigning ? "Processing..." : mode === "reassign" ? "Reassign Here" : "Assign Here"}
                   </button>

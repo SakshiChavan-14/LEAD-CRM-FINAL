@@ -1,5 +1,7 @@
 import ChartCard from "./ChartCard";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const COLORS = ["#A3D8F4", "#B388FF", "#F8C8DC", "#4A72C9", "#F8E79B"];
 
 export default function SourceAnalyticsChart({ data, isLoading }) {
   return (
@@ -22,38 +24,49 @@ export default function SourceAnalyticsChart({ data, isLoading }) {
                 type="number"
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: '#64748b', fontSize: 12 }} 
+                tick={{ fill: '#1E293B', fontSize: 12 }} 
               />
               <YAxis 
                 type="category"
                 dataKey="source" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fill: '#475569', fontSize: 13, fontWeight: 500 }}
+                tick={{ fill: '#1E293B', fontSize: 13, fontWeight: 500 }}
               />
               <Tooltip 
                 cursor={{ fill: '#f8fafc' }}
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
+                itemStyle={{ color: '#1E293B' }}
+                labelStyle={{ color: '#1E293B', fontWeight: 600 }}
               />
               <Legend 
                 iconType="circle" 
-                wrapperStyle={{ paddingTop: '10px', fontSize: '13px' }}
+                iconSize={10}
+                wrapperStyle={{ paddingTop: '15px', fontSize: '13px' }}
+                formatter={(value) => (
+                  <span style={{ color: '#1E293B', fontWeight: 500, marginRight: '15px' }}>
+                    {value}
+                  </span>
+                )}
+                payload={[
+                  { value: 'Leads', type: 'circle', id: 'leads', color: '#B388FF' },
+                  { value: 'Admissions', type: 'circle', id: 'admissions', color: '#F8C8DC' },
+                  { value: 'Sources', type: 'circle', id: 'sources', color: '#F8E79B' }
+                ]}
               />
               <Bar 
                 dataKey="leads" 
                 name="Leads" 
-                fill="#2563EB" 
-                radius={[0, 0, 0, 0]} 
                 barSize={22}
-                stackId="a"
-              />
-              <Bar 
-                dataKey="admissions" 
-                name="Admissions" 
-                fill="#10B981" 
-                radius={[0, 4, 4, 0]} 
-                stackId="a"
-              />
+                radius={[0, 4, 4, 0]}
+              >
+                {data.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]} 
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -61,3 +74,4 @@ export default function SourceAnalyticsChart({ data, isLoading }) {
     </ChartCard>
   );
 }
+

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ErrorState from "@/components/ui/ErrorState";
+import { LayoutDashboard, History, FileText } from "lucide-react";
 
 import { TABS_CONFIG } from "@/features/leads/constants/detailsConfig";
 import LeadHeaderCard from "@/features/leads/components/profile/LeadHeaderCard";
@@ -20,6 +21,7 @@ export default function LeadDetailsView({
   onDelete,
   onEdit,
   canEdit = true,
+  isTelecaller = false,
   actions,
   tabsConfig,
   showStats = true,
@@ -47,8 +49,17 @@ export default function LeadDetailsView({
 
   if (!viewModel) return null;
 
+  console.groupCollapsed("[LeadDetails] Render");
+  console.log("Lead ID", leadId);
+  console.log("Raw status", rawData?.status);
+  console.log("Status history", viewModel?.statusHistory || rawData?.statusHistory);
+  console.log("Calls", rawData?.calls?.length);
+  console.log("Followups", rawData?.followups?.length);
+  console.log("Timeline", rawData?.timeline?.length);
+  console.groupEnd();
+
   return (
-    <div className="p-6 flex flex-col gap-6 max-w-[1440px] mx-auto w-full">
+    <div className="flex flex-col gap-6 w-full font-outfit">
       
       {/* ── Lead Header & Metadata ─────────────────────────────────────────────── */}
       <LeadHeaderCard
@@ -68,33 +79,32 @@ export default function LeadDetailsView({
       )}
 
       {/* ── Statistics Section ─────────────────────────────────────────────────── */}
-      {showStats && <LeadStatisticsSection viewModel={viewModel} rawData={rawData} />}
+      {showStats && <LeadStatisticsSection viewModel={viewModel} rawData={rawData} isTelecaller={isTelecaller} />}
 
-      {/* ── Tabs Navigation ─────────────────────────────────────────────────────── */}
-      <nav className="flex border-b border-outline-variant overflow-x-auto hide-scrollbar">
+      {/* ── Tabs Navigation (Standard Slate UI with Smooth Active Indicator) ───── */}
+      <nav className="flex items-center gap-2 border-b border-slate-200/80 overflow-x-auto [scrollbar-width:none]">
         {resolvedTabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const getIcon = (id) => {
-            if (id === "info" || id === "overview") return "overview";
-            if (id === "notes") return "notes";
-            if (id === "timeline" || id === "activity") return "history";
-            return "folder";
+            if (id === "info" || id === "overview") return LayoutDashboard;
+            if (id === "notes") return FileText;
+            if (id === "timeline" || id === "activity") return History;
+            return LayoutDashboard;
           };
+          const Icon = getIcon(tab.id);
 
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-4 flex items-center gap-2 font-label-lg whitespace-nowrap transition-colors ${
+              className={`px-5 py-3 flex items-center gap-2 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer ${
                 isActive
-                  ? "border-b-[3px] border-primary text-primary active-tab font-semibold"
-                  : "text-on-surface-variant hover:text-primary"
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300"
               }`}
             >
-              <span className="material-symbols-outlined text-[20px]">
-                {getIcon(tab.id)}
-              </span>
-              {tab.label}
+              <Icon size={15} />
+              <span>{tab.label}</span>
             </button>
           );
         })}

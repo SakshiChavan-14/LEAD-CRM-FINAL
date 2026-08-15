@@ -1,12 +1,14 @@
+"use client";
+
 import React, { useState } from "react";
 import { useProfile } from "../hooks/useProfile";
 import ProfileHeroCard from "./ProfileHeroCard";
 import PersonalInformationCard from "./PersonalInformationCard";
 import SecurityCard from "./SecurityCard";
-import AccountStatusCard from "./AccountStatusCard";
 import SupportBanner from "./SupportBanner";
 import EditProfileDialog from "./EditProfileDialog";
 import { CardSkeleton } from "@/components/ui/Skeletons";
+import { UserCheck } from "lucide-react";
 
 export default function ProfileSettingsView() {
   const { data: profile, isLoading, isError } = useProfile();
@@ -14,14 +16,11 @@ export default function ProfileSettingsView() {
 
   if (isLoading) {
     return (
-      <div className="max-w-[1200px] mx-auto p-4 sm:p-6 space-y-6">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 space-y-6 font-outfit">
         <CardSkeleton />
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CardSkeleton />
-          <div className="space-y-6">
-            <CardSkeleton />
-            <CardSkeleton />
-          </div>
+          <CardSkeleton />
         </div>
       </div>
     );
@@ -29,46 +28,47 @@ export default function ProfileSettingsView() {
 
   if (isError || !profile) {
     return (
-      <div className="max-w-[1200px] mx-auto p-4 sm:p-6">
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200">
-          Failed to load profile. Please try again.
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 font-outfit">
+        <div className="bg-rose-50 text-rose-700 p-6 rounded-2xl border border-rose-200 shadow-xs text-center">
+          <h3 className="text-base font-extrabold">Failed to load profile details</h3>
+          <p className="text-xs text-rose-500 mt-1">Please check your network connection or try refreshing the page.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto p-4 sm:p-6 pb-24">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="text-gray-500 mt-1">Manage your personal information and account settings</p>
-      </div>
-
-      <ProfileHeroCard 
-        profile={profile} 
-        onEditProfile={() => setIsEditModalOpen(true)} 
-      />
-
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Left Column */}
-        <div className="flex flex-col h-full">
-          <PersonalInformationCard profile={profile} />
-        </div>
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 space-y-6 font-outfit animate-in fade-in duration-300">
         
-        {/* Right Column */}
-        <div className="flex flex-col space-y-6 h-full">
-          <SecurityCard />
-          <AccountStatusCard profile={profile} />
+        {/* Profile Hero Card */}
+        <ProfileHeroCard 
+          profile={profile} 
+          onEditProfile={() => setIsEditModalOpen(true)} 
+        />
+
+        {/* 2-Column Balanced Grid: Personal Info + Security (No Account Status Card) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {/* Left Column: Personal Information */}
+          <div className="flex flex-col h-full">
+            <PersonalInformationCard profile={profile} />
+          </div>
+          
+          {/* Right Column: Security & Authentication */}
+          <div className="flex flex-col h-full">
+            <SecurityCard />
+          </div>
         </div>
+
+
+
+        {/* Edit Profile Modal */}
+        <EditProfileDialog 
+          isOpen={isEditModalOpen} 
+          onClose={() => setIsEditModalOpen(false)} 
+          profile={profile}
+        />
       </div>
-
-      <SupportBanner />
-
-      <EditProfileDialog 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        profile={profile}
-      />
     </div>
   );
 }

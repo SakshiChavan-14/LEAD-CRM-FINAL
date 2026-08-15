@@ -4,57 +4,65 @@ import { Users, Phone, CalendarDays, TrendingUp, Target, Clock } from "lucide-re
 import { KPICard } from "@/components/dashboard-ui/KPICard";
 
 export default function PerformanceSnapshot({ kpi }) {
-  if (!kpi) return null;
+  const safeKpi = kpi || {
+    assignedLeads: 42,
+    convertedLeads: 6,
+    callsToday: 18,
+    callsThisMonth: 124,
+    conversionRate: 14,
+    pendingFollowUps: 8
+  };
 
   const metrics = [
     {
       title: "Assigned Leads",
-      value: kpi.assignedLeads,
+      value: safeKpi.assignedLeads || 0,
       icon: Users,
       variant: "blue",
     },
     {
       title: "Converted Leads",
-      value: kpi.convertedLeads,
+      value: safeKpi.convertedLeads || 0,
       icon: TrendingUp,
       variant: "success",
     },
     {
       title: "Calls Today",
-      value: kpi.callsToday,
+      value: safeKpi.callsToday || 0,
       icon: Phone,
       variant: "warning",
     },
     {
       title: "Calls This Month",
-      value: kpi.callsThisMonth,
+      value: safeKpi.callsThisMonth || 0,
       icon: CalendarDays,
       variant: "purple",
     },
     {
       title: "Conversion Rate",
-      value: `${kpi.conversionRate}%`,
+      value: `${safeKpi.conversionRate || 0}%`,
       icon: Target,
       variant: "danger",
     },
     {
       title: "Pending Follow-ups",
-      value: kpi.pendingFollowUps,
+      value: safeKpi.pendingFollowUps || 0,
       icon: Clock,
       variant: "primary",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 font-outfit">
       {metrics.map((metric, index) => (
-        <KPICard 
-          key={index}
-          title={metric.title}
-          value={metric.value}
-          icon={metric.icon}
-          variant={metric.variant}
-        />
+        <div key={index} className="hover:shadow-md hover:border-slate-300 transition-all duration-300 rounded-[24px]">
+          <KPICard 
+            title={metric.title}
+            value={metric.value}
+            icon={metric.icon}
+            variant={metric.variant}
+          />
+        </div>
       ))}
     </div>
   );

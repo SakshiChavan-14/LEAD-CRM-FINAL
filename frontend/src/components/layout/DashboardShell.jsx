@@ -56,7 +56,7 @@ export default function DashboardShell({ children }) {
           isSidebarOpen={sidebarOpen}
         />
 
-        <main className="flex-1 overflow-y-auto crm-scroll">
+        <main className="flex-1 overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {children}
         </main>
       </div>

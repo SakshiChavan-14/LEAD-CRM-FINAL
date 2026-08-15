@@ -65,7 +65,7 @@ const COLUMNS = [
     label: "Enquiry No",
     width: "90px",
     render: (value, row) => (
-      <span className="text-sm font-bold text-[#8B0D16]">
+      <span className="text-sm font-bold text-blue-600">
         #{row.enquiryNo || row.id}
       </span>
     ),
@@ -76,7 +76,7 @@ const COLUMNS = [
     width: "260px",
     render: (value, row) => (
       <div className="flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(row.name)}`}>
+        <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white text-sky-500 text-xs font-bold shrink-0 border border-slate-200/80 shadow-2xs">
           {getInitials(row.name)}
         </div>
         <div className="flex flex-col min-w-0">
@@ -142,7 +142,7 @@ const COLUMNS = [
       
       return (
         <div className="flex items-center gap-2">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${getAvatarColor(assignedName)}`}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white text-pink-500 text-xs font-bold shrink-0 border border-slate-200/80 shadow-2xs">
             {getInitials(assignedName)}
           </div>
           <div className="flex flex-col min-w-0">
@@ -190,7 +190,7 @@ export default function LeadsDataTable({
       onRowClick={onRowClick}
       selectable={true}
       loading={loading}
-      tableClassName="min-w-[1200px]"
+      tableClassName="w-full min-w-[1050px]"
       stickyActions={true}
       renderRowActions={(row) => (
         <button
@@ -198,9 +198,9 @@ export default function LeadsDataTable({
             e.stopPropagation();
             if (onRowClick) onRowClick(row);
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-[#6F1D28] transition-colors shadow-sm"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-[#8B0D16]/5 hover:border-[#8B0D16]/30 hover:text-[#8B0D16] transition-all shadow-2xs cursor-pointer active:scale-95"
         >
-          <span className="material-symbols-outlined text-[18px]">visibility</span>
+          <span className="material-symbols-outlined text-[16px]">visibility</span>
           View
         </button>
       )}

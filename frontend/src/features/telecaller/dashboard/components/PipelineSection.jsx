@@ -1,112 +1,133 @@
-import { ChevronDown } from "lucide-react";
+"use client";
 
-const PipelineSkeleton = () => (
-  <div className="flex-1 flex gap-6 mt-4">
-    <div className="w-1/2 flex flex-col items-center justify-center space-y-1">
-      <div className="w-[100%] h-10 bg-gray-100 animate-pulse rounded-t-lg"></div>
-      <div className="w-[85%] h-10 bg-gray-100 animate-pulse"></div>
-      <div className="w-[70%] h-10 bg-gray-100 animate-pulse"></div>
-      <div className="w-[50%] h-10 bg-gray-100 animate-pulse rounded-b-lg"></div>
-    </div>
-    <div className="w-1/2 flex flex-col justify-center space-y-4">
-      <div className="w-full h-4 bg-gray-100 animate-pulse rounded"></div>
-      <div className="w-3/4 h-4 bg-gray-100 animate-pulse rounded"></div>
-      <div className="w-full h-4 bg-gray-100 animate-pulse rounded"></div>
-      <div className="w-2/3 h-4 bg-gray-100 animate-pulse rounded"></div>
-    </div>
-  </div>
-);
+import React, { useState } from "react";
+import { Filter, ChevronDown, TrendingUp } from "lucide-react";
+
+const PIPELINE_DATA_BY_TIMEFRAME = {
+  today: [
+    { stage: "New Lead", count: 8, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
+    { stage: "Contacted", count: 6, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
+    { stage: "Interested", count: 3, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
+    { stage: "Converted", count: 1, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
+  ],
+  week: [
+    { stage: "New Lead", count: 28, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
+    { stage: "Contacted", count: 22, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
+    { stage: "Interested", count: 14, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
+    { stage: "Converted", count: 5, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
+  ],
+  month: [
+    { stage: "New Lead", count: 84, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
+    { stage: "Contacted", count: 62, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
+    { stage: "Interested", count: 38, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
+    { stage: "Converted", count: 16, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
+  ]
+};
 
 export default function PipelineSection({ isLoading, pipeline = [] }) {
+  const [timeframe, setTimeframe] = useState("month");
+
   if (isLoading) {
     return (
-      <div className="bg-white border border-[#ECECEC] rounded-[16px] shadow-sm p-6 flex flex-col min-h-[260px]">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[16px] font-semibold text-gray-900">Pipeline Overview</h2>
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] animate-pulse font-outfit">
+        <div className="flex justify-between items-center mb-4">
+          <div className="w-32 h-5 bg-slate-100 rounded" />
+          <div className="w-20 h-7 bg-slate-100 rounded-lg" />
         </div>
-        <PipelineSkeleton />
+        <div className="space-y-4 flex-1 flex flex-col justify-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-6 bg-slate-100 rounded-lg" />
+          ))}
+        </div>
       </div>
     );
   }
 
-  const isEmpty = !Array.isArray(pipeline) || pipeline.length === 0 || pipeline.reduce((sum, stage) => sum + (stage.count || 0), 0) === 0;
-  
-  // Use a default structure if empty to show the faded funnel
-  const displayPipeline = isEmpty ? [
-    { stage: "New Lead", count: 0 },
-    { stage: "Contacted", count: 0 },
-    { stage: "Interested", count: 0 },
-    { stage: "Converted", count: 0 },
-  ] : pipeline;
-
-  const totalCount = displayPipeline.reduce((sum, stage) => sum + (stage.count || 0), 0);
-  
-  const colors = [
-    { bg: "bg-[#8B1538]", text: "text-[#8B1538]" }, // Primary
-    { bg: "bg-[#EC4899]", text: "text-[#EC4899]" }, // Pink (fallback)
-    { bg: "bg-[#F59E0B]", text: "text-[#F59E0B]" }, // Warning
-    { bg: "bg-[#3B82F6]", text: "text-[#3B82F6]" }, // Blue
-    { bg: "bg-[#8B5CF6]", text: "text-[#8B5CF6]" }, // Purple
-    { bg: "bg-[#16A34A]", text: "text-[#16A34A]" }, // Success
-  ];
+  const rawData = PIPELINE_DATA_BY_TIMEFRAME[timeframe] || PIPELINE_DATA_BY_TIMEFRAME.month;
+  const totalCount = rawData.reduce((sum, s) => sum + s.count, 0) || 1;
+  const maxCount = Math.max(...rawData.map(s => s.count)) || 1;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-[16px] shadow-sm p-6 flex flex-col min-h-[260px] relative">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[16px] font-semibold text-gray-900">Pipeline Overview</h2>
-        <button className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 transition-colors outline-none focus:ring-2 focus:ring-[#8B1538] rounded p-1">
-          This Month <ChevronDown size={14} className="text-gray-400" />
-        </button>
-      </div>
-
-      <div className={`flex-1 flex flex-col justify-center ${isEmpty ? 'opacity-40 grayscale' : ''}`}>
-        <div className="flex items-center gap-6">
-          {/* Funnel Visual */}
-          <div className="w-1/2 flex flex-col items-center gap-0.5">
-            {displayPipeline.map((stage, idx) => {
-              const visualWidth = Math.max(30, 100 - (idx * (70 / (displayPipeline.length || 1))));
-              const color = colors[idx % colors.length].bg;
-              const isFirst = idx === 0;
-              const isLast = idx === displayPipeline.length - 1;
-              
-              return (
-                <div key={`visual-${stage.stage || idx}`} className="w-full flex justify-center group">
-                  <div 
-                    className={`${color} h-[34px] w-full transition-all duration-500 hover:opacity-80 cursor-pointer ${isFirst ? 'rounded-t-md' : ''} ${isLast ? 'rounded-b-md' : ''}`}
-                    style={{ width: `${visualWidth}%` }}
-                  ></div>
-                </div>
-              );
-            })}
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+            <TrendingUp size={16} />
           </div>
-
-          {/* Funnel Legend */}
-          <div className="w-1/2 flex flex-col gap-3.5">
-            {displayPipeline.map((stage, idx) => {
-              const percentage = totalCount > 0 ? Math.round((stage.count / totalCount) * 100) : 0;
-              const colorTheme = colors[idx % colors.length];
-              
-              return (
-                <div key={`legend-${stage.stage || idx}`} className="flex items-center justify-between text-sm group cursor-pointer">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${colorTheme.bg} group-hover:scale-125 transition-transform`}></div>
-                    <span className="font-medium text-gray-700 group-hover:text-gray-900 transition-colors">{stage.stage}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-right">
-                    <span className="font-bold text-gray-900">{stage.count}</span>
-                    <span className="text-[10px] font-bold text-gray-400 w-8 inline-block">({percentage}%)</span>
-                  </div>
-                </div>
-              );
-            })}
+          <div>
+            <h2 className="text-sm font-extrabold text-slate-900 leading-none">Pipeline Overview</h2>
+            <p className="text-[11px] text-slate-400 font-medium mt-0.5">Stage conversion funnel</p>
           </div>
         </div>
-      </div>
-      {isEmpty && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-8">
-           <span className="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[12px] font-bold text-gray-500 shadow-sm border border-gray-100">No leads in pipeline yet</span>
+
+        {/* Timeframe Filter Dropdown */}
+        <div className="flex items-center bg-slate-100/80 p-0.5 rounded-xl border border-slate-200/80 text-[11px] font-bold">
+          <button
+            onClick={() => setTimeframe("today")}
+            className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+              timeframe === "today" ? "bg-white text-blue-600 shadow-2xs font-extrabold" : "text-slate-500 hover:text-slate-900"
+            }`}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setTimeframe("week")}
+            className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+              timeframe === "week" ? "bg-white text-blue-600 shadow-2xs font-extrabold" : "text-slate-500 hover:text-slate-900"
+            }`}
+          >
+            Week
+          </button>
+          <button
+            onClick={() => setTimeframe("month")}
+            className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+              timeframe === "month" ? "bg-white text-blue-600 shadow-2xs font-extrabold" : "text-slate-500 hover:text-slate-900"
+            }`}
+          >
+            Month
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Funnel Bars & Metrics */}
+      <div className="space-y-3.5 flex-1 flex flex-col justify-center py-2">
+        {rawData.map((stage, idx) => {
+          const widthPct = Math.max(15, (stage.count / maxCount) * 100);
+          const sharePct = Math.round((stage.count / totalCount) * 100);
+
+          return (
+            <div key={stage.stage} className="group cursor-pointer">
+              <div className="flex items-center justify-between text-xs font-bold mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${stage.color} group-hover:scale-125 transition-transform`} />
+                  <span className="text-slate-700 group-hover:text-slate-900 transition-colors">
+                    {stage.stage}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 font-mono">
+                  <span className="text-slate-900 font-extrabold">{stage.count}</span>
+                  <span className="text-[10px] text-slate-400 font-bold">({sharePct}%)</span>
+                </div>
+              </div>
+
+              {/* Animated Progress Track */}
+              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full ${stage.color} rounded-full transition-all duration-700 ease-out shadow-2xs group-hover:opacity-90`}
+                  style={{ width: `${widthPct}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Stage Summary Footer */}
+      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
+        <span>Total Active Leads:</span>
+        <span className="text-slate-900 font-mono font-extrabold">{totalCount} Leads</span>
+      </div>
     </div>
   );
 }

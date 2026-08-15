@@ -13,8 +13,6 @@ import AnalyticsCards from "@/features/telecaller/voice/components/AnalyticsCard
 import AudioTestModal from "@/features/telecaller/voice/components/AudioTestModal";
 import DeviceSettingsModal from "@/features/telecaller/voice/components/DeviceSettingsModal";
 
-import ContentSection from "@/components/management/ContentSection";
-
 export default function TelecallerCallsPage() {
   const queryClient = useQueryClient();
 
@@ -31,37 +29,35 @@ export default function TelecallerCallsPage() {
   };
 
   return (
-    <ContentSection
-      className="bg-[#FFFFFF] -m-4 sm:-m-6 p-4 sm:p-6 lg:p-8 space-y-6 animate-in fade-in duration-500 min-h-screen"
-      style={{ fontFamily: "var(--font-outfit), sans-serif" }}
-    >
-      {/* ── HEADER ────────────────────────────────────────────────────── */}
-      <VoiceHeader />
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 font-outfit space-y-6 animate-in fade-in duration-300">
+        
+        {/* ── HEADER ────────────────────────────────────────────────────── */}
+        <VoiceHeader />
 
-      {/* ── ANALYTICS STRIP (TOP) ──────────────────────────────────────── */}
-      <div className="mb-2">
+        {/* ── ANALYTICS STRIP (TOP) ──────────────────────────────────────── */}
         <AnalyticsCards />
-      </div>
 
-      {/* ── WORKSPACE PANELS (BOTTOM) ──────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
-        <div className="flex flex-col h-full">
-          <TodayCallQueue />
+        {/* ── 3 EQUAL WORKSPACE PANELS ──────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="w-full">
+            <TodayCallQueue />
+          </div>
+          <div className="w-full">
+            <ActiveCallCard callNotes={callNotes} setCallNotes={setCallNotes} />
+          </div>
+          <div className="w-full">
+            <QuickDialCard />
+          </div>
         </div>
-        <div className="flex flex-col h-full">
-          <ActiveCallCard callNotes={callNotes} setCallNotes={setCallNotes} />
-        </div>
-        <div className="flex flex-col h-full">
-          <QuickDialCard />
-        </div>
-      </div>
 
-      {/* ── MODALS ────────────────────────────────────────────────────── */}
-      <AudioTestModal isOpen={isAudioTestOpen} onClose={() => setIsAudioTestOpen(false)} />
-      <DeviceSettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
-    </ContentSection>
+        {/* ── MODALS ────────────────────────────────────────────────────── */}
+        <AudioTestModal isOpen={isAudioTestOpen} onClose={() => setIsAudioTestOpen(false)} />
+        <DeviceSettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+      </div>
+    </div>
   );
 }

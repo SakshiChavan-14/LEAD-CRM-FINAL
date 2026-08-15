@@ -64,7 +64,7 @@ export default function AddTelecallerDialog({
       title: "Create Telecaller?",
       description: "Are you sure you want to create this telecaller?",
       confirmText: "Create",
-      variant: "primary",
+      variant: "admin-primary",
     });
 
     if (isConfirmed) {
@@ -90,6 +90,7 @@ export default function AddTelecallerDialog({
         title="Telecaller Created Successfully"
         footer={
           <Button
+            variant="admin-primary"
             fullWidth={false}
             onClick={handleClose}
           >
@@ -163,14 +164,16 @@ export default function AddTelecallerDialog({
             Cancel
           </Button>
 
-          <button
+          <Button
             type="submit"
             form="add-user-form"
-            disabled={isPending}
-            className="h-[44px] rounded-xl bg-[#6F1D28] px-5 text-white hover:bg-[#5a1620] transition font-medium disabled:opacity-50"
+            variant="admin-primary"
+            loading={isPending}
+            loadingText="Creating..."
+            fullWidth={false}
           >
-            {isPending ? "Creating..." : "Create Telecaller"}
-          </button>
+            Create Telecaller
+          </Button>
         </>
       }
     >

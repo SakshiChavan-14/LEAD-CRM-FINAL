@@ -22,5 +22,12 @@ export const telecallerBreadcrumbs = {
     { label: "Dashboard", href: "/telecaller" },
     { label: "Recordings" }
   ],
-  profile: [{ label: "Profile" }]
+  profile: [
+    { label: "Dashboard", href: "/telecaller" },
+    { label: "Profile" }
+  ],
+  followups: [
+    { label: "Dashboard", href: "/telecaller" },
+    { label: "Follow Ups" }
+  ]
 };

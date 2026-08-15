@@ -1,21 +1,13 @@
+"use client";
+
+import React from "react";
 import ChartCard from "./ChartCard";
-import { ArrowDown } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-export default function ConversionFunnel({ data, isLoading }) {
-  const maxVal = data ? Math.max(...data.map(d => d.value)) : 100;
+const COLORS = ["#2563EB", "#3B82F6", "#06B6D4", "#10B981", "#8B5CF6"];
 
-  // Find the largest drop-off index
-  let largestDropIndex = -1;
-  let largestDropValue = 0;
-  if (data) {
-    for (let i = 0; i < data.length - 1; i++) {
-      const drop = data[i].value - data[i+1].value;
-      if (drop > largestDropValue) {
-        largestDropValue = drop;
-        largestDropIndex = i;
-      }
-    }
-  }
+export default function ConversionFunnel({ data = [], isLoading }) {
+  const chartData = Array.isArray(data) ? data : [];
 
   return (
     <ChartCard 
@@ -24,36 +16,40 @@ export default function ConversionFunnel({ data, isLoading }) {
       isLoading={isLoading}
       skeletonHeight="320px"
     >
-      {data && (
-        <div className="flex flex-col h-full mt-4 justify-between">
-          {data.map((stage, i) => {
-            const width = `${(stage.value / maxVal) * 100}%`;
-            
-            return (
-              <div key={stage.name} className="flex flex-col">
-                <div className="flex justify-between items-center text-sm mb-1.5">
-                  <span className="font-medium text-slate-500">{stage.name}</span>
-                  <span className="font-bold text-slate-900">{stage.value.toLocaleString()}</span>
-                </div>
-                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full rounded-full bg-[#2563EB] transition-all duration-1000"
-                    style={{ width }}
-                  />
-                </div>
-                
-                {/* Connector with percentage */}
-                {i < data.length - 1 && data[i+1].rate && (
-                  <div className="flex items-center gap-1.5 my-3 ml-2">
-                    <ArrowDown size={14} className={i === largestDropIndex ? "text-amber-500" : "text-slate-400"} />
-                    <span className={`text-[12px] font-bold ${i === largestDropIndex ? "text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded" : "text-slate-500"}`}>
-                      {data[i+1].rate}
-                    </span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+      {chartData.length > 0 && (
+        <div className="w-full h-[320px] mt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              layout="vertical"
+              margin={{ top: 10, right: 30, left: 10, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F1F5F9" />
+              <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: "#64748b", fontSize: 11 }} />
+              <YAxis 
+                type="category" 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "#334155", fontSize: 12, fontWeight: 700 }}
+                width={100}
+              />
+              <Tooltip 
+                cursor={{ fill: "transparent" }}
+                contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", fontSize: "13px" }}
+              />
+              <Bar 
+                dataKey="value" 
+                name="Leads"
+                radius={[0, 10, 10, 0]}
+                barSize={20}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
     </ChartCard>

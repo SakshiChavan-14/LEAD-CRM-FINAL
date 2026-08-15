@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function FollowupCalendarView({ 
-  followups,
+  followups = [],
   selectedDate, 
   onSelectDate, 
   onSchedule, 
@@ -55,76 +57,83 @@ export default function FollowupCalendarView({
   const monthLabel = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div className="flex flex-col border border-transparent rounded-2xl w-full">
-      <div className="w-full">
-        {/* Month header with navigation */}
-        <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={() => setMonthOffset(prev => prev - 1)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-            aria-label="Previous month"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <h2 className="text-lg font-[700] text-gray-900">
-            {monthLabel}
-          </h2>
-          <button
-            onClick={() => setMonthOffset(prev => prev + 1)}
-            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 transition-colors text-slate-600"
-            aria-label="Next month"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
+    <div className="flex flex-col rounded-2xl w-full font-outfit">
+      {/* Month header with navigation */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+        <button
+          onClick={() => setMonthOffset(prev => prev - 1)}
+          className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-slate-100 border border-slate-200/80 transition-all text-slate-600 cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+          aria-label="Previous month"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+          {monthLabel}
+        </h2>
+        <button
+          onClick={() => setMonthOffset(prev => prev + 1)}
+          className="flex items-center justify-center w-8 h-8 rounded-xl hover:bg-slate-100 border border-slate-200/80 transition-all text-slate-600 cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+          aria-label="Next month"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
 
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {DAYS.map(day => (
-            <div key={day} className="text-center text-[11px] font-[700] text-slate-400 uppercase tracking-wider">
-              {day}
-            </div>
-          ))}
-        </div>
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 gap-1.5 mb-2">
+        {DAYS.map(day => (
+          <div key={day} className="text-center text-[10px] font-extrabold text-slate-400 uppercase tracking-wider py-1">
+            {day}
+          </div>
+        ))}
+      </div>
 
-        <div className="grid grid-cols-7 gap-1">
-          {calendarDays.map((dateStr, idx) => {
-            if (!dateStr) return <div key={`empty-${idx}`} className="aspect-square"></div>;
+      {/* Days grid */}
+      <div className="grid grid-cols-7 gap-1.5">
+        {calendarDays.map((dateStr, idx) => {
+          if (!dateStr) return <div key={`empty-${idx}`} className="aspect-square"></div>;
 
-            const isSelected = selectedDate === dateStr;
-            const isToday = dateStr === todayStr;
-            const count = heatmap[dateStr] || 0;
+          const isSelected = selectedDate === dateStr;
+          const isToday = dateStr === todayStr;
+          const count = heatmap[dateStr] || 0;
 
-            return (
-              <button
-                key={dateStr}
-                onClick={() => {
-                  onSelectDate(dateStr);
-                  if (count === 0) {
-                    onSchedule && onSchedule(dateStr);
-                  }
-                }}
-                className={`relative flex flex-col aspect-square p-1 rounded-lg border transition-all ${
-                  isSelected 
-                    ? 'border-[#7A1F2B] bg-[#7A1F2B]/5 ring-1 ring-[#7A1F2B] z-10' 
-                    : isToday
-                      ? 'border-slate-300 bg-slate-50'
-                      : 'border-[#ECECEC] hover:border-slate-300 hover:bg-slate-50'
-                }`}
-              >
-                <span className={`text-sm font-[700] ${isToday ? 'text-[#7A1F2B]' : 'text-gray-700'}`}>
-                  {parseInt(dateStr.split('-')[2], 10)}
-                </span>
+          return (
+            <button
+              key={dateStr}
+              onClick={() => {
+                onSelectDate(dateStr);
+                if (count === 0 && onSchedule) {
+                  onSchedule(dateStr);
+                }
+              }}
+              className={`relative flex flex-col items-center justify-between aspect-square p-1.5 rounded-xl border transition-all duration-200 cursor-pointer ${
+                isSelected 
+                  ? 'border-blue-600 bg-blue-50 text-blue-700 ring-2 ring-blue-500/30 shadow-xs scale-105 z-10' 
+                  : isToday
+                    ? 'border-blue-200 bg-blue-50/40 text-blue-700 font-extrabold hover:border-blue-300'
+                    : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              <span className={`text-xs font-bold ${isSelected ? 'text-blue-700 font-extrabold' : isToday ? 'text-blue-600' : 'text-slate-700'}`}>
+                {parseInt(dateStr.split('-')[2], 10)}
+              </span>
 
-                {/* Heatmap / badge indicator */}
-                <div className="mt-auto self-center flex items-center justify-center w-full">
-                  {count > 0 && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#7A1F2B]" />
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+              {/* Event count dot indicator */}
+              <div className="mt-auto flex items-center justify-center h-2">
+                {count > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 shadow-xs animate-pulse" />
+                    {count > 1 && (
+                      <span className="text-[9px] font-mono font-bold text-blue-600 leading-none">
+                        {count}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

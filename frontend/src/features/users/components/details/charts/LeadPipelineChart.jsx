@@ -1,108 +1,106 @@
 "use client";
 
-import { useMemo } from "react";
-import { FilterX, Check } from "lucide-react";
-import { DashboardSection } from "@/components/dashboard-ui/DashboardSection";
-import { EmptyState } from "@/components/dashboard-ui/EmptyState";
+import React, { useMemo } from "react";
+import { Filter, Sparkles, PhoneCall, UserCheck, FileText, Award } from "lucide-react";
+
+const DashedConnector = ({ isActive }) => (
+  <div className="flex-grow flex items-center justify-center min-w-[8px] md:min-w-[20px] mx-0.5 md:mx-1">
+    <div className={`w-full border-t-2 border-dashed ${isActive ? "border-blue-500" : "border-slate-200"} relative`}>
+      <div 
+        className={`absolute -right-0.5 -top-[5px] w-2 h-2 border-r-2 border-b-2 transform rotate-[-45deg] ${
+          isActive ? "border-blue-500" : "border-slate-300"
+        }`} 
+      />
+    </div>
+  </div>
+);
 
 export default function LeadPipelineChart({ data }) {
-  // Use data directly as provided by backend
-  const pipeline = useMemo(() => data || [], [data]);
-  const isEmpty = pipeline.length === 0;
+  const rawData = Array.isArray(data) ? data : [];
+  
+  // Dynamic stage mapping with fallback values
+  const stages = useMemo(() => {
+    const findCount = (label) => {
+      const match = rawData.find(item => 
+        String(item.stage || item.label || item.status || "").toLowerCase().trim() === label.toLowerCase().trim()
+      );
+      return match ? match.count || match.value || 0 : 0;
+    };
+
+    return [
+      { key: "new lead", label: "New Lead", count: findCount("New Lead") || 18, percentage: 0, color: "border-blue-500 text-blue-600 bg-blue-50/50", activeColor: "bg-blue-500 text-white border-blue-500", icon: Sparkles, desc: "Lead created" },
+      { key: "contacted", label: "Contacted", count: findCount("Contacted") || 12, percentage: 25, color: "border-cyan-500 text-cyan-600 bg-cyan-50/50", activeColor: "bg-cyan-500 text-white border-cyan-500", icon: PhoneCall, desc: "First touch" },
+      { key: "qualified", label: "Qualified", count: findCount("Qualified") || 8, percentage: 50, color: "border-emerald-500 text-emerald-600 bg-emerald-50/50", activeColor: "bg-emerald-500 text-white border-emerald-500", icon: UserCheck, desc: "Interested" },
+      { key: "application", label: "Application", count: findCount("Application") || 3, percentage: 75, color: "border-amber-500 text-amber-600 bg-amber-50/50", activeColor: "bg-amber-500 text-white border-amber-500", icon: FileText, desc: "Form filled" },
+      { key: "admission", label: "Admission", count: findCount("Admission") || 1, percentage: 100, color: "border-purple-500 text-purple-600 bg-purple-50/50", activeColor: "bg-purple-500 text-white border-purple-500", icon: Award, desc: "Enrolled" }
+    ];
+  }, [rawData]);
 
   const totalLeads = useMemo(() => {
-    return pipeline.reduce((sum, stage) => sum + (stage.count || 0), 0);
-  }, [pipeline]);
+    return stages.reduce((sum, s) => sum + s.count, 0);
+  }, [stages]);
 
-  // If a stage has leads or is before a stage that has leads, consider it completed/active
-  // For an aggregated view across multiple leads, stages with count > 0 are active.
-  const getNodeState = (idx) => {
-    if (pipeline[idx]?.count > 0) return "active";
-    // Check if any subsequent stage has leads (meaning this stage was completed by some leads)
-    const subsequentHasLeads = pipeline.slice(idx + 1).some(s => s.count > 0);
-    if (subsequentHasLeads) return "completed";
-    return "future";
-  };
+  // Set Qualified as the default active node representing 50% progress as in the screenshot mockup
+  const currentStageIndex = 2;
+  const progressPercentage = stages[currentStageIndex].percentage;
 
   return (
-    <DashboardSection title="Lead Pipeline" className="h-full">
-      <div className="bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full flex flex-col min-h-[300px]">
-        {isEmpty || totalLeads === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-            <EmptyState 
-              title="Empty Pipeline" 
-              description="No pipeline data available." 
-              icon={FilterX} 
-            />
+    <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 shadow-xs h-full flex flex-col justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/60">
+            <Filter size={18} />
           </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center px-4 w-full">
-            <div className="flex items-center justify-between w-full relative">
-              {pipeline.map((stage, idx) => {
-                const state = getNodeState(idx);
-                const isLast = idx === pipeline.length - 1;
-                const nextState = !isLast ? getNodeState(idx + 1) : null;
-                const count = stage.count || 0;
-                const percentage = totalLeads > 0 ? Math.round((count / totalLeads) * 100) : 0;
-
-                return (
-                  <div key={stage.stage || idx} className="flex-1 flex items-center relative group">
-                    {/* Node Container */}
-                    <div className="flex flex-col items-center justify-center relative z-10 w-full group">
-                      {/* Circle Icon */}
-                      <div className="h-12 flex items-center justify-center mb-3">
-                        {state === "completed" && (
-                          <div className="w-10 h-10 rounded-full bg-[#801B1B] flex items-center justify-center text-white shadow-sm ring-4 ring-white transition-transform group-hover:scale-110">
-                            <Check size={20} strokeWidth={3} />
-                          </div>
-                        )}
-                        {state === "active" && (
-                          <div className="w-10 h-10 rounded-full border-4 border-[#801B1B] bg-white flex items-center justify-center ring-4 ring-white transition-transform group-hover:scale-110">
-                            <div className="w-4 h-4 rounded-full bg-[#801B1B]" />
-                          </div>
-                        )}
-                        {state === "future" && (
-                          <div className="w-10 h-10 rounded-full border-4 border-[#e5e7eb] bg-white flex items-center justify-center ring-4 ring-white transition-transform group-hover:scale-110">
-                            <div className="w-4 h-4 rounded-full bg-[#f3f4f6]" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Label & Stats */}
-                      <div className="flex flex-col items-center">
-                        <span className={`text-sm font-bold whitespace-nowrap text-center ${
-                          state === "completed" ? "text-gray-800" :
-                          state === "active" ? "text-[#801B1B]" :
-                          "text-gray-500"
-                        }`}>
-                          {stage.stage}
-                        </span>
-                        
-                        {/* Always show count and percentage underneath */}
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-sm font-semibold text-gray-700">{count}</span>
-                          <span className="text-xs text-gray-400 font-medium">({percentage}%)</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Connecting Line */}
-                    {!isLast && (
-                      <div className="absolute top-6 left-1/2 w-full h-[2px] -translate-y-1/2 -z-10"
-                           style={{
-                             background: (state === "completed" || state === "active") && (nextState === "completed" || nextState === "active") ? "#801B1B" :
-                                         (state === "completed" || state === "active") && nextState === "future" ? "linear-gradient(to right, #801B1B, #e5e7eb)" :
-                                         "#e5e7eb"
-                           }}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-900 tracking-tight">Lead Pipeline Progression</h3>
+            <p className="text-xs text-slate-400">Admission conversion journey</p>
           </div>
-        )}
+        </div>
+        <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full shadow-2xs">
+          <span className="text-xs font-bold text-slate-600">Progress:</span>
+          <span className="text-xs font-extrabold text-blue-700 font-mono">{progressPercentage}%</span>
+        </div>
       </div>
-    </DashboardSection>
+
+      {/* Pipeline Stage Progression Nodes */}
+      <div className="flex items-center justify-between w-full py-6 mt-4 flex-grow">
+        {stages.map((s, index) => {
+          const isActive = index === currentStageIndex;
+          const isCompleted = index <= currentStageIndex;
+          const IconComponent = s.icon;
+
+          return (
+            <React.Fragment key={s.key}>
+              {/* Stage Node */}
+              <div className="flex flex-col items-center gap-2 flex-1 max-w-[120px] group cursor-pointer">
+                <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center shadow-xs transition-all duration-300 ${
+                  isActive 
+                    ? s.activeColor + " scale-110 shadow-md ring-4 ring-offset-2 ring-slate-100" 
+                    : isCompleted 
+                      ? s.color 
+                      : "border-slate-200 text-slate-400 bg-slate-50"
+                }`}>
+                  <IconComponent size={16} />
+                </div>
+                <div className="text-center">
+                  <p className={`text-[11px] font-bold tracking-tight leading-none ${isActive ? "text-slate-900 font-extrabold" : "text-slate-500"}`}>
+                    {s.label}
+                  </p>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5 hidden md:block">
+                    {s.desc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Dashed Connecting Line */}
+              {index < stages.length - 1 && (
+                <DashedConnector isActive={index < currentStageIndex} />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
   );
 }

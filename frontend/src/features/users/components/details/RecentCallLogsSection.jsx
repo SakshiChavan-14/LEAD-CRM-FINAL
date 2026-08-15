@@ -1,124 +1,121 @@
 "use client";
 
-import { Phone, MoreVertical, PhoneCall, PhoneOff, PhoneForwarded, PhoneMissed } from "lucide-react";
-import DataTable from "@/components/table/DataTable";
-import { DashboardSection } from "@/components/dashboard-ui/DashboardSection";
+import React, { useState } from "react";
+import { Phone, PhoneCall, PhoneOff, PhoneForwarded, PhoneMissed, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { useTelecallerCallLogs } from "@/features/callReports/hooks/useCallReports";
-import { useState } from "react";
+import { formatDisplayDate } from "@/utils/dateUtils";
 
-const getOutcomeStyle = (outcome) => {
-  const text = outcome?.toLowerCase() || "";
-  if (text.includes("interested") && !text.includes("not")) return { icon: PhoneCall, color: "text-emerald-600" };
-  if (text.includes("not interested")) return { icon: PhoneOff, color: "text-red-500" };
-  if (text.includes("follow-up")) return { icon: PhoneForwarded, color: "text-blue-500" };
-  if (text.includes("no response") || text.includes("missed")) return { icon: PhoneMissed, color: "text-gray-400" };
-  if (text.includes("connected")) return { icon: PhoneCall, color: "text-emerald-500" };
-  
-  return { icon: Phone, color: "text-gray-500" };
-};
-
-const columns = [
-  { 
-    key: "studentName", 
-    label: "LEAD NAME",
-    render: (value) => <span className="font-[700] text-gray-900">{value || "--"}</span>
-  },
-  { 
-    key: "mobile", 
-    label: "MOBILE NUMBER",
-    render: (value) => <span className="font-[600] text-gray-900">{value || "--"}</span>
-  },
-  { 
-    key: "callTime", 
-    label: "CALL TIME",
-    render: (value) => <span className="font-[600] text-gray-600">{value || "--"}</span>
-  },
-  { 
-    key: "duration", 
-    label: "DURATION",
-    render: (value) => <span className="font-[700] text-gray-900">{value || "--"}</span>
-  },
-  {
-    key: "outcome",
-    label: "CALL OUTCOME",
-    render: (value) => {
-      const { icon: Icon, color } = getOutcomeStyle(value);
-      return (
-        <div className="flex items-center gap-2">
-          <Icon className={`w-4 h-4 ${color}`} />
-          <span className={`font-[600] ${color}`}>{value || "--"}</span>
-        </div>
-      );
-    }
-  },
-  { 
-    key: "nextFollowUp", 
-    label: "NEXT FOLLOW-UP",
-    render: (value) => <span className="font-[600] text-gray-600">{value || "--"}</span>
-  },
-  {
-    key: "actions",
-    label: "ACTIONS",
-    render: () => (
-      <button className="p-1 hover:bg-gray-100 rounded-md text-gray-500 transition-colors">
-        <MoreVertical className="w-5 h-5" />
-      </button>
-    )
-  }
-];
 
 export default function RecentCallLogsSection({ userId }) {
-  const [filters] = useState({ page: 0, size: 5 });
-
+  const [filters] = useState({ page: 0, size: 10 });
   const { data, isError, isLoading } = useTelecallerCallLogs(userId, filters);
 
-  const displayLogs = data?.data?.length > 0 ? data.data : data?.content?.length > 0 ? data.content : Array.isArray(data) ? data : [];
+  const rawLogs = data?.data?.length > 0 ? data.data : data?.content?.length > 0 ? data.content : Array.isArray(data) ? data : [];
+  const displayLogs = rawLogs;
 
   return (
-    <DashboardSection 
-      title={
-        <div className="flex items-center gap-2">
-          <Phone className="w-5 h-5 text-[#991b1b]" />
-          <span>Recent Call Logs</span>
+    <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 shadow-xs font-outfit">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/60">
+            <Phone size={18} />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">Recent Call Logs</h2>
+            <p className="text-xs text-slate-500 mt-0.5">Direct communication history logged by this telecaller</p>
+          </div>
         </div>
-      }
-      action={
-        <button className="px-4 py-1.5 border border-gray-200 rounded-md text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors">
-          View All
-        </button>
-      }
-      className="h-full w-full overflow-hidden"
-    >
-      <div className="bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col min-h-[400px]">
-        {isError ? (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-red-500 font-medium">Failed to load recent call logs.</p>
-          </div>
-        ) : isLoading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="animate-pulse space-y-4 w-full">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-12 bg-gray-100 rounded w-full" />
-              ))}
-            </div>
-          </div>
-        ) : displayLogs.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center">
-             <p className="text-gray-500 font-medium">No recent call logs available.</p>
-          </div>
-        ) : (
-          <div className="flex-1 overflow-hidden">
-            <DataTable
-              density="comfortable"
-              columns={columns}
-              data={displayLogs}
-              rowKey={(row, i) => row.id || i}
-              selectable={false}
-              onRowClick={() => {}}
-            />
-          </div>
-        )}
+        <span className="text-[11px] font-bold bg-purple-50 text-purple-700 px-2.5 py-0.5 rounded-full border border-purple-200/60">
+          {displayLogs.length} Calls
+        </span>
       </div>
-    </DashboardSection>
+
+      {/* Table Container */}
+      <div className="border border-slate-200/80 rounded-2xl overflow-hidden shadow-2xs">
+        <div className="bg-slate-50/95 border-b border-slate-200/80 shrink-0">
+          <table className="w-full table-fixed text-left align-middle border-collapse">
+            <thead>
+              <tr className="text-[10px] tracking-wider text-slate-500 font-bold uppercase">
+                <th className="py-3 px-4 w-[24%] text-left">Lead Name</th>
+                <th className="py-3 px-3 w-[16%] text-left">Mobile Number</th>
+                <th className="py-3 px-3 w-[16%] text-left">Call Time</th>
+                <th className="py-3 px-2 w-[12%] text-center">Duration</th>
+                <th className="py-3 px-3 w-[16%] text-center">Call Outcome</th>
+                <th className="py-3 px-3 w-[16%] text-right">Next Follow-Up</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+
+        <div className="overflow-y-auto max-h-[256px] divide-y divide-slate-100 bg-white [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <table className="w-full table-fixed text-left align-middle border-collapse">
+            <tbody className="divide-y divide-slate-100 text-xs">
+                {displayLogs.length > 0 ? (
+                  displayLogs.map((log, idx) => {
+                    const isConnected = String(log.status || "").toLowerCase() === "connected" || (log.duration && log.duration !== "00:00");
+                    return (
+                      <tr key={log.id || idx} className="h-[56px] hover:bg-slate-50/80 transition-colors">
+                        {/* Lead Name */}
+                        <td className="px-4 w-[24%]">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px] flex items-center justify-center border border-slate-200 shrink-0">
+                              {(log.studentName || "L").charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-bold text-slate-900 truncate">
+                              {log.studentName || "Lead Contact"}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Mobile */}
+                        <td className="px-3 w-[16%] font-mono text-slate-600 font-medium">
+                          <div className="flex items-center gap-1">
+                            <Phone size={10} className="text-slate-400" />
+                            <span className="truncate">{log.mobile || "-"}</span>
+                          </div>
+                        </td>
+
+                        {/* Call Time */}
+                        <td className="px-3 w-[16%] text-slate-600 font-medium">
+                          {log.callTime || "Today"}
+                        </td>
+
+                        {/* Duration */}
+                        <td className="px-2 w-[12%] text-center font-mono font-bold text-slate-800">
+                          {log.duration || "00:00"}
+                        </td>
+
+                        {/* Outcome */}
+                        <td className="px-3 w-[16%] text-center">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-2xs ${
+                            isConnected 
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200/80" 
+                              : "bg-rose-50 text-rose-700 border-rose-200/80"
+                          }`}>
+                            {isConnected ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
+                            {log.outcome || (isConnected ? "Connected" : "Missed")}
+                          </span>
+                        </td>
+
+                        {/* Next Follow-up */}
+                        <td className="px-3 w-[16%] text-right font-medium text-slate-500 text-[11px] truncate">
+                          {log.nextFollowUp || "—"}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="py-8 text-center text-slate-400 font-medium">
+                      No recent call logs available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+      </div>
+    </div>
   );
 }

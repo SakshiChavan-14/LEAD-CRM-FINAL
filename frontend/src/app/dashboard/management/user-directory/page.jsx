@@ -27,10 +27,10 @@ export default function UserDirectoryPage() {
             <div className="relative group">
               <button 
                 onClick={() => setIsAddOpen(true)}
-                className="bg-primary-container text-on-tertiary font-button-text text-button-text h-[52px] px-6 rounded-card flex items-center gap-2 hover:opacity-90 transition-all active:scale-95"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-admin-primary text-white text-sm font-bold rounded-xl shadow-sm hover:bg-admin-primary-hover active:bg-admin-primary-active active:scale-95 transition-all cursor-pointer h-[44px]"
               >
-                <span>+ Add Telecaller</span>
-                <span className="material-symbols-outlined text-lg">expand_more</span>
+                <span className="material-symbols-outlined text-[18px]">person_add</span>
+                <span>Add Telecaller</span>
               </button>
             </div>
           </div>

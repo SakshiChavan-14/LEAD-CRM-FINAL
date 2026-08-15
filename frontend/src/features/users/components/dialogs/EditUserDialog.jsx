@@ -6,16 +6,17 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
-import useUpdateTelecaller from "@/features/users/hooks/useUpdateTelecaller";
+import useUpdateUser from "@/features/users/hooks/useUpdateUser";
 import { useConfirm } from "@/hooks/useConfirm";
 
 const initialForm = {
   slNo: null,
   empId: "",
   username: "",
-  password: "",
   name: "",
   phoneNo: "",
+  phone: "",
+  mobile: "",
   email: "",
   department: "",
   role: "",
@@ -32,7 +33,7 @@ export default function EditTelecallerDialog({
   const {
     mutate,
     isPending,
-  } = useUpdateTelecaller(user?.empId, {
+  } = useUpdateUser({
     onSuccess: () => {
       onClose();
     },
@@ -40,13 +41,15 @@ export default function EditTelecallerDialog({
 
   useEffect(() => {
     if (user && open) {
+      const phoneValue = user.phoneNo || user.phone || user.mobile || "";
       setForm({
         slNo: user.slNo,
         empId: user.empId,
         username: user.username ?? "",
-        password: "",
         name: user.name ?? "",
-        phoneNo: user.phone ?? "",
+        phoneNo: phoneValue,
+        phone: phoneValue,
+        mobile: phoneValue,
         email: user.email ?? "",
         department: user.department ?? "",
         role: user.role ?? "",
@@ -60,10 +63,15 @@ export default function EditTelecallerDialog({
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === "phoneNo" || name === "phone" || name === "mobile") {
+        next.phoneNo = value;
+        next.phone = value;
+        next.mobile = value;
+      }
+      return next;
+    });
   };
 
   const confirm = useConfirm();
@@ -73,13 +81,22 @@ export default function EditTelecallerDialog({
 
     const isConfirmed = await confirm({
       title: "Save Changes?",
-      description: "Are you sure you want to save these changes to the telecaller?",
+      description: "Are you sure you want to update this telecaller's details?",
       confirmText: "Save",
-      variant: "primary",
+      variant: "admin-primary",
     });
 
     if (isConfirmed) {
-      mutate(form);
+      const payload = {
+        slNo: form.slNo,
+        empId: form.empId,
+        username: form.username,
+        name: form.name,
+        phoneNo: form.phoneNo,
+        email: form.email,
+      };
+      console.log("Submitting payload:", payload);
+      mutate(payload);
     }
   };
 
@@ -98,21 +115,23 @@ export default function EditTelecallerDialog({
             Cancel
           </Button>
 
-          <button
+          <Button
             type="submit"
             form="edit-user-form"
-            disabled={isPending}
-            className="h-[44px] rounded-xl bg-[#6F1D28] px-5 text-white hover:bg-[#5a1620] transition font-medium disabled:opacity-50"
+            variant="admin-primary"
+            loading={isPending}
+            loadingText="Updating..."
+            fullWidth={false}
           >
-            {isPending ? "Updating..." : "Save Telecaller"}
-          </button>
+            Save Telecaller
+          </Button>
         </>
       }
     >
       <form
         id="edit-user-form"
         onSubmit={handleSubmit}
-        className="grid grid-cols-2 gap-4"
+        className="grid grid-cols-2 gap-4 font-outfit"
       >
         <Input
           label="Employee ID"
@@ -126,6 +145,7 @@ export default function EditTelecallerDialog({
           name="username"
           value={form.username}
           onChange={handleChange}
+          autoComplete="off"
           required
         />
 
@@ -146,15 +166,6 @@ export default function EditTelecallerDialog({
         />
 
         <Input
-          label="New Password"
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Leave blank to keep existing password"
-        />
-
-        <Input
           label="Email"
           name="email"
           type="email"
@@ -167,23 +178,29 @@ export default function EditTelecallerDialog({
           label="Department"
           name="department"
           value={form.department}
-          onChange={handleChange}
+          disabled
         />
 
         <Input
           label="Role"
           name="role"
           value={form.role}
-          onChange={handleChange}
+          disabled
         />
 
         <Input
           label="Reporting Manager"
           name="reportingManager"
           value={form.reportingManager}
-          onChange={handleChange}
+          disabled
         />
       </form>
+
+      <div className="mt-4 px-2">
+        <p className="text-sm text-slate-500 font-medium font-outfit">
+          Password changes are managed separately and cannot be updated by administrators.
+        </p>
+      </div>
     </Modal>
   );
 }

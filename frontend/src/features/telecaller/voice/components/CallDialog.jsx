@@ -41,7 +41,7 @@ export default function CallDialog({ open, isOpen, onClose, onConfirm, name, pho
 
   return createPortal(
     <div
-      className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-[9999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200 p-4"
+      className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-[9999] flex items-center justify-center bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200 p-4 font-outfit"
       onClick={onClose}
       role="presentation"
     >
@@ -49,32 +49,34 @@ export default function CallDialog({ open, isOpen, onClose, onConfirm, name, pho
         role="dialog"
         aria-modal="true"
         aria-labelledby="call-dialog-title"
-        className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 text-center">
-          <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-[#00C853]/10 text-[#00C853] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#00C853]/20 shadow-xs">
             <PhoneCall size={32} />
           </div>
-          <h3 id="call-dialog-title" className="text-xl font-bold text-gray-900 mb-1">
-            {name || "Unknown"}
+          <h3 id="call-dialog-title" className="text-lg font-extrabold text-slate-900 mb-1">
+            {name || "Lead Contact"}
           </h3>
-          <p className="text-gray-500 font-medium mb-6 text-lg">{phone || "No phone number"}</p>
+          <p className="text-slate-500 font-mono font-bold mb-6 text-sm">{phone || "No phone number"}</p>
           
           <div className="flex gap-3 justify-center">
-            <Button
+            <button
               onClick={onClose}
-              variant="outline"
-              className="flex-1 justify-center"
+              type="button"
+              className="flex-1 justify-center py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={onConfirm}
-              className="flex-1 justify-center bg-[#7A1F2B] hover:bg-[#6a1b26] text-white"
+              type="button"
+              className="flex-1 justify-center py-2.5 px-4 rounded-xl bg-[#00C853] hover:bg-[#00b048] text-white text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
             >
-              Start Call
-            </Button>
+              <PhoneCall size={14} />
+              <span>Start Call</span>
+            </button>
           </div>
         </div>
       </div>
@@ -82,4 +84,3 @@ export default function CallDialog({ open, isOpen, onClose, onConfirm, name, pho
     document.body
   );
 }
-

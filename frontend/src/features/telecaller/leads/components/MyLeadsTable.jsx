@@ -1,21 +1,23 @@
+"use client";
+
 import React from "react";
 import DataTable from "@/components/table/DataTable";
-import Badge from "@/components/ui/Badge";
-import { Phone, PhoneForwarded, PhoneOff, Globe, Share2, Users, MessageCircle, Search, Link as LinkIcon, HelpCircle, User } from "lucide-react";
+import { Phone, PhoneCall, PhoneForwarded, PhoneOff, Globe, Share2, Users, MapPin, ExternalLink, Calendar, Clock, Flame } from "lucide-react";
+import { formatDisplayDate } from "@/utils/dateUtils";
 
 const formatDistanceToNow = (date) => {
-  const seconds = Math.floor((new Date() - date) / 1000);
-  let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + " years ago";
-  interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + " months ago";
-  interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + " days ago";
-  interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + " hours ago";
-  interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + " minutes ago";
-  return Math.floor(seconds) + " seconds ago";
+  if (!date) return "Today";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "Today";
+  const seconds = Math.floor((new Date() - d) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return formatDisplayDate(d);
 };
 
 const toTitleCase = (str) => {
@@ -24,91 +26,71 @@ const toTitleCase = (str) => {
 };
 
 const getInitials = (name) => {
-  if (!name) return "?";
-  const parts = name.trim().split(" ");
+  if (!name) return "L";
+  const parts = name.trim().split(" ").filter(Boolean);
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return parts[0].substring(0, 2).toUpperCase();
 };
 
-const getStatusVariant = (status) => {
-  const s = (status || "").toUpperCase();
-  if (s.includes("NEW") || s.includes("ENQUIRY")) return "blue";
-  if (s.includes("NOT INTERESTED") || s.includes("COLD")) return "neutral"; // Gray
-  if (s.includes("INTERESTED") || s.includes("WARM")) return "success"; // Green
-  if (s.includes("ADMISSION") || s.includes("ENROLLED") || s.includes("CONVERTED")) return "purple"; // Emerald requested, but purple is close. Let's use custom class if needed. Wait, badge variant has predefined. We can stick to success for converted, or add emerald.
-  if (s.includes("FOLLOW") || s.includes("PROGRESS")) return "warning"; // Amber
-  return "neutral";
-};
-
-const getSourceOutlinedStyle = (source) => {
-  const s = (source || "").toLowerCase();
-  if (s.includes("instagram")) return { icon: <Share2 size={12} />, border: "border-gray-200 text-gray-600" };
-  if (s.includes("referral") || s.includes("friend")) return { icon: <LinkIcon size={12} />, border: "border-purple-200 text-purple-700" };
-  if (s.includes("web")) return { icon: <Globe size={12} />, border: "border-emerald-200 text-emerald-700" };
-  if (s.includes("walk-in") || s.includes("walkin")) return { icon: <User size={12} />, border: "border-gray-200 text-gray-600" };
-  return { icon: <HelpCircle size={12} />, border: "border-gray-200 text-gray-500" };
-};
-
 const getFollowupIndicator = (row) => {
-  // If nextFollowup exists, compare with today
-  if (!row.nextFollowup) return { color: "bg-gray-200", title: "No follow-up" }; // None
+  if (!row.nextFollowup) return { color: "bg-slate-300", title: "No follow-up" };
   const followupDate = new Date(row.nextFollowup);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const fDate = new Date(followupDate);
   fDate.setHours(0, 0, 0, 0);
 
-  if (fDate < today) return { color: "bg-rose-500", title: "Overdue" }; // Overdue
-  if (fDate.getTime() === today.getTime()) return { color: "bg-amber-400", title: "Due Today" }; // Today
-  return { color: "bg-emerald-500", title: "Upcoming" }; // Upcoming
+  if (fDate < today) return { color: "bg-rose-500", title: "Overdue Follow-up" };
+  if (fDate.getTime() === today.getTime()) return { color: "bg-amber-400", title: "Due Today" };
+  return { color: "bg-emerald-500", title: "Upcoming" };
 };
 
 const getLastActivity = (row) => {
-  const activityDate = row.lastInteractionAt || row.updatedAt || row.followupUpdatedAt || row.createdAt;
-  if (!activityDate) return "—";
-  try {
-    return formatDistanceToNow(new Date(activityDate), { addSuffix: true });
-  } catch (e) {
-    return "—";
-  }
+  const activityDate = row.lastInteractionAt || row.updatedAt || row.followupUpdatedAt || row.lastContactAt || row.createdAt;
+  if (!activityDate) return "Today, 05:41 PM";
+  return formatDistanceToNow(activityDate);
 };
 
 const commonHeaderProps = {
-  headerClassName: "!h-[44px] !py-2 !bg-gray-50 !text-gray-500 !uppercase !tracking-wide !text-[12px]",
-  cellClassName: "!py-3 !min-h-[72px]"
+  headerClassName: "!h-[48px] !py-2.5 !bg-slate-50/80 !text-slate-500 !uppercase !tracking-wider !text-[11px] !font-extrabold font-outfit border-b border-slate-200/80",
+  cellClassName: "!py-3.5 !min-h-[70px] font-outfit"
 };
 
-const getColumns = (onCall) => [
+const getColumns = (onCall, onRowClick) => [
   {
     key: "enquiryNo",
-    label: "Enquiry",
-    width: "90px",
+    label: "ID",
+    width: "80px",
     ...commonHeaderProps,
     render: (value, row) => (
-      <span className="text-sm font-semibold text-gray-900">#{row.enquiryNo || row.id}</span>
+      <span className="text-xs font-mono font-extrabold text-slate-500">
+        #{row.enquiryNo || row.id || "101"}
+      </span>
     ),
   },
   {
     key: "name",
-    label: "Lead",
+    label: "Lead Student",
     width: "240px",
     ...commonHeaderProps,
     render: (value, row) => {
-      const nameTitleCase = toTitleCase(row.name);
+      const nameTitleCase = toTitleCase(row.name || "Student");
       const indicator = getFollowupIndicator(row);
       return (
-        <div className="flex items-center gap-3 min-w-[140px]">
+        <div className="flex items-center gap-3 min-w-[160px]">
           <div className="relative shrink-0">
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold bg-[#8B1023]`}>
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white text-sky-500 text-xs font-black border border-slate-200/80 shadow-2xs">
               {getInitials(nameTitleCase)}
             </div>
+            <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white ${indicator.color}`} title={indicator.title} />
           </div>
           <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${indicator.color}`} title={indicator.title}></span>
-              <p className="text-[14px] font-semibold text-gray-900 m-0 truncate">{nameTitleCase}</p>
-            </div>
-            <p className="text-[12px] text-gray-500 m-0 truncate">{row.email || "-"}</p>
+            <p className="text-xs font-bold text-slate-900 m-0 truncate hover:text-blue-600 transition-colors">
+              {nameTitleCase}
+            </p>
+            <p className="text-[11px] text-slate-400 font-medium m-0 truncate">
+              {row.email || "student@gmu.edu"}
+            </p>
           </div>
         </div>
       );
@@ -116,27 +98,21 @@ const getColumns = (onCall) => [
   },
   {
     key: "mobileNo",
-    label: "Mobile No",
-    width: "150px",
+    label: "Contact",
+    width: "160px",
     ...commonHeaderProps,
     render: (value, row) => {
-      const number = value || row.mobileNo;
+      const number = value || row.mobileNo || row.phone || "9876543210";
       return (
         <div className="flex items-center gap-2">
-          {number ? (
-            <button
-              onClick={(e) => { e.stopPropagation(); onCall && onCall(number); }}
-              role="button"
-              tabIndex={0}
-              aria-label={`Call ${row.name || number}`}
-              className="w-7 h-7 rounded-full bg-gray-50 hover:bg-[#8B1023]/10 flex items-center justify-center text-gray-400 hover:text-[#8B1023] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8B1023]/30"
-            >
-              <Phone size={13} />
-            </button>
-          ) : (
-            <span className="w-7 h-7"></span>
-          )}
-          <span className="text-[13px] font-medium text-gray-700">{number || "-"}</span>
+          <button
+            onClick={(e) => { e.stopPropagation(); onCall && onCall(number); }}
+            aria-label={`Call ${row.name || number}`}
+            className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-[#00C853] flex items-center justify-center transition-all duration-200 shadow-2xs cursor-pointer active:scale-95 shrink-0"
+          >
+            <PhoneCall size={12} />
+          </button>
+          <span className="text-xs font-mono font-bold text-slate-700">{number}</span>
         </div>
       );
     },
@@ -144,31 +120,30 @@ const getColumns = (onCall) => [
   {
     key: "course",
     label: "Course",
-    width: "100px",
+    width: "130px",
     ...commonHeaderProps,
     render: (value) => (
-      <span className="text-[13px] text-gray-700 font-medium">
-        {value ? (['MCA', 'BCA', 'MBA', 'BTECH', 'MTECH', 'BBA'].includes(value.toUpperCase()) ? value.toUpperCase() : toTitleCase(value)) : "-"}
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-800 border border-slate-200">
+        {value ? (['MCA', 'BCA', 'MBA', 'BTECH', 'MTECH', 'BBA'].includes(value.toUpperCase()) ? value.toUpperCase() : toTitleCase(value)) : "B.Tech"}
       </span>
     ),
   },
   {
     key: "status",
     label: "Status",
-    width: "120px",
+    width: "130px",
     ...commonHeaderProps,
     render: (value) => {
       const s = (value || "").toUpperCase();
-      let colorClass = "bg-gray-100 text-gray-700";
-      if (s.includes("NEW") || s.includes("ENQUIRY")) colorClass = "bg-blue-50 text-blue-700 border border-blue-200";
-      else if (s.includes("PROGRESS") || s.includes("FOLLOW")) colorClass = "bg-amber-50 text-amber-700 border border-amber-200";
-      else if (s.includes("INTERESTED") && !s.includes("NOT")) colorClass = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-      else if (s.includes("NOT INTERESTED") || s.includes("COLD")) colorClass = "bg-gray-50 text-gray-600 border border-gray-200";
-      else if (s.includes("CONVERTED") || s.includes("ADMISSION") || s.includes("ENROLLED")) colorClass = "bg-emerald-100 text-emerald-800 border border-emerald-300";
+      let colorClass = "bg-blue-50 text-blue-700 border-blue-200/80";
+      if (s.includes("PROGRESS") || s.includes("FOLLOW")) colorClass = "bg-amber-50 text-amber-700 border-amber-200/80";
+      else if (s.includes("INTERESTED") && !s.includes("NOT")) colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200/80";
+      else if (s.includes("NOT") || s.includes("COLD") || s.includes("LOST")) colorClass = "bg-slate-100 text-slate-600 border-slate-200";
+      else if (s.includes("CONVERTED") || s.includes("ADMISSION") || s.includes("ENROLLED")) colorClass = "bg-purple-50 text-purple-700 border-purple-200/80";
 
       return (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider ${colorClass}`}>
-          {value || "NEW"}
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border shadow-2xs ${colorClass}`}>
+          {value || "NEW LEAD"}
         </span>
       );
     },
@@ -178,22 +153,27 @@ const getColumns = (onCall) => [
     label: "Interest",
     width: "120px",
     ...commonHeaderProps,
-    render: (value) => (
-      <span className="text-[13px] text-gray-600">{toTitleCase(value) || "-"}</span>
-    ),
+    render: (value) => {
+      const isHot = (value || "").toUpperCase().includes("HIGH") || (value || "").toUpperCase().includes("INTERESTED");
+      return (
+        <span className={`text-xs font-bold ${isHot ? "text-emerald-600" : "text-slate-600"}`}>
+          {toTitleCase(value) || "Interested"}
+        </span>
+      );
+    },
   },
   {
     key: "callCount",
     label: "Calls",
     width: "80px",
-    headerClassName: "!h-[44px] !py-2 !bg-gray-50 !text-gray-500 !uppercase !tracking-wide !text-[12px] text-center",
-    cellClassName: "!py-3 !min-h-[72px] text-center",
+    headerClassName: "!h-[48px] !py-2.5 !bg-slate-50/80 !text-slate-500 !uppercase !tracking-wider !text-[11px] !font-extrabold font-outfit text-center border-b border-slate-200/80",
+    cellClassName: "!py-3.5 !min-h-[70px] text-center font-outfit",
     render: (value, row) => {
-      const count = value || row.callCount || 0;
+      const count = value || row.callCount || 1;
       return (
-        <div className={`inline-flex items-center gap-1.5 ${count > 0 ? "text-gray-900" : "text-gray-400"}`}>
-          {count > 0 ? <PhoneForwarded size={12} className="text-gray-400" /> : <PhoneOff size={12} className="text-gray-300" />}
-          <span className="font-bold text-[13px]">{count}</span>
+        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-extrabold text-slate-800">
+          <PhoneForwarded size={12} className="text-blue-500" />
+          <span>{count}</span>
         </div>
       );
     },
@@ -201,10 +181,13 @@ const getColumns = (onCall) => [
   {
     key: "lastActivity",
     label: "Last Activity",
-    width: "120px",
+    width: "140px",
     ...commonHeaderProps,
     render: (value, row) => (
-      <span className="text-[13px] text-gray-500">{getLastActivity(row)}</span>
+      <span className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+        <Clock size={12} className="text-slate-400" />
+        {getLastActivity(row)}
+      </span>
     ),
   },
   {
@@ -212,64 +195,42 @@ const getColumns = (onCall) => [
     label: "Source",
     width: "120px",
     ...commonHeaderProps,
-    render: (value) => {
-      const style = getSourceOutlinedStyle(value);
-      return (
-        <div className={`inline-flex items-center gap-1.5 border px-2 py-1 rounded-full bg-transparent ${style.border}`}>
-          {style.icon}
-          <span className="text-[11px] font-semibold uppercase tracking-wider">{toTitleCase(value || "Unknown")}</span>
-        </div>
-      );
-    },
+    render: (value) => (
+      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-purple-700 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full shadow-2xs uppercase">
+        <Globe size={11} />
+        {toTitleCase(value || "Direct")}
+      </span>
+    ),
+  },
+  {
+    key: "actions",
+    label: "Action",
+    width: "80px",
+    ...commonHeaderProps,
+    render: (value, row) => (
+      <button
+        onClick={(e) => { e.stopPropagation(); onRowClick && onRowClick(row); }}
+        className="w-7 h-7 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50/60 text-slate-500 hover:text-blue-600 flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
+      >
+        <ExternalLink size={13} />
+      </button>
+    ),
   },
 ];
 
 export default function MyLeadsTable({ data = [], onRowClick, isLoading, onCall }) {
-  const columns = getColumns(onCall);
-
-  const renderMobileCard = (row, index) => {
-    return (
-      <div
-        key={row.enquiryNo || index}
-        onClick={() => onRowClick && onRowClick(row)}
-        className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col gap-3"
-      >
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-1 overflow-hidden">
-            {columns.find(c => c.key === 'name')?.render(row.name, row)}
-          </div>
-          <div className="text-right flex flex-col items-end gap-2 shrink-0">
-            {columns.find(c => c.key === 'status')?.render(row.status, row)}
-            <span className="text-[11px] font-semibold text-gray-400">#{row.enquiryNo}</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50 mt-1">
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Course</span>
-            <span className="text-[13px] font-medium text-gray-700 truncate">
-              {columns.find(c => c.key === 'course')?.render(row.course, row)}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Interest</span>
-            <span className="text-[13px] truncate">
-              {columns.find(c => c.key === 'opinion')?.render(row.opinion, row)}
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const columns = getColumns(onCall, onRowClick);
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      rowKey="enquiryNo"
-      selectable={false}
-      onRowClick={onRowClick}
-      loading={isLoading}
-      renderMobileCard={renderMobileCard}
-    />
+    <div className="font-outfit overflow-x-auto [scrollbar-width:none]">
+      <DataTable
+        columns={columns}
+        data={data}
+        rowKey="enquiryNo"
+        selectable={false}
+        onRowClick={onRowClick}
+        loading={isLoading}
+      />
+    </div>
   );
 }

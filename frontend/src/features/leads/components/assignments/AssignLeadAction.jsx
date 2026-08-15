@@ -18,8 +18,8 @@ export default function AssignLeadAction({ leadId, isAssigned, currentTelecaller
 
   const handleAssign = (selectedTelecallerId) => {
     assignLeads({
-      leadIds: [leadId],
-      telecallerId: selectedTelecallerId,
+      userId: selectedTelecallerId,
+      enquiryIds: [leadId],
     });
   };
 
@@ -27,13 +27,13 @@ export default function AssignLeadAction({ leadId, isAssigned, currentTelecaller
 
   return (
     <>
-      <Button 
-        className={`bg-[#dca450] hover:bg-[#c99547] text-white font-semibold rounded-lg shadow-sm px-6 py-2 border border-transparent ${fullWidth ? 'w-full' : ''}`}
-        icon={<UserPlus size={16} />}
+      <button 
+        className={`inline-flex items-center justify-center gap-2 bg-admin-primary hover:bg-admin-primary-hover active:bg-admin-primary-active active:scale-95 text-white font-bold text-xs rounded-xl shadow-2xs px-4 py-2 transition-all cursor-pointer ${fullWidth ? 'w-full' : ''}`}
         onClick={() => setIsAssignModalOpen(true)}
       >
-        {isAssigned ? "Reassign Lead" : "Assign Lead"}
-      </Button>
+        <UserPlus size={14} />
+        <span>{isAssigned ? "Reassign Lead" : "Assign Lead"}</span>
+      </button>
 
       {isAssignModalOpen && (
         <AssignLeadsModal

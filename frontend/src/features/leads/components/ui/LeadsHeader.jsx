@@ -20,7 +20,7 @@ export default function LeadsHeader() {
       title: "Export Leads?",
       description: "Are you sure you want to export all matching leads to a CSV?",
       confirmText: "Export",
-      variant: "primary",
+      variant: "admin-primary",
     });
     if (isConfirmed) {
       exportLeads({});
@@ -36,10 +36,10 @@ export default function LeadsHeader() {
         descriptionClassName="mt-1 text-base text-gray-500"
         className="sm:items-end"
         actions={
-          <>
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsImportOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px] text-gray-500">upload</span>
               Import CSV
@@ -47,7 +47,7 @@ export default function LeadsHeader() {
 
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8B0D16] text-white text-sm font-medium rounded-xl shadow-md hover:brightness-110 active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-admin-primary text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-admin-primary-hover active:bg-admin-primary-active active:scale-95 transition-all cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
               Add Lead
@@ -56,12 +56,12 @@ export default function LeadsHeader() {
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-xl shadow-sm hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl shadow-xs hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px] text-gray-500">download</span>
               {isExporting ? "Exporting…" : "Export"}
             </button>
-          </>
+          </div>
         }
       />
 

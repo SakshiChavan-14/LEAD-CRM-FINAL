@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, Filter, X } from "lucide-react";
@@ -44,15 +46,15 @@ export default function MyLeadsFilterToolbar({
   const activeKeys = Object.keys(filters).filter(k => filters[k]);
 
   return (
-    <div className="mb-6 flex flex-col gap-3">
+    <div className="flex flex-col gap-3 font-outfit">
       {/* Search & Inline Filters Row */}
-      <div className="bg-white border border-gray-200 shadow-sm p-2 rounded-xl flex flex-col lg:flex-row gap-3">
-        {/* Search */}
+      <div className="bg-white border border-slate-200/80 shadow-2xs p-2.5 rounded-2xl flex flex-col lg:flex-row gap-3">
+        {/* Search Input */}
         <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
-            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-[#8B1023]/20 text-[14px] outline-none transition-all" 
-            placeholder="Search leads, phone, enquiry no..." 
+            className="w-full pl-9 pr-4 py-2.5 bg-slate-50/70 border border-slate-200/80 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none transition-all" 
+            placeholder="Search leads by student name, phone, enquiry no..." 
             type="text"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
@@ -61,16 +63,16 @@ export default function MyLeadsFilterToolbar({
         </div>
         
         {/* Dropdowns */}
-        <div className="flex gap-2 overflow-x-auto hide-scrollbar">
+        <div className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
           {['status', 'source', 'course'].map((key) => (
             <select
               key={key}
               aria-label={`Filter by ${key}`}
-              className="px-3 py-2.5 bg-gray-50 border border-transparent rounded-lg text-[13px] font-medium text-gray-700 outline-none focus:bg-white focus:border-gray-200 focus:ring-2 focus:ring-[#8B1023]/20 min-w-[130px] cursor-pointer transition-all"
+              className="px-3 py-2 bg-slate-50/70 border border-slate-200/80 rounded-xl text-xs font-bold text-slate-700 outline-none hover:bg-white focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 min-w-[130px] cursor-pointer transition-all capitalize"
               value={filters[key] || ""}
               onChange={(e) => onFilterChange && onFilterChange(key, e.target.value)}
             >
-              <option value="">{toTitleCase(key)}</option>
+              <option value="">All {toTitleCase(key)}s</option>
               {(uniqueOptions[key] || []).map(opt => (
                 <option key={opt} value={opt}>{toTitleCase(opt)}</option>
               ))}
@@ -81,12 +83,12 @@ export default function MyLeadsFilterToolbar({
           <button 
             onClick={onOpenFilters}
             aria-label="Open advanced filters"
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium text-[13px] rounded-lg hover:bg-gray-50 transition-all shrink-0"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200/80 text-slate-700 hover:text-blue-600 hover:border-blue-200 font-bold text-xs rounded-xl hover:bg-slate-50 transition-all shrink-0 cursor-pointer shadow-2xs active:scale-95"
           >
-            <Filter size={14} />
-            Filters
+            <Filter size={13} />
+            <span>Filters</span>
             {hasActiveFilters && activeFiltersCount > 0 && (
-              <span className="flex items-center justify-center w-5 h-5 bg-[#8B1023] text-white text-[11px] font-bold rounded-full">
+              <span className="flex items-center justify-center w-5 h-5 bg-blue-600 text-white text-[10px] font-extrabold rounded-full">
                 {activeFiltersCount}
               </span>
             )}
@@ -97,14 +99,14 @@ export default function MyLeadsFilterToolbar({
       {/* Active Filter Chips */}
       {activeKeys.length > 0 && (
         <div className="flex flex-wrap gap-2 items-center px-1">
-          <span className="text-[12px] font-medium text-gray-500 mr-1">Active Filters:</span>
+          <span className="text-xs font-bold text-slate-400 mr-1">Active Filters:</span>
           {activeKeys.map((key) => (
-            <div key={key} className="flex items-center gap-1.5 bg-white border border-gray-200 px-2.5 py-1 rounded-full shadow-sm">
-              <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">{key}:</span>
-              <span className="text-[12px] font-medium text-gray-900">{toTitleCase(filters[key])}</span>
+            <div key={key} className="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1 rounded-full shadow-2xs">
+              <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide">{key}:</span>
+              <span className="text-xs font-bold text-slate-900">{toTitleCase(filters[key])}</span>
               <button 
                 onClick={() => onClearFilter && onClearFilter(key)}
-                className="ml-1 text-gray-400 hover:text-gray-700 focus:outline-none"
+                className="ml-1 text-slate-400 hover:text-rose-600 focus:outline-none cursor-pointer"
                 aria-label={`Remove ${key} filter`}
               >
                 <X size={12} strokeWidth={3} />

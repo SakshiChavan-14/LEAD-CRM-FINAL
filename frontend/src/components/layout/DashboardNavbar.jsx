@@ -21,6 +21,8 @@ import { useSearchController } from "@/hooks/useSearchController";
 import DynamicHeaderDate from "./DynamicHeaderDate";
 import ProfileDropdown from "./ProfileDropdown";
 
+import NotificationDropdown from "@/features/telecaller/notifications/components/NotificationDropdown";
+
 export default function DashboardNavbar({
   breadcrumbs,
   onMenuClick,
@@ -57,6 +59,11 @@ export default function DashboardNavbar({
   const getBreadcrumbArray = () => {
     if (!breadcrumbs) return [{ label: "Dashboard" }];
     
+    if (pathname.includes('/reports/telecaller/')) return breadcrumbs.reportsTelecaller || [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Reports", href: "/dashboard/reports" },
+      { label: "Telecaller Performance" }
+    ];
     if (pathname.includes('/leads/')) return breadcrumbs.leadDetails || breadcrumbs.leadsDetail;
     if (pathname.endsWith('/leads')) return breadcrumbs.leads;
     if (pathname.includes('/user-directory/')) return breadcrumbs.telecallerDetails;
@@ -68,6 +75,11 @@ export default function DashboardNavbar({
       { label: "Dashboard", href: pathname.startsWith("/telecaller") ? "/telecaller" : "/dashboard" },
       { label: "Follow-ups" }
     ];
+    if (pathname.endsWith('/calls/history')) return breadcrumbs.callsHistory || [
+      { label: "Dashboard", href: "/telecaller" },
+      { label: "Calls", href: "/telecaller/calls" },
+      { label: "Recent Calls" }
+    ];
     if (pathname.endsWith('/calls')) return breadcrumbs.calls || [
       { label: "Dashboard", href: pathname.startsWith("/telecaller") ? "/telecaller" : "/dashboard" },
       { label: "Calls" }
@@ -76,7 +88,10 @@ export default function DashboardNavbar({
       { label: "Dashboard", href: "/telecaller" },
       { label: "Recordings" }
     ];
-    if (pathname.endsWith('/profile')) return breadcrumbs.profile;
+    if (pathname.endsWith('/profile')) return breadcrumbs.profile || [
+      { label: "Dashboard", href: pathname.startsWith("/telecaller") ? "/telecaller" : "/dashboard" },
+      { label: "Profile" }
+    ];
     if (pathname.endsWith('/reports')) return breadcrumbs.reports;
     if (pathname.endsWith('/settings')) return breadcrumbs.settings;
     if (pathname.endsWith('/management')) return breadcrumbs.management;
@@ -178,10 +193,7 @@ export default function DashboardNavbar({
 
         {/* Icons & Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 relative text-gray-700 transition-colors">
-            <Bell size={20} />
-            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
-          </button>
+          <NotificationDropdown />
 
           <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1"></div>
 

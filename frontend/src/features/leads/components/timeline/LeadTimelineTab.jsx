@@ -15,7 +15,8 @@ const groupTimelineEvents = (events) => {
   yesterday.setDate(yesterday.getDate() - 1);
 
   events.forEach(event => {
-    const eventDate = new Date(event.timestamp);
+    const rawDate = event.timestamp || event.createdAt;
+    const eventDate = rawDate ? new Date(rawDate) : new Date();
     eventDate.setHours(0, 0, 0, 0);
     
     let groupKey;

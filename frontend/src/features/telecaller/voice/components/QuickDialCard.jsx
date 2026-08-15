@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState, useMemo } from "react";
-import { Search, Phone } from "lucide-react";
+import { Search, Phone, User, PhoneCall, Check, X } from "lucide-react";
 import { useVoice } from "../context/VoiceProvider";
 import { VOICE_STATES } from "../utils/twilioEvents";
 import { useTelecallerLeads } from "../../hooks/useMyLeads";
@@ -7,7 +9,6 @@ import { useTelecallerLeads } from "../../hooks/useMyLeads";
 export default function QuickDialCard() {
   const voiceCtx = useVoice();
   const voiceState = voiceCtx?.voiceState || "IDLE";
-
   const { selectedLead, setSelectedLead } = voiceCtx;
 
   const [mode, setMode] = useState("search"); // "search" | "manual"
@@ -39,7 +40,7 @@ export default function QuickDialCard() {
   const handleSelectLead = (lead) => {
     setSelectedLead({
       ...lead,
-      phone: lead.mobileNo
+      phone: lead.mobileNo || lead.phone
     });
     setSearchQuery(lead.name || "");
   };
@@ -51,7 +52,7 @@ export default function QuickDialCard() {
     }
 
     if (mode === "search" && selectedLead) {
-      voiceCtx?.startCall(selectedLead.enquiryNo, selectedLead.phone);
+      voiceCtx?.startCall(selectedLead.enquiryNo || selectedLead.id, selectedLead.phone);
     } else if (mode === "search" && !selectedLead && manualPhone.trim().length >= 10) {
       voiceCtx?.startCall(null, manualPhone.trim());
     } else if (mode === "manual" && manualPhone.trim().length >= 10) {
@@ -62,142 +63,159 @@ export default function QuickDialCard() {
   };
 
   return (
-    <div className="bg-white border border-[#ECECEC] rounded-[16px] shadow-sm flex flex-col h-full overflow-hidden">
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-xs hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col h-[560px] overflow-hidden font-outfit">
       {/* Header */}
-      <div className="p-6 border-b border-[#ECECEC] flex-shrink-0">
-        <h2 className="text-[15px] font-[700] text-gray-900 mb-4">Quick Dial</h2>
+      <div className="p-5 border-b border-slate-100 flex-shrink-0">
+        <h2 className="text-sm font-extrabold text-slate-900 mb-3">Quick Outbound Dial</h2>
         
         {/* Segmented Controls */}
-        <div className="flex bg-gray-100/50 p-1 rounded-xl border border-[#ECECEC]">
+        <div className="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
           <button
             onClick={() => { setMode("search"); setSelectedLead(null); }}
-            className={`flex-1 py-2 text-[13px] font-[600] rounded-lg transition-all ${
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
               mode === "search"
-                ? "bg-white text-gray-900 shadow-sm border border-[#ECECEC]"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50 border border-transparent"
+                ? "bg-white text-blue-700 shadow-2xs"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
-            Search Lead
+            Search Contact
           </button>
           <button
             onClick={() => { setMode("manual"); setSelectedLead(null); }}
-            className={`flex-1 py-2 text-[13px] font-[600] rounded-lg transition-all ${
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
               mode === "manual"
-                ? "bg-white text-gray-900 shadow-sm border border-[#ECECEC]"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50 border border-transparent"
+                ? "bg-white text-blue-700 shadow-2xs"
+                : "text-slate-500 hover:text-slate-900"
             }`}
           >
-            Enter Number
+            Direct Number
           </button>
         </div>
       </div>
 
       {/* Body */}
-      <div className="p-6 flex-1 flex flex-col gap-6 overflow-y-auto">
+      <div className="p-5 flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
         {/* Search Mode */}
         {mode === "search" && (
-          <div className="flex flex-col gap-5">
-            <div className="relative">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setSelectedLead(null);
-                }}
-                placeholder="Search by name, phone or enquiry no..."
-                className="w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all"
-              />
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Search Directory</label>
+              <div className="relative">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSelectedLead(null);
+                  }}
+                  placeholder="Type name, phone or enquiry ID..."
+                  className="w-full text-xs bg-slate-50/70 border border-slate-200/80 rounded-xl pl-9 pr-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium shadow-2xs"
+                />
+              </div>
             </div>
 
-            {/* Autocomplete */}
+            {/* Autocomplete dropdown */}
             {searchQuery.length > 1 && !selectedLead && searchResults.length > 0 && (
-              <div className="bg-white border border-[#ECECEC] rounded-xl shadow-lg max-h-[160px] overflow-y-auto -mt-3">
+              <div className="bg-white border border-slate-200 rounded-xl shadow-lg max-h-[160px] overflow-y-auto -mt-2 custom-scrollbar">
                 {searchResults.map((lead) => (
                   <button
                     key={lead.enquiryNo}
                     onClick={() => handleSelectLead(lead)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-[#F5F5F5] last:border-0"
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 hover:bg-blue-50/50 transition-colors text-left border-b border-slate-100 last:border-0 cursor-pointer"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#7A1F2B] text-white flex items-center justify-center text-xs font-[700] shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
                       {(lead.name || "?")[0]}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-[13px] font-[600] text-gray-900 truncate">{lead.name}</span>
-                      <span className="text-[11px] text-gray-500">{lead.mobileNo}</span>
+                      <span className="text-xs font-bold text-slate-900 truncate">{lead.name}</span>
+                      <span className="text-[10px] text-slate-400 font-mono">{lead.mobileNo || lead.phone}</span>
                     </div>
                   </button>
                 ))}
               </div>
             )}
 
-            {/* Divider */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-[#ECECEC]" />
-              <span className="text-[11px] text-gray-400 font-[500] uppercase tracking-wider">or</span>
-              <div className="flex-1 h-px bg-[#ECECEC]" />
-            </div>
-
-            {/* Phone Number input always visible in search mode too */}
-            <div className="relative">
-              <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="tel"
-                value={manualPhone}
-                onChange={(e) => setManualPhone(e.target.value.replace(/[^0-9+]/g, ""))}
-                placeholder="Enter phone number"
-                maxLength={15}
-                className="w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all font-mono"
-              />
-            </div>
-
             {/* Selected Lead Preview */}
             {selectedLead && (
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-[#ECECEC]">
-                <div className="w-10 h-10 rounded-full bg-[#7A1F2B] text-white flex items-center justify-center font-[700] text-sm shrink-0">
-                  {(selectedLead.name || "?")[0]}
+              <div className="flex items-center justify-between gap-3 p-3.5 bg-blue-50/70 rounded-xl border border-blue-200/80 shadow-2xs">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                    {(selectedLead.name || "?")[0]}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-bold text-slate-900 truncate">{selectedLead.name}</span>
+                    <span className="text-[11px] text-blue-700 font-mono font-semibold">{selectedLead.phone}</span>
+                  </div>
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[14px] font-[600] text-gray-900 truncate">{selectedLead.name}</span>
-                  <span className="text-[12px] text-gray-500 font-mono">{selectedLead.phone}</span>
-                </div>
+                <button
+                  onClick={() => setSelectedLead(null)}
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+                >
+                  <X size={13} />
+                </button>
               </div>
             )}
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-1">
+              <div className="flex-1 h-px bg-slate-100" />
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">or dial phone</span>
+              <div className="flex-1 h-px bg-slate-100" />
+            </div>
+
+            {/* Direct Phone Number input */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Direct Phone</label>
+              <div className="relative">
+                <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="tel"
+                  value={manualPhone}
+                  onChange={(e) => setManualPhone(e.target.value.replace(/[^0-9+]/g, ""))}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={15}
+                  className="w-full text-xs bg-slate-50/70 border border-slate-200/80 rounded-xl pl-9 pr-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-bold shadow-2xs"
+                />
+              </div>
+            </div>
           </div>
         )}
 
         {/* Manual Mode */}
         {mode === "manual" && (
           <div className="flex flex-col gap-4">
-            <div className="relative">
-              <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="tel"
-                value={manualPhone}
-                onChange={(e) => setManualPhone(e.target.value.replace(/[^0-9+]/g, ""))}
-                placeholder="Enter phone number"
-                maxLength={15}
-                className="w-full text-[13px] bg-white border border-[#ECECEC] rounded-xl pl-10 pr-4 py-3 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/15 focus:border-[#7A1F2B]/30 transition-all font-mono"
-              />
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Direct Phone Number</label>
+              <div className="relative">
+                <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="tel"
+                  value={manualPhone}
+                  onChange={(e) => setManualPhone(e.target.value.replace(/[^0-9+]/g, ""))}
+                  placeholder="Enter 10-digit mobile number"
+                  maxLength={15}
+                  className="w-full text-xs bg-slate-50/70 border border-slate-200/80 rounded-xl pl-9 pr-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono font-bold shadow-2xs"
+                />
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer */}
-      <div className="p-6 bg-white border-t border-[#ECECEC] flex-shrink-0">
+      {/* Footer Call Button with #00C853 */}
+      <div className="p-4 bg-slate-50/60 border-t border-slate-100 flex-shrink-0">
         <button
           onClick={handleCall}
           disabled={isBusy}
-          className={`w-full flex items-center justify-center gap-2 font-[600] text-[13px] py-3 rounded-xl transition-all shadow-sm ${
+          className={`w-full flex items-center justify-center gap-2 font-bold text-xs py-3 rounded-xl transition-all border shadow-xs active:scale-95 cursor-pointer ${
             isBusy 
-              ? "bg-gray-400 text-white cursor-not-allowed" 
-              : "bg-[#7A1F2B] hover:bg-[#6a1b26] text-white"
+              ? "bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed" 
+              : "bg-white border-slate-200 hover:bg-slate-50 text-[#00C853]"
           }`}
         >
-          <Phone size={16} />
-          {isBusy ? "Call in Progress..." : "Call Lead"}
+          <PhoneCall size={14} />
+          <span>{isBusy ? "Call in Progress..." : "Start Outbound Call"}</span>
         </button>
       </div>
     </div>

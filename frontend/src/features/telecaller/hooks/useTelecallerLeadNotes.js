@@ -30,3 +30,21 @@ export const useUpdateTelecallerLeadNote = (enquiryNo) => {
     },
   });
 };
+
+export const useCreateTelecallerLeadNote = (enquiryNo) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (content) => {
+      return await telecallerLeadService.addLeadNote(enquiryNo, content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["telecaller", "leads", enquiryNo, "notes"] });
+      queryClient.invalidateQueries({ queryKey: ["telecaller", "lead", enquiryNo] });
+      toast.success("Note created successfully");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Failed to create note");
+    },
+  });
+};

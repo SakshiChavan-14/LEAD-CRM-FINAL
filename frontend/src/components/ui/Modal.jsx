@@ -112,7 +112,7 @@ export default function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className={`flex flex-col gap-[var(--spacing-content)] border-t border-gray-200 px-[var(--spacing-card)] py-[var(--spacing-toolbar)] sm:flex-row sm:justify-end sm:gap-[var(--spacing-content)] sm:px-[var(--spacing-section)] sm:py-[var(--spacing-card)] ${footerClassName}`}>
+          <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-gray-200 px-6 py-4 ${footerClassName}`}>
             {footer}
           </div>
         )}

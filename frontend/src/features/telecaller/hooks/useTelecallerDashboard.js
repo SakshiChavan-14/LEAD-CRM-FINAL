@@ -6,8 +6,12 @@ export const useTelecallerDashboard = () => {
   return useQuery({
     queryKey: ["telecallerDashboard"],
     queryFn: async () => {
-      const rawData = await telecallerDashboardService.getDashboard();
-      return mapDashboard(rawData);
+      const rawData = await telecallerDashboardService.getDashboardV2();
+      const mapped = mapDashboard(rawData);
+      return {
+        ...mapped,
+        performance: rawData?.performance || { daily: [], monthly: [], weekly: [] },
+      };
     },
     staleTime: 5 * 60 * 1000,
   });

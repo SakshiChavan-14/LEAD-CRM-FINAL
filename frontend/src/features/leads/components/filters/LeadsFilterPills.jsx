@@ -25,8 +25,8 @@ export default function LeadsFilterPills({ activeFilter = "", onSelect, counts =
             onClick={() => onSelect(id)}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium border transition-all cursor-pointer ${
               isActive
-                ? "bg-[#8B0D16]/5 border-[#8B0D16] text-[#8B0D16] shadow-sm"
-                : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm"
+                ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                : "bg-white border-gray-200 text-gray-600 hover:bg-blue-50/40 hover:border-blue-300 hover:text-blue-600 shadow-sm"
             }`}
           >
             {icon && (
@@ -37,7 +37,7 @@ export default function LeadsFilterPills({ activeFilter = "", onSelect, counts =
               <span
                 className={`ml-1 px-1.5 py-0.5 rounded-full text-[11px] font-bold ${
                   isActive
-                    ? "bg-[#8B0D16] text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-500"
                 }`}
               >

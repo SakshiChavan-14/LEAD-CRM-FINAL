@@ -55,4 +55,13 @@ export const breadcrumbs = {
     { label: "User Directory", href: "/dashboard/management/user-directory" },
     { label: "Telecaller Details" }
   ],
+  reportsTelecaller: [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Reports", href: "/dashboard/reports" },
+    { label: "Telecaller Performance" }
+  ],
+  profile: [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Profile" }
+  ],
 };

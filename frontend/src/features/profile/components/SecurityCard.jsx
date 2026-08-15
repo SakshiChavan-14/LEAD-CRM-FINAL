@@ -1,75 +1,98 @@
+"use client";
+
 import React, { useState } from "react";
-import { Shield, Lock, CheckCircle2, History, Clock } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { Shield, Lock, CheckCircle2, History, Clock, KeyRound, Smartphone, ShieldCheck, Laptop } from "lucide-react";
 import ChangePasswordDialog from "./ChangePasswordDialog";
 
 export default function SecurityCard() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const securityTips = [
-    "Use at least 8 characters",
-    "Include uppercase and lowercase letters",
-    "Include numbers and special characters",
-    "Avoid using personal information"
+    "Use at least 8 characters with upper & lowercase letters",
+    "Include numeric numbers and special symbols (@, #, $)",
+    "Avoid using personal birthdates or common words",
+    "Do not reuse passwords across multiple systems"
   ];
 
   return (
     <>
-      <div className="bg-white rounded-[24px] shadow-sm border border-[#ECECEC] overflow-hidden">
-        <div className="px-6 py-5 border-b border-[#ECECEC] flex items-center gap-3">
-          <Shield size={18} className="text-[#7A1F2B]" />
-          <h3 className="text-[16px] font-semibold text-gray-900">Security</h3>
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 hover:border-slate-300 hover:shadow-md transition-all duration-300 overflow-hidden h-full flex flex-col font-outfit">
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 shadow-2xs">
+              <Shield size={18} />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 tracking-tight">Security & Authentication</h3>
+              <p className="text-xs text-slate-400 font-medium mt-0.5">Password management, 2FA, and login history</p>
+            </div>
+          </div>
+          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200/80 shadow-2xs">
+            <ShieldCheck size={12} />
+            2FA Active
+          </span>
         </div>
         
-        <div className="p-6">
+        <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
           {/* Password Section */}
-          <div className="bg-rose-50/50 border border-rose-100 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-gradient-to-r from-blue-50/60 to-purple-50/40 border border-blue-100 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs hover:shadow-xs transition-all">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
-                <Lock size={20} className="text-[#7A1F2B]" />
+              <div className="w-12 h-12 rounded-xl bg-white shadow-xs border border-slate-200/80 flex items-center justify-center text-blue-600 shrink-0">
+                <Lock size={20} />
               </div>
               <div>
-                <h4 className="text-[15px] font-semibold text-gray-900">Password</h4>
-                <p className="text-[18px] font-bold text-gray-900 tracking-[0.2em] leading-tight mt-0.5">••••••••</p>
-                <p className="text-[12px] text-gray-500 mt-1">Last changed: 20 July 2025</p>
+                <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Account Password</h4>
+                <p className="text-lg font-extrabold text-slate-900 tracking-[0.25em] leading-tight font-mono mt-0.5">••••••••••••</p>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">Last changed: 20 July 2025</p>
               </div>
             </div>
             
-            <Button 
+            <button 
               onClick={() => setIsPasswordModalOpen(true)}
-              className="bg-[#7A1F2B] hover:bg-[#6a1b26] text-white flex items-center justify-center gap-2 px-5 whitespace-nowrap shadow-sm"
+              className="px-5 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold rounded-xl border border-blue-200/80 shadow-xs transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
             >
-              <Lock size={16} />
-              Change Password
-            </Button>
+              <KeyRound size={14} />
+              <span>Change Password</span>
+            </button>
           </div>
 
-          {/* Read Only Stats */}
-          <div className="mt-6 grid grid-cols-2 gap-4 border-b border-[#ECECEC] pb-6">
-             <div className="flex items-center gap-3">
-               <History size={16} className="text-gray-400" />
-               <div>
-                  <p className="text-[12px] font-medium text-gray-500 uppercase">Last Login</p>
-                  <p className="text-[14px] font-semibold text-gray-900 mt-0.5">Today, 09:41 AM</p>
-               </div>
-             </div>
-             <div className="flex items-center gap-3">
-               <Clock size={16} className="text-green-500" />
-               <div>
-                  <p className="text-[12px] font-medium text-gray-500 uppercase">Active Session</p>
-                  <p className="text-[14px] font-semibold text-gray-900 mt-0.5">Windows • Chrome</p>
-               </div>
-             </div>
+          {/* Interactive Security Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 hover:bg-white hover:border-blue-200 hover:shadow-2xs transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 shadow-2xs">
+                <History size={18} />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Last Login Session</span>
+                <span className="text-xs font-extrabold text-slate-900 truncate mt-0.5">Today, 09:41 AM</span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 hover:bg-white hover:border-emerald-200 hover:shadow-2xs transition-all">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100 shadow-2xs">
+                <Laptop size={18} />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Active Device</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <span className="text-xs font-extrabold text-emerald-700 truncate mt-0.5">Windows 11 • Chrome</span>
+              </div>
+            </div>
           </div>
 
-          {/* Tips List */}
-          <div className="mt-6">
-            <h4 className="text-[14px] font-semibold text-gray-900 mb-4">Tips for a strong password</h4>
-            <div className="space-y-3">
+          {/* Password Best Practice Checklist */}
+          <div className="bg-slate-50/50 rounded-2xl border border-slate-200/80 p-5">
+            <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-3">
+              Password Security Guidelines
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {securityTips.map((tip, idx) => (
-                <div key={idx} className="flex items-start gap-2.5">
-                  <CheckCircle2 size={16} className="text-green-500 shrink-0 mt-0.5" />
-                  <span className="text-[13.5px] text-gray-600 leading-snug">{tip}</span>
+                <div key={idx} className="flex items-start gap-2 text-xs font-semibold text-slate-600">
+                  <CheckCircle2 size={15} className="text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="leading-snug">{tip}</span>
                 </div>
               ))}
             </div>

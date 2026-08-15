@@ -5,7 +5,7 @@ import { useCallHistory } from "@/features/telecaller/voice/hooks/useCallHistory
 import { createCallQueueModel } from "../utils/callQueueEngine";
 
 export function useTodayCallQueue() {
-  const { data: leadsData, isLoading: leadsLoading } = useTelecallerLeads({}, 0, 5000);
+  const { data: leadsData, isLoading: leadsLoading } = useTelecallerLeads({}, 0, 100);
   const { data: followups, isLoading: followupsLoading } = useFollowups("all");
   const { data: calls, isLoading: callsLoading } = useCallHistory();
 

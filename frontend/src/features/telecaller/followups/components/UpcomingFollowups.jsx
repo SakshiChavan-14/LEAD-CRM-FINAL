@@ -1,127 +1,103 @@
-import { CalendarClock, Clock, AlertCircle } from "lucide-react";
-import Button from "@/components/ui/Button";
+"use client";
+
+import React from "react";
+import { CalendarClock, Clock, Calendar } from "lucide-react";
 import CallButton from "@/features/telecaller/voice/components/CallButton";
 
-const FollowupSkeleton = () => (
-  <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 shadow-sm mb-3">
-    <div className="flex flex-col gap-2">
-      <div className="w-24 h-4 bg-gray-100 animate-pulse rounded"></div>
-      <div className="w-16 h-3 bg-gray-100 animate-pulse rounded"></div>
-    </div>
-    <div className="w-16 h-8 bg-gray-100 animate-pulse rounded-full"></div>
-  </div>
-);
+import EmptyState from "@/components/ui/EmptyState";
 
-const BucketGroup = ({ title, items, colorClass, icon: Icon }) => {
-  if (!items || items.length === 0) return null;
-
-  return (
-    <div className="mb-5">
-      <div className="flex items-center gap-2 mb-3">
-        <Icon size={14} className={colorClass.text} />
-        <h3 className={`text-[12px] font-bold uppercase tracking-wider ${colorClass.text}`}>{title}</h3>
-        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${colorClass.bg} ${colorClass.text}`}>
-          {items.length}
-        </span>
-      </div>
-      <div className="space-y-2">
-        {items.map((item, idx) => (
-          <div key={item.id || idx} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-[#8B1538]/30 transition-all group">
-            <div className="flex flex-col min-w-0">
-              <span className="text-[14px] font-semibold text-gray-900 truncate max-w-[120px]">{item.name}</span>
-              <span className="text-[12px] text-gray-500 font-medium">{item.time || 'N/A'}</span>
-            </div>
-            <CallButton
-              enquiryNo={item.id}
-              name={item.name}
-              phone={item.phone}
-              className="h-8 px-3 rounded-full bg-white border border-gray-200 text-[#8B1538] hover:bg-[#8B1538] hover:text-white shadow-none font-semibold text-[13px]"
-              iconSize={14}
-              label="Call"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default function UpcomingFollowups({ isLoading, followups = [], leads = [] }) {
+export default function UpcomingFollowups({ isLoading, followups = [] }) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-[16px] shadow-sm p-5 flex flex-col min-h-[380px]">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[16px] font-semibold text-gray-900">Follow-ups</h2>
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] animate-pulse font-outfit">
+        <div className="flex justify-between items-center mb-4">
+          <div className="w-28 h-5 bg-slate-100 rounded" />
+          <div className="w-16 h-5 bg-slate-100 rounded-full" />
         </div>
-        <div className="flex-1">
-          {[...Array(4)].map((_, i) => <FollowupSkeleton key={i} />)}
+        <div className="space-y-3 flex-1">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 bg-slate-50 rounded-xl" />
+          ))}
         </div>
       </div>
     );
   }
 
-  // Very basic bucketing logic for UI purposes
-  const overdue = [];
-  const next2h = [];
-  const today = [];
-  const tomorrow = [];
+  const items = Array.isArray(followups) ? followups : [];
 
-  const displayFollowups = Array.isArray(followups) ? followups : [];
-
-  displayFollowups.forEach((f, i) => {
-    // Mock distribution for the sake of the CRM UI
-    if (i === 0) overdue.push(f);
-    else if (i === 1) next2h.push(f);
-    else if (i === 2) today.push(f);
-    else tomorrow.push(f);
-  });
+  if (!isLoading && items.length === 0) {
+    return (
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+              <CalendarClock size={16} />
+            </div>
+            <div>
+              <h2 className="text-sm font-extrabold text-slate-900 leading-none">Upcoming Follow-ups</h2>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Scheduled student touchpoints</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex-grow flex items-center justify-center mt-5">
+          <EmptyState title="No upcoming follow-ups" description="No scheduled student touchpoints." />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-[16px] shadow-sm p-5 flex flex-col min-h-[380px]">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[16px] font-semibold text-gray-900">Follow-ups</h2>
-        <span className="text-[12px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-          {displayFollowups.length} remaining
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+            <CalendarClock size={16} />
+          </div>
+          <div>
+            <h2 className="text-sm font-extrabold text-slate-900 leading-none">Upcoming Follow-ups</h2>
+            <p className="text-[11px] text-slate-400 font-medium mt-0.5">Scheduled student touchpoints</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200/80 px-2.5 py-0.5 rounded-full shadow-2xs">
+          {items.length} Pending
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-        {displayFollowups.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-6">
-            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-              <CalendarClock className="text-gray-300" size={24} />
+      {/* List with Smooth Scrolling */}
+      <div className="space-y-2.5 flex-1 overflow-y-auto pr-1 [scrollbar-width:none]">
+        {items.map((item, idx) => {
+          return (
+            <div 
+              key={item.id || idx} 
+              className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-blue-200 hover:shadow-2xs transition-all duration-200 group gap-3"
+            >
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
+                  {item.name}
+                </span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-600 border border-blue-200">
+                    <Clock size={10} />
+                    {item.time || "Scheduled"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Icon-Only White Call Button with #00C853 */}
+              <div className="flex items-center gap-2 shrink-0">
+                <CallButton
+                  enquiryNo={item.enquiryNo || item.id}
+                  name={item.name}
+                  phone={item.phone}
+                  iconOnly={true}
+                  className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-[#00C853] shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center"
+                  iconSize={13}
+                />
+              </div>
             </div>
-            <p className="text-[14px] font-semibold text-gray-900">No follow-ups</p>
-            <p className="text-[12px] text-gray-500 mt-1 max-w-[200px]">Enjoy your free schedule 🎉</p>
-          </div>
-        ) : (
-          <div>
-            <BucketGroup 
-              title="Overdue" 
-              items={overdue} 
-              icon={AlertCircle} 
-              colorClass={{ text: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/10' }} 
-            />
-            <BucketGroup 
-              title="Next 2 Hours" 
-              items={next2h} 
-              icon={Clock} 
-              colorClass={{ text: 'text-[#EF4444]', bg: 'bg-[#EF4444]/10' }} 
-            />
-            <BucketGroup 
-              title="Today" 
-              items={today} 
-              icon={CalendarClock} 
-              colorClass={{ text: 'text-[#2563EB]', bg: 'bg-[#2563EB]/10' }} 
-            />
-            <BucketGroup 
-              title="Tomorrow" 
-              items={tomorrow} 
-              icon={CalendarClock} 
-              colorClass={{ text: 'text-[#64748B]', bg: 'bg-gray-100' }} 
-            />
-          </div>
-        )}
+          );
+        })}
       </div>
     </div>
   );

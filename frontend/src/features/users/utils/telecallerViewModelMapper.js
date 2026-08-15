@@ -13,6 +13,7 @@ export function mapProfile(profileRaw) {
   return {
     slNo: profileRaw?.slNo || null,
     empId: profileRaw?.empId || "N/A",
+    username: profileRaw?.username || "",
     name: profileRaw?.name || "Unknown User",
     email: profileRaw?.email || "N/A",
     phone: profileRaw?.phoneNo || profileRaw?.phone || "N/A",

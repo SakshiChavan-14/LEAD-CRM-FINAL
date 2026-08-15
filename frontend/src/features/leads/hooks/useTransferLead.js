@@ -14,6 +14,8 @@ export const useTransferLead = (onSuccessCallback) => {
       toast.success("Lead Reassigned", "The lead was successfully reassigned.");
       queryClient.invalidateQueries({ queryKey: LEAD_KEYS.overviewLists() });
       queryClient.invalidateQueries({ queryKey: LEAD_KEYS.counts() });
+      queryClient.invalidateQueries({ queryKey: ["telecaller-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["telecaller-notifications-unread"] });
       if (onSuccessCallback) onSuccessCallback();
     },
     onError: (error) => {

@@ -41,9 +41,13 @@ export default function TeamSnapshotSection({ data, isLoading }) {
           <Trophy size={24} strokeWidth={2.5} />
         </div>
         <div>
-          <h4 className="text-[20px] font-bold text-slate-900 leading-tight truncate">{data.topPerformer.name}</h4>
+          <h4 className="text-[20px] font-bold text-slate-900 leading-tight truncate">
+            {data.topPerformer ? data.topPerformer.name : "N/A"}
+          </h4>
           <p className="text-[13px] font-medium text-slate-500 tracking-tight mt-0.5">Top Performer</p>
-          <p className="text-[12px] text-slate-400 mt-1">{data.topPerformer.admissions} admissions this month</p>
+          <p className="text-[12px] text-slate-400 mt-1">
+            {data.topPerformer ? `${data.topPerformer.admissions} admissions this month` : "No performer stats recorded"}
+          </p>
         </div>
       </div>
 

@@ -1,81 +1,89 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Phone, CheckCircle, ChevronRight, ChevronLeft } from "lucide-react";
+"use client";
+
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { PhoneCall, CheckCircle, ChevronRight, Sparkles, User, BookOpen } from "lucide-react";
 import { useTodayCallQueue } from "../hooks/useTodayCallQueue";
 import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 import { CardSkeleton } from "@/components/ui/Skeletons";
-import Avatar from "@/components/ui/Avatar";
 import StatusBadge from "@/components/table/StatusBadge";
 import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 import { useRouter } from "next/navigation";
 
 export default function TodayCallQueue() {
   const { summary, recommendedLead, queue, isLoading } = useTodayCallQueue();
-  const { setSelectedCallId } = useVoice();
+  const { startCall, setSelectedLead } = useVoice();
   const router = useRouter();
   
-  const scrollRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const [visibleCount, setVisibleCount] = useState(8);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const allQueueItems = recommendedLead ? [recommendedLead, ...queue] : queue;
+  const isEmpty = allQueueItems.length === 0;
+
+  // Infinite Scroll Observer
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    if (scrollTop + clientHeight >= scrollHeight - 30) {
+      setVisibleCount((prev) => Math.min(prev + 6, allQueueItems.length));
+    }
+  }, [allQueueItems.length]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, [handleScroll]);
 
   if (isLoading) {
     return <CardSkeleton />;
   }
 
-  const handleCall = (e, id) => {
+  const handleCall = (e, lead) => {
     e.stopPropagation();
-    setSelectedCallId(id);
+    setSelectedLead({
+      ...lead,
+      phone: lead.mobileNo || lead.phone
+    });
+    startCall(lead.enquiryNo || lead.id, lead.mobileNo || lead.phone);
   };
 
   const handleOpenLead = (id) => {
     router.push(`/telecaller/leads/${id}`);
   };
 
-  const handleKeyDown = (e, id) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleOpenLead(id);
-    }
-  };
-
-  const allQueueItems = recommendedLead ? [recommendedLead, ...queue] : queue;
-  const isEmpty = allQueueItems.length === 0;
-
-  const totalPages = Math.max(1, Math.ceil(allQueueItems.length / itemsPerPage));
-  const currentItems = allQueueItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-      if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-      if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    }
-  };
+  const visibleItems = allQueueItems.slice(0, visibleCount);
 
   return (
-    <div className="bg-white rounded-[16px] shadow-sm border border-[#ECECEC] overflow-hidden flex flex-col h-full">
+    <div className="bg-white rounded-2xl shadow-xs border border-slate-200/80 hover:border-slate-300 hover:shadow-md transition-all duration-300 flex flex-col h-[560px] font-outfit overflow-hidden">
       {/* Header & Summary */}
-      <div className="p-5 border-b border-[#ECECEC] flex-shrink-0">
-        <h2 className="text-[15px] font-[700] text-gray-900 mb-2">Priority Queue</h2>
-        <div className="flex items-center gap-2 text-[12px] font-[500] text-gray-500 flex-wrap">
-          <span><strong className="text-gray-900">{summary.assignedLeads}</strong> Leads</span>
-          <span className="text-gray-300">•</span>
-          <span><strong className="text-gray-900">{summary.pendingFollowups}</strong> Pending</span>
-          <span className="text-gray-300">•</span>
-          <span className="text-red-600"><strong className="text-red-600">{summary.overdueCalls}</strong> Overdue</span>
+      <div className="p-5 border-b border-slate-100 flex-shrink-0 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-extrabold text-slate-900 tracking-tight">Priority Queue</h2>
+            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+              {allQueueItems.length} Total
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] font-semibold text-slate-500 mt-1">
+            <span><strong className="text-slate-900 font-mono">{summary.assignedLeads}</strong> Active</span>
+            <span className="text-slate-300">•</span>
+            <span><strong className="text-amber-600 font-mono">{summary.pendingFollowups}</strong> Pending</span>
+            <span className="text-slate-300">•</span>
+            <span><strong className="text-rose-600 font-mono">{summary.overdueCalls}</strong> Overdue</span>
+          </div>
         </div>
       </div>
 
-      {/* Body */}
-      <div ref={scrollRef} className="p-5 flex flex-col flex-1 overflow-y-auto">
+      {/* Body with Infinite Scroll */}
+      <div 
+        ref={scrollContainerRef} 
+        className="p-4 flex-1 overflow-y-auto custom-scrollbar space-y-2.5"
+      >
         {isEmpty ? (
-          <div className="flex-1 flex flex-col justify-center py-8">
+          <div className="h-full flex flex-col items-center justify-center py-8">
             <EmptyState 
               title="No Leads in Your Queue" 
               description="You're all caught up for now." 
@@ -83,79 +91,78 @@ export default function TodayCallQueue() {
             />
           </div>
         ) : (
-          <div className="flex flex-col gap-2.5">
-            {currentItems.map((lead) => (
-              <div 
-                key={lead.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => handleOpenLead(lead.id)}
-                onKeyDown={(e) => handleKeyDown(e, lead.id)}
-                className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 py-3 px-4 rounded-[12px] border border-[#ECECEC] bg-white hover:bg-gray-50 hover:border-gray-300 hover:shadow-md transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#7A1F2B]/50 h-16"
-              >
-                {/* Avatar */}
-                <Avatar name={lead.name} size="md" className="shrink-0" />
-                
-                {/* Name */}
-                <div className="text-[15px] font-semibold text-gray-900 truncate leading-snug">
-                  {lead.name}
-                </div>
+          <>
+            {visibleItems.map((lead) => {
+              const initials = (lead.name || "Student")
+                .split(" ")
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join("")
+                .substring(0, 2)
+                .toUpperCase() || "ST";
 
-                {/* Status Badge */}
-                <div className="flex items-center shrink-0">
-                  <div className="h-6 flex items-center rounded-full overflow-hidden">
-                    <StatusBadge status={lead.status} />
+              return (
+                <div 
+                  key={lead.id || lead.enquiryNo}
+                  onClick={() => handleOpenLead(lead.enquiryNo || lead.id)}
+                  className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white hover:bg-blue-50/30 hover:border-blue-200 hover:shadow-xs transition-all duration-200 cursor-pointer group"
+                >
+                  {/* Avatar & Student Name */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-9 h-9 rounded-full bg-blue-50 text-blue-800 border border-blue-100 flex items-center justify-center font-extrabold text-xs shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                      {initials}
+                    </div>
+
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                        {lead.name}
+                      </span>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-400 font-medium mt-0.5">
+                        <span className="font-mono">{lead.mobileNo || lead.phone || "N/A"}</span>
+                        {lead.course && (
+                          <>
+                            <span>•</span>
+                            <span className="truncate">{lead.course}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="shrink-0">
+                    <StatusBadge status={lead.status || "NEW"} />
+                  </div>
+
+                  {/* Call Icon-Only Button with #00C853 */}
+                  <div className="shrink-0">
+                    <button 
+                      onClick={(e) => handleCall(e, lead)}
+                      className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[#00C853] flex items-center justify-center shadow-xs transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                      title={`Call ${lead.name}`}
+                      aria-label={`Call ${lead.name}`}
+                    >
+                      <PhoneCall size={13} />
+                    </button>
                   </div>
                 </div>
+              );
+            })}
 
-                {/* Call Action */}
-                <div className="flex items-center shrink-0 ml-1">
-                  <button 
-                    onClick={(e) => handleCall(e, lead.id)}
-                    tabIndex={0}
-                    className="h-8 w-20 rounded-lg bg-[#7A1F2B] flex items-center justify-center text-white hover:bg-[#6a1b26] transition-colors text-[12px] font-semibold gap-1.5 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#7A1F2B]"
-                    title="Call"
-                  >
-                    <Phone size={14} />
-                    Call
-                  </button>
-                </div>
+            {visibleCount < allQueueItems.length && (
+              <div className="text-center py-2 text-[11px] font-semibold text-slate-400 animate-pulse">
+                Scroll for more leads...
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Pagination Footer */}
-      {!isEmpty && (
-        <div className="px-6 py-4 border-t border-[#ECECEC] bg-gray-50/50 flex-shrink-0 flex items-center justify-between">
-          <button
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-            className={`flex items-center gap-1 text-[13px] font-[600] ${
-              currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:text-[#7A1F2B] transition-colors"
-            }`}
-          >
-            <ChevronLeft size={16} />
-            <span className="hidden sm:inline">Previous</span>
-          </button>
-          
-          <span className="text-[12px] font-[500] text-gray-600">
-            Page <strong className="text-gray-900">{currentPage}</strong> of <strong className="text-gray-900">{totalPages}</strong>
-          </span>
-
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className={`flex items-center gap-1 text-[13px] font-[600] ${
-              currentPage === totalPages ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:text-[#7A1F2B] transition-colors"
-            }`}
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
+      {/* Footer Info */}
+      <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/60 flex-shrink-0 flex items-center justify-between text-[11px] font-semibold text-slate-500">
+        <span>Showing <strong className="text-slate-900 font-mono">{visibleItems.length}</strong> of <strong className="text-slate-900 font-mono">{allQueueItems.length}</strong> leads</span>
+        <span className="text-blue-600 font-bold">Infinite Scroll Active</span>
+      </div>
     </div>
   );
 }

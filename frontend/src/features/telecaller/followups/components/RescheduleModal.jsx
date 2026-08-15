@@ -1,9 +1,11 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/ui/Modal";
-import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
 import { useUpdateFollowup } from "@/features/telecaller/hooks/useFollowupMutations";
+import { toast } from "sonner";
 
 const normalizeTimeValue = (value) => {
   if (!value) return "";
@@ -37,13 +39,6 @@ export default function RescheduleModal({ isOpen, onClose, followup }) {
       remarks: notes,
     };
 
-    console.log("[RescheduleModal] ========== PAYLOAD BEFORE MUTATE ==========");
-    console.log("[RescheduleModal] Followup ID:", followup.id);
-    console.log("[RescheduleModal] Form state - date:", date);
-    console.log("[RescheduleModal] Form state - time:", time);
-    console.log("[RescheduleModal] Form state - notes:", notes);
-    console.log("[RescheduleModal] Constructed payload:", JSON.stringify(payload, null, 2));
-
     updateMutation.mutate(
       { 
         id: followup.id, 
@@ -51,7 +46,11 @@ export default function RescheduleModal({ isOpen, onClose, followup }) {
       },
       {
         onSuccess: () => {
+          toast.success("Follow-up rescheduled successfully");
           onClose();
+        },
+        onError: (error) => {
+          toast.error(error?.response?.data?.message || "Failed to reschedule follow-up");
         }
       }
     );
@@ -59,8 +58,7 @@ export default function RescheduleModal({ isOpen, onClose, followup }) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Reschedule Follow-up">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        
+      <form onSubmit={handleSubmit} className="space-y-4 font-outfit">
         <div className="grid grid-cols-2 gap-4">
           <Input 
             label="Date"
@@ -86,18 +84,21 @@ export default function RescheduleModal({ isOpen, onClose, followup }) {
           onChange={(e) => setNotes(e.target.value)}
         />
 
-        <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-slate-100">
-          <Button type="button" variant="outline" onClick={onClose} className="h-10 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border-slate-200">
+        <div className="flex justify-end gap-2.5 pt-4 mt-2 border-t border-slate-100">
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+          >
             Cancel
-          </Button>
-          <Button 
+          </button>
+          <button 
             type="submit" 
-            variant="primary" 
-            className="h-10 text-sm font-semibold bg-gray-900 hover:bg-gray-800 text-white shadow-sm transition-colors border-none"
+            className="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
             disabled={updateMutation.isPending}
           >
             {updateMutation.isPending ? "Saving..." : "Confirm Reschedule"}
-          </Button>
+          </button>
         </div>
       </form>
     </Modal>

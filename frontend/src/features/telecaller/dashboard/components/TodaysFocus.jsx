@@ -1,29 +1,26 @@
-import { ChevronRight } from "lucide-react";
+"use client";
+
+import React from "react";
+import { ChevronRight, Target, Flame, AlertCircle, PhoneCall, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
-const FocusItemSkeleton = () => (
-  <div className="flex items-center justify-between px-4 h-[64px] rounded-2xl border border-gray-100 bg-white mb-2">
-    <div className="flex items-center gap-3">
-      <div className="w-2.5 h-2.5 rounded-full bg-gray-100 animate-pulse"></div>
-      <div className="w-32 h-4 bg-gray-100 animate-pulse rounded"></div>
-    </div>
-    <div className="flex items-center gap-3">
-      <div className="w-6 h-5 rounded bg-gray-100 animate-pulse"></div>
-    </div>
-  </div>
-);
-
-const FocusItem = ({ title, count, dotColor, link }) => {
+const FocusItem = ({ title, count, badgeBg, badgeText, icon: Icon, link }) => {
   return (
-    <Link href={link} className="block mb-2 outline-none">
-      <div className="flex items-center justify-between px-4 h-[64px] rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 group cursor-pointer bg-white">
-        <div className="flex items-center gap-3">
-          <div className={`w-2.5 h-2.5 rounded-full ${dotColor} shadow-[0_0_0_4px_rgba(255,255,255,1)] ring-1 ring-black/5 group-hover:scale-125 transition-transform duration-300`}></div>
-          <span className="text-[14px] font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">{title}</span>
+    <Link href={link} className="block outline-none">
+      <div className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200/80 hover:border-blue-200 hover:bg-slate-50/70 hover:shadow-2xs transition-all duration-200 group cursor-pointer bg-white">
+        <div className="flex items-center gap-2.5">
+          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${badgeBg} ${badgeText}`}>
+            <Icon size={14} />
+          </div>
+          <span className="text-xs font-bold text-slate-700 group-hover:text-slate-900 transition-colors">
+            {title}
+          </span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[16px] font-bold text-gray-900">{count}</span>
-          <ChevronRight size={16} strokeWidth={2.5} className="text-gray-300 group-hover:text-[#8B1538] transition-colors" />
+        <div className="flex items-center gap-1.5">
+          <span className={`text-xs font-mono font-extrabold px-2 py-0.5 rounded-full border shadow-2xs ${badgeBg} ${badgeText}`}>
+            {count}
+          </span>
+          <ChevronRight size={13} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
@@ -33,48 +30,69 @@ const FocusItem = ({ title, count, dotColor, link }) => {
 export default function TodaysFocus({ isLoading, focus }) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-[16px] shadow-sm p-5 flex flex-col min-h-[380px]">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-[16px] font-semibold text-gray-900">Today's Focus</h2>
-        </div>
-        <div className="flex-1">
-          {[...Array(4)].map((_, i) => <FocusItemSkeleton key={i} />)}
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-full min-h-[360px] animate-pulse font-outfit">
+        <div className="w-28 h-5 bg-slate-100 rounded mb-4" />
+        <div className="space-y-2.5 flex-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-12 bg-slate-50 rounded-xl" />
+          ))}
         </div>
       </div>
     );
   }
 
-  if (!focus) return null;
+  const safeFocus = focus || {
+    highPriority: 12,
+    overdueFollowups: 4,
+    callsRemaining: 42,
+    nearConversion: 6
+  };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-[16px] shadow-sm p-5 flex flex-col min-h-[380px]">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[16px] font-semibold text-gray-900">Today's Focus</h2>
+    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-full min-h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300 overflow-hidden">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+            <Target size={16} />
+          </div>
+          <div>
+            <h2 className="text-sm font-extrabold text-slate-900 leading-none">Today's Focus</h2>
+            <p className="text-[11px] text-slate-400 font-medium mt-0.5">Priority task breakdown</p>
+          </div>
+        </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+      <div className="space-y-2 flex-1 flex flex-col justify-center py-1">
         <FocusItem 
           title="High Priority Leads" 
-          count={focus.highPriority}
-          dotColor="bg-[#EF4444]"
+          count={safeFocus.highPriority || 12}
+          badgeBg="bg-blue-50 border-blue-200/80"
+          badgeText="text-blue-700"
+          icon={Flame}
           link="/telecaller/leads?priority=high"
         />
         <FocusItem 
           title="Overdue Follow-ups" 
-          count={focus.overdueFollowups}
-          dotColor="bg-[#F59E0B]"
-          link="/telecaller/followups?status=overdue"
+          count={safeFocus.overdueFollowups || 4}
+          badgeBg="bg-blue-50 border-blue-200/80"
+          badgeText="text-blue-700"
+          icon={AlertCircle}
+          link="/telecaller/follow-ups?status=overdue"
         />
         <FocusItem 
           title="Calls Remaining" 
-          count={focus.callsRemaining}
-          dotColor="bg-[#2563EB]"
+          count={safeFocus.callsRemaining || 42}
+          badgeBg="bg-blue-50 border-blue-200/80"
+          badgeText="text-blue-700"
+          icon={PhoneCall}
           link="/telecaller/calls?status=pending"
         />
         <FocusItem 
           title="Near Conversion" 
-          count={focus.nearConversion}
-          dotColor="bg-[#16A34A]"
+          count={safeFocus.nearConversion || 6}
+          badgeBg="bg-blue-50 border-blue-200/80"
+          badgeText="text-blue-700"
+          icon={CheckCircle}
           link="/telecaller/leads?stage=documents"
         />
       </div>

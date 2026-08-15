@@ -22,7 +22,7 @@ const normalizeUser = (raw) => ({
   phone: raw.phoneNo ?? raw.phone ?? raw.mobile ?? "",
   phoneNo: raw.phoneNo ?? raw.phone ?? raw.mobile ?? "",
   avatar: normalizeAvatarPath(raw.photo ?? raw.avatar ?? raw.avatarUrl ?? ""),
-  role: raw.role ?? "TELECALLER",
+  role: raw.role || "TELECALLER",
   college: raw.college ?? "",
   programme: raw.programme ?? "",
   course: raw.course ?? "",
@@ -76,10 +76,9 @@ const createUser = async (payload) => {
 };
 
 const updateUser = async (payload) => {
-  const { slNo, empId, ...rest } = payload;
   const response = await axiosInstance.put(
-    `${API_ENDPOINTS.USERS.UPDATE}/${slNo ?? empId}`,
-    rest
+    `${API_ENDPOINTS.USERS.UPDATE}/${payload.slNo}`,
+    payload
   );
   const raw = response.data?.data ?? response.data;
   return normalizeUser(raw);

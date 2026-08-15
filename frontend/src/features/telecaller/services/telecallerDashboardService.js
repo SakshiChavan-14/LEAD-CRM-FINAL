@@ -2,8 +2,29 @@ import { telecallerLeadService } from "./telecallerLeadService";
 import { telecallerFollowupService } from "./telecallerFollowupService";
 import { callHistoryService } from "../voice/services/callHistoryService";
 import { computeVoiceAnalytics, computeWeeklyPerformance, formatRecentActivity } from "../utils/telecallerMetrics";
+import axiosInstance from "@/lib/axios";
+import API_ENDPOINTS from "@/utils/apiEndpoints";
 
 export const telecallerDashboardService = {
+  getDashboardV2: async () => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.TELECALLER.DASHBOARD_V2);
+      const v2Data = response.data?.data || response.data || {};
+      const baseDashboard = await telecallerDashboardService.getDashboard();
+      return {
+        ...baseDashboard,
+        performance: v2Data.performance || { daily: [], monthly: [], weekly: [] },
+      };
+    } catch (error) {
+      console.error("Dashboard V2 load failed:", error);
+      const baseDashboard = await telecallerDashboardService.getDashboard();
+      return {
+        ...baseDashboard,
+        performance: { daily: [], monthly: [], weekly: [] }
+      };
+    }
+  },
+
   getDashboard: async () => {
     try {
       // 1. Fetch data concurrently

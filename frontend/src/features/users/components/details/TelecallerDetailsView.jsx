@@ -13,10 +13,6 @@ import RecentCallLogsSection from "./RecentCallLogsSection";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import { breadcrumbs } from "@/config/breadcrumbs";
 
-import ContentSection from "@/components/management/ContentSection";
-import KPIGrid from "@/components/management/KPIGrid";
-import PageContainer from "@/components/layout/PageContainer";
-
 export default function TelecallerDetailsView({
   userId,
   telecaller,
@@ -25,32 +21,26 @@ export default function TelecallerDetailsView({
 }) {
   if (isLoading) {
     return (
-      <PageContainer size="wide" className="py-8 space-y-6">
-        <div className="mt-6">
-          <DashboardSkeleton />
-        </div>
-      </PageContainer>
+      <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit space-y-6">
+        <DashboardSkeleton />
+      </div>
     );
   }
 
   if (isError || !telecaller) {
     return (
-      <PageContainer size="wide" className="py-8 space-y-6">
-        <div className="mt-6">
-          <ErrorState
-            title="Error Loading Telecaller Details"
-            message="Failed to load telecaller details."
-            onRetry={() => window.location.reload()}
-          />
-        </div>
-      </PageContainer>
+      <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit space-y-6">
+        <ErrorState
+          title="Error Loading Telecaller Details"
+          message="Failed to load telecaller details."
+          onRetry={() => window.location.reload()}
+        />
+      </div>
     );
   }
 
-  // Performance Snapshot and Profile Section will render below
-
   return (
-    <PageContainer size="wide" className="py-8 space-y-6">
+    <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit space-y-6">
       <ManagementHeader
         title="Performance Dashboard"
         description="View telecaller profile, performance analytics, and workload."
@@ -58,29 +48,29 @@ export default function TelecallerDetailsView({
         actions={<div />}
       />
       
-      <ContentSection className="pb-10">
+      <div className="space-y-6 pb-10">
         <TelecallerHeader profile={telecaller.profile} kpi={telecaller.kpi} />
 
         <PerformanceSnapshot kpi={telecaller.kpi} />
 
-        <KPIGrid columns={2} className="grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Row 1: Profile Information & Calls Performance Trend */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           <ProfileSection profile={telecaller.profile} kpi={telecaller.kpi} />
           <CallsTrendChart data={telecaller.callsPerformance} />
-        </KPIGrid>
+        </div>
 
-        <KPIGrid columns={2} className="grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Row 2: Call Outcome Breakdown & Lead Pipeline Progression */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           <CallOutcomeChart data={telecaller.callOutcomes} />
           <LeadPipelineChart data={telecaller.leadPipeline} />
-        </KPIGrid>
-
-        <div className="grid grid-cols-1 gap-6">
-          <AssignedLeadsSection leads={telecaller.assignedLeads} userId={userId} />
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          <RecentCallLogsSection userId={userId} />
-        </div>
-      </ContentSection>
-    </PageContainer>
+        {/* Assigned Leads Table */}
+        <AssignedLeadsSection leads={telecaller.assignedLeads} userId={userId} />
+
+        {/* Recent Call Logs Table */}
+        <RecentCallLogsSection userId={userId} />
+      </div>
+    </div>
   );
 }

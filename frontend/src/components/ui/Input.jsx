@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+
 export default function Input({
     label,
     name,
@@ -14,6 +17,9 @@ export default function Input({
     ...props
 }) {
     const errorId = name ? `${name}-error` : undefined;
+    const [showPassword, setShowPassword] = useState(false);
+
+    const inputType = type === "password" && showPassword ? "text" : type;
 
     return (
         <div className="space-y-1.5">
@@ -36,7 +42,7 @@ export default function Input({
                 <input
                     id={name}
                     name={name}
-                    type={type}
+                    type={inputType}
                     value={value}
                     onChange={onChange}
                     onBlur={onBlur}
@@ -50,6 +56,7 @@ export default function Input({
                         rounded-[var(--radius-control)]
                         border
                         ${icon ? "pl-11 pr-[var(--spacing-card)]" : "px-[var(--spacing-card)]"}
+                        ${type === "password" ? "pr-11" : ""}
                         py-3
                         text-body
                         placeholder:text-gray-400
@@ -64,7 +71,18 @@ export default function Input({
                         }
                         ${className}
                     `}
+                    {...props}
                 />
+                {type === "password" && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                        tabIndex={-1}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                )}
             </div>
 
             <div className="min-h-[20px] text-caption text-red-500 font-sans">

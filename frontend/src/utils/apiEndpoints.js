@@ -26,15 +26,20 @@ const API_ENDPOINTS = {
     DELETE: (enquiryNo) =>
       `/api/leads/manager/leads/${enquiryNo}`,
 
-    DETAIL: (leadId) => `/api/leads/${leadId}`,
-    TIMELINE: (leadId) => `/api/leads/${leadId}/timeline`,
-    NOTES: (leadId) => `/api/leads/${leadId}/notes`,
+    DETAIL: (enquiryNo) => `/api/leads/${enquiryNo}`,
+    TIMELINE: (enquiryNo) => `/api/leads/${enquiryNo}/timeline`,
+    NOTES: (enquiryNo) => `/api/leads/${enquiryNo}/notes`,
+    STATUS: (enquiryNo) => `/api/leads/${enquiryNo}/status`,
+    STATUS_HISTORY: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}/status-history`,
 
     ASSIGN: "/api/leads/manager/leads/assign",
 
     TRANSFER: "/api/leads/manager/leads/transfer",
 
     IMPORT: "/api/leads/manager/leads/import",
+
+    IMPORT_STATUS: (jobId) =>
+      `/api/leads/manager/leads/import/status/${jobId}`,
 
     EXPORT: "/api/leads/manager/export",
 
@@ -57,6 +62,7 @@ const API_ENDPOINTS = {
   DASHBOARD: {
     STATS: "/api/leads/dashboard/stats",
     ACTIVITY: "/api/leads/dashboard/activity",
+    MONTHLY_TREND: (months = 6) => `/api/leads/dashboard/stats/monthly-trend?months=${months}`,
   },
 
   REPORTS: {
@@ -73,21 +79,42 @@ const API_ENDPOINTS = {
 
     DATEWISE_SUMMARY:
       "/api/leads/calls/datewise-summary",
+
+    COURSE_DISTRIBUTION: "/api/leads/reports/course-distribution",
+
+    EXPORT: "/api/leads/reports/export",
+
+    TELECALLER_EXPORT: (id) =>
+      `/api/leads/reports/telecaller/${id}/export`,
+  },
+
+  ADMIN_TELECALLER: {
+    TIMELINE: (empId, page = 0, size = 20) =>
+      `/api/leads/telecaller/${empId}/timeline?page=${page}&size=${size}`,
+    FOLLOWUPS: (empId, status = "ALL", page = 0, size = 20) =>
+      `/api/leads/telecaller/${empId}/followups?status=${status}&page=${page}&size=${size}`,
   },
 
   TELECALLER: {
     DASHBOARD: "/api/leads/telecaller/dashboard",
+    DASHBOARD_V2: "/api/leads/telecaller/dashboard/v2",
     INTERACTIONS: "/api/leads/telecaller/interactions",
     LEADS: "/api/leads/telecaller/leads",
     LEAD_DETAILS: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}`,
     LEAD_TIMELINE: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}/timeline`,
     LEAD_NOTES: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}/notes`,
+    LEAD_STATUS: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}/status`,
+    LEAD_STATUS_HISTORY: (enquiryNo) => `/api/leads/telecaller/leads/${enquiryNo}/status-history`,
     LEAD_FILTER_OPTIONS: "/api/leads/telecaller/leads/filter-options",
     CALLS: "/api/leads/telecaller/calls",
     CALL_DETAILS: (callId) => `/api/leads/telecaller/calls/${callId}`,
     CALL_RECORDING_AUDIO: (callId) => `/api/leads/telecaller/calls/${callId}/recording`,
     FOLLOWUPS: "/api/leads/telecaller/followups",
     FOLLOWUP_DETAILS: (id) => `/api/leads/telecaller/followups/${id}`,
+    NOTIFICATIONS: "/api/leads/telecaller/notifications",
+    UNREAD_NOTIFICATIONS_COUNT: "/api/leads/telecaller/notifications/unread-count",
+    NOTIFICATION_READ: (id) => `/api/leads/telecaller/notifications/${id}/read`,
+    NOTIFICATIONS_READ_ALL: "/api/leads/telecaller/notifications/read-all",
     AVATAR: "/api/leads/telecaller/profile/avatar",
     VOICE: {
       TOKEN: "/api/leads/telecaller/voice/token",

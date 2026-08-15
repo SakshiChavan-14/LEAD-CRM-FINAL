@@ -40,11 +40,13 @@ const formatRelativeTime = (timestamp) => {
 
 export default function TimelineItem({ event }) {
   if (!event) return null;
-  const { title, description, timestamp, actor, type, outcome, duration } = event;
+  const { title, description, timestamp, createdAt, actor, type, outcome, duration } = event;
+  
+  const actualTime = timestamp || createdAt;
 
   const cfg = getTypeConfig(type);
-  const relativeTime = formatRelativeTime(timestamp);
-  const absoluteTime = timestamp ? new Date(timestamp).toLocaleString("en-IN", {
+  const relativeTime = formatRelativeTime(actualTime);
+  const absoluteTime = actualTime ? new Date(actualTime).toLocaleString("en-IN", {
     day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
   }) : "";
 

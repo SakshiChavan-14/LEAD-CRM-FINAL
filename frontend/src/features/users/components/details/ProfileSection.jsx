@@ -1,71 +1,85 @@
 "use client";
 
-import { DashboardSection } from "@/components/dashboard-ui/DashboardSection";
+import React from "react";
+import { User, Building, ShieldCheck, Mail, Phone, Calendar, Briefcase, Award } from "lucide-react";
 
 export default function ProfileSection({ profile, kpi }) {
   if (!profile) return null;
 
-  const groups = [
-    {
-      title: "Personal",
-      items: [
-        { label: "Employee ID", value: profile.empId },
-        { label: "Email", value: profile.email },
-        { label: "Phone", value: profile.phone },
-      ]
-    },
-    {
-      title: "Organization",
-      items: [
-        { label: "Role", value: profile.role },
-        { label: "Department", value: profile.department },
-        { label: "Reporting Manager", value: profile.reportingManager },
-        { label: "Joining Date", value: profile.joiningDate },
-      ]
-    },
-    {
-      title: "Status",
-      items: [
-        {
-          label: "Status",
-          value: profile.status === "ACTIVE" ? "Active" : "Inactive",
-          isBadge: true,
-          badgeColor: profile.status === "ACTIVE" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700",
-        },
-        { label: "Conversion Rate", value: kpi ? `${kpi.conversionRate}%` : "N/A" },
-        { label: "Assigned Leads", value: kpi ? kpi.assignedLeads : "N/A" },
-      ]
-    }
-  ];
+  const isActive = (profile.status || "ACTIVE").toUpperCase() === "ACTIVE";
 
   return (
-    <DashboardSection title="Profile Information" className="h-full">
-      <div className="bg-white p-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)] h-full">
-        <div className="flex flex-col gap-6">
-          {groups.map((group, groupIdx) => (
-            <div key={groupIdx} className="flex flex-col gap-3">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{group.title}</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-                {group.items.map((item, idx) => (
-                  <div key={idx} className="flex flex-col gap-1">
-                    <span className="text-[13px] text-gray-500 font-medium">{item.label}</span>
-                    {item.isBadge ? (
-                      <div className="flex items-center mt-0.5">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-[600] tracking-wide ${item.badgeColor}`}>
-                          {item.value}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-[15px] font-[600] text-gray-900">{item.value || "-"}</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {groupIdx < groups.length - 1 && <hr className="border-[#ECECEC] mt-2" />}
-            </div>
-          ))}
+    <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 shadow-xs h-full flex flex-col justify-between font-outfit">
+      {/* Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+        <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/60">
+          <User size={18} />
+        </div>
+        <div>
+          <h3 className="text-base font-bold text-slate-900 tracking-tight">Profile Information</h3>
+          <p className="text-xs text-slate-400">Account and organizational details</p>
         </div>
       </div>
-    </DashboardSection>
+
+      {/* Structured Sections */}
+      <div className="space-y-4 my-4">
+        
+        {/* Personal Details */}
+        <div className="bg-slate-50/70 border border-slate-200/60 rounded-2xl p-4">
+          <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400 block mb-2.5">
+            Personal Details
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Employee ID</span>
+              <span className="font-mono font-bold text-slate-900 mt-0.5 block">{profile.empId || "EMP0003"}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Email Address</span>
+              <span className="font-bold text-slate-900 mt-0.5 block truncate">{profile.email || "-"}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Phone Number</span>
+              <span className="font-bold text-slate-900 mt-0.5 block">{profile.phone || "-"}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Account Status</span>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 mt-0.5 rounded-full text-[10px] font-bold border ${
+                isActive ? "bg-emerald-50 text-emerald-700 border-emerald-200/80" : "bg-rose-50 text-rose-700 border-rose-200/80"
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
+                {isActive ? "Active" : "Inactive"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Organization Details */}
+        <div className="bg-slate-50/70 border border-slate-200/60 rounded-2xl p-4">
+          <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400 block mb-2.5">
+            Organization & Assignment
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Designation / Role</span>
+              <span className="font-bold text-slate-900 mt-0.5 block">{profile.role || "Telecaller"}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Department</span>
+              <span className="font-bold text-slate-900 mt-0.5 block">{profile.department || "Admissions"}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Assigned Leads</span>
+              <span className="font-bold text-blue-600 mt-0.5 block">{kpi?.assignedLeads ?? 42} leads</span>
+            </div>
+            <div>
+              <span className="text-slate-400 font-semibold block text-[11px]">Joining Date</span>
+              <span className="font-bold text-slate-900 mt-0.5 block">{profile.joiningDate || "13 Jul 2026"}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }

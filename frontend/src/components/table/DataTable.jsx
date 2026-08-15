@@ -8,22 +8,6 @@ import { Inbox } from "lucide-react";
  *
  * Owns: thead, tbody, row selection, empty state, loading skeleton, mobile card renderer.
  * Does NOT own: card wrapper (use TableCard), pagination (use TablePagination).
- *
- * @param {Array}         columns        - [{ key, label, render?, headerClassName?, cellClassName? }]
- * @param {Array}         data           - Row objects
- * @param {Array}         selectedRows   - Selected row IDs
- * @param {function}      setSelectedRows
- * @param {string}        rowKey         - Property to use as row identifier (default: "id")
- * @param {function}      renderRowActions - (row) => ReactNode for action column
- * @param {function}      onRowClick     - (row) => void
- * @param {"standard"|"comfortable"} density
- * @param {boolean}       selectable     - Show checkboxes
- * @param {boolean}       loading        - Show skeleton rows
- * @param {number}        skeletonRows   - Number of skeleton rows to show (default: 6)
- * @param {ReactNode}     emptyState     - Custom empty state component
- * @param {function}      renderMobileCard - (row, index) => ReactNode for mobile view
- * @param {function}      onScroll       - scroll callback for scroll-aware headers
- * @param {string}        className      - Additional classes on the scroll container
  */
 export default function DataTable({
   columns = [],
@@ -41,7 +25,7 @@ export default function DataTable({
   renderMobileCard,
   onScroll,
   className = "",
-  tableClassName = "min-w-[1000px]", // Default maintained for backwards compatibility where not overridden
+  tableClassName = "min-w-[1000px]",
   stickyActions = false,
 }) {
   const scrollRef = useRef(null);
@@ -89,18 +73,18 @@ export default function DataTable({
     return (
       <>
         {/* Desktop skeleton */}
-        <div className={`hidden md:block overflow-x-auto ${className}`}>
+        <div className={`hidden md:block overflow-x-auto no-scrollbar [scrollbar-width:none] ${className}`}>
           <table className={`w-full border-separate border-spacing-0 ${tableClassName}`}>
-            <thead className="bg-gray-50/80">
+            <thead className="bg-slate-50/80">
               <tr>
                 {selectable && (
                   <th className="w-14 px-6 py-3.5">
-                    <div className="w-4 h-4 rounded bg-gray-200 animate-pulse" />
+                    <div className="w-4 h-4 rounded bg-slate-200 animate-pulse" />
                   </th>
                 )}
                 {columns.map((col) => (
                   <th key={col.key} className={headerPadding}>
-                    <div className="h-3 w-20 rounded bg-gray-200 animate-pulse" />
+                    <div className="h-3 w-20 rounded bg-slate-200 animate-pulse" />
                   </th>
                 ))}
                 {renderRowActions && <th className="w-14" />}
@@ -108,16 +92,16 @@ export default function DataTable({
             </thead>
             <tbody>
               {Array.from({ length: skeletonRows }).map((_, rowIdx) => (
-                <tr key={rowIdx} className="border-b border-gray-100">
+                <tr key={rowIdx} className="border-b border-slate-100">
                   {selectable && (
                     <td className="w-14 px-6 py-4">
-                      <div className="w-4 h-4 rounded bg-gray-200 animate-pulse" />
+                      <div className="w-4 h-4 rounded bg-slate-200 animate-pulse" />
                     </td>
                   )}
                   {columns.map((col, colIdx) => (
                     <td key={col.key} className={cellPadding}>
                       <div
-                        className={`h-4 rounded bg-gray-200 animate-pulse ${
+                        className={`h-4 rounded bg-slate-200 animate-pulse ${
                           colIdx === 0 ? "w-32" : "w-24"
                         }`}
                       />
@@ -125,7 +109,7 @@ export default function DataTable({
                   ))}
                   {renderRowActions && (
                     <td className={`w-14 px-6 py-4 ${stickyActions ? "sticky right-0 bg-white" : ""}`}>
-                      <div className="w-6 h-6 rounded bg-gray-200 animate-pulse" />
+                      <div className="w-6 h-6 rounded bg-slate-200 animate-pulse" />
                     </td>
                   )}
                 </tr>
@@ -136,19 +120,19 @@ export default function DataTable({
 
         {/* Mobile skeleton */}
         {renderMobileCard && (
-          <div className="md:hidden p-4 space-y-[var(--spacing-content)]">
+          <div className="md:hidden p-4 space-y-3">
             {Array.from({ length: skeletonRows }).map((_, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-[var(--radius-surface)] border border-gray-200 p-[var(--spacing-card)] animate-pulse"
+                className="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse"
               >
                 <div className="flex justify-between mb-3">
-                  <div className="h-4 w-28 rounded bg-gray-200" />
-                  <div className="h-5 w-16 rounded-full bg-gray-200" />
+                  <div className="h-4 w-28 rounded bg-slate-200" />
+                  <div className="h-5 w-16 rounded-full bg-slate-200" />
                 </div>
-                <div className="grid grid-cols-2 gap-[var(--spacing-content)]">
-                  <div className="h-3 w-20 rounded bg-gray-200" />
-                  <div className="h-3 w-24 rounded bg-gray-200" />
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="h-3 w-20 rounded bg-slate-200" />
+                  <div className="h-3 w-24 rounded bg-slate-200" />
                 </div>
               </div>
             ))}
@@ -157,14 +141,14 @@ export default function DataTable({
 
         {/* Fallback skeleton when no mobile renderer */}
         {!renderMobileCard && (
-          <div className="md:hidden p-4 space-y-[var(--spacing-content)]">
+          <div className="md:hidden p-4 space-y-3">
             {Array.from({ length: skeletonRows }).map((_, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-[var(--radius-surface)] border border-gray-200 p-[var(--spacing-card)] animate-pulse"
+                className="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse"
               >
-                <div className="h-4 w-32 rounded bg-gray-200 mb-2" />
-                <div className="h-3 w-24 rounded bg-gray-200" />
+                <div className="h-4 w-32 rounded bg-slate-200 mb-2" />
+                <div className="h-3 w-24 rounded bg-slate-200" />
               </div>
             ))}
           </div>
@@ -176,15 +160,15 @@ export default function DataTable({
   // ── Empty State ──
   if (!loading && data.length === 0) {
     return (
-      <div className="py-16 flex items-center justify-center">
+      <div className="py-16 flex items-center justify-center font-outfit">
         {emptyState || (
-          <div className="flex flex-col items-center gap-[var(--spacing-content)] text-center px-[var(--spacing-section)]">
-            <div className="w-12 h-12 rounded-[var(--radius-pill)] bg-gray-50 flex items-center justify-center">
-              <Inbox className="text-gray-400" size={24} />
+          <div className="flex flex-col items-center gap-3 text-center px-6">
+            <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100">
+              <Inbox className="text-slate-400" size={24} />
             </div>
-            <p className="text-sm font-medium text-gray-800">No records found</p>
-            <p className="text-xs text-gray-500">
-              There is no data to display.
+            <p className="text-sm font-bold text-slate-800">No records found</p>
+            <p className="text-xs text-slate-400 font-medium">
+              There is no data matching your filters.
             </p>
           </div>
         )}
@@ -197,24 +181,24 @@ export default function DataTable({
     <>
       <div
         ref={scrollRef}
-        className={`hidden md:block overflow-x-auto flex-1 min-h-0 ${className}`}
+        className={`hidden md:block overflow-x-auto flex-1 min-h-0 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}
         onScroll={(e) => {
           if (onScroll) onScroll(e);
         }}
       >
-        <table className={`w-full border-separate border-spacing-0 ${tableClassName}`}>
+        <table className={`w-full border-separate border-spacing-0 font-outfit ${tableClassName}`}>
           {/* Sticky header */}
-          <thead className="bg-gray-50/80 sticky top-0 z-20">
+          <thead className="bg-slate-50/95 sticky top-0 z-20 border-b border-slate-200/80">
             <tr>
               {selectable && (
-                <th className="w-[40px] px-2 text-center align-middle" style={{ paddingTop: "14px", paddingBottom: "14px" }}>
+                <th className="w-[48px] px-3 text-center align-middle border-b border-slate-200/80" style={{ paddingTop: "14px", paddingBottom: "14px" }}>
                   <div className="flex items-center justify-center">
                     <input
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleAll}
                       aria-label="Select all rows"
-                      className="w-4 h-4 text-[#8B0D16] bg-white border-gray-300 rounded focus:ring-[#8B0D16] focus:ring-2 accent-[#8B0D16] cursor-pointer"
+                      className="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500/20 focus:ring-2 accent-blue-600 cursor-pointer"
                     />
                   </div>
                 </th>
@@ -226,9 +210,9 @@ export default function DataTable({
                   scope="col"
                   style={{ width: column.width || "auto" }}
                   className={`
-                    text-left text-[12px] font-[700] uppercase tracking-[0.08em] text-gray-900
-                    whitespace-nowrap h-[52px]
-                    ${headerPadding}
+                    text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500 border-b border-slate-200/80
+                    whitespace-nowrap h-[48px]
+                    px-4 py-3
                     ${column.headerClassName || ""}
                   `}
                 >
@@ -238,14 +222,14 @@ export default function DataTable({
 
               {renderRowActions && (
                 <th
-                  className={`w-[64px] text-center ${headerPadding} ${stickyActions ? "sticky right-0 bg-gray-50/80 z-20" : ""}`}
+                  className={`w-[72px] text-center px-4 py-3 border-b border-slate-200/80 ${stickyActions ? "sticky right-0 bg-slate-50/95 z-20" : ""}`}
                 />
               )}
             </tr>
           </thead>
 
           {/* Body */}
-          <tbody>
+          <tbody className="divide-y divide-slate-100 bg-white">
             {data.map((row, index) => {
               const id = getRowId(row, index);
               const isSelected = selectedRows.includes(id);
@@ -254,17 +238,18 @@ export default function DataTable({
                 <tr
                   key={id}
                   className={`
-                    border-b border-gray-100
-                    transition-colors
+                    border-b border-slate-100
+                    transition-all duration-150
+                    group
                     ${onRowClick ? "cursor-pointer" : ""}
-                    ${isSelected ? "bg-[#8B0D16]/[0.03]" : "hover:bg-gray-50/60"}
+                    ${isSelected ? "bg-blue-50/60" : "hover:bg-blue-50/40 hover:shadow-[inset_0_0_0_1px_rgba(59,130,246,0.12)]"}
                   `}
                   onClick={() => onRowClick && onRowClick(row)}
                 >
                   {/* Checkbox */}
                   {selectable && (
                     <td
-                      className="w-[40px] px-2 align-middle text-center"
+                      className="w-[48px] px-3 align-middle text-center"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex items-center justify-center">
@@ -273,7 +258,7 @@ export default function DataTable({
                           checked={isSelected}
                           onChange={() => toggleRow(row, index)}
                           aria-label={`Select row ${id}`}
-                          className="w-4 h-4 text-[#8B0D16] bg-white border-gray-300 rounded focus:ring-[#8B0D16] focus:ring-2 accent-[#8B0D16] cursor-pointer"
+                          className="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500/20 focus:ring-2 accent-blue-600 cursor-pointer"
                         />
                       </div>
                     </td>
@@ -286,7 +271,7 @@ export default function DataTable({
                       <td
                         key={column.key}
                         className={`
-                          text-sm text-gray-700
+                          text-xs text-slate-700 group-hover:text-slate-900 transition-colors duration-150
                           ${cellPadding}
                           ${column.cellClassName || ""}
                         `}
@@ -299,7 +284,7 @@ export default function DataTable({
                   {/* Actions */}
                   {renderRowActions && (
                     <td
-                      className={`w-[64px] text-center ${cellPadding} ${stickyActions ? "sticky right-0 bg-white group-hover:bg-gray-50/60" : ""}`}
+                      className={`w-[64px] text-center ${cellPadding} ${stickyActions ? "sticky right-0 bg-white group-hover:bg-slate-50/60" : ""}`}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {renderRowActions(row)}
@@ -314,7 +299,7 @@ export default function DataTable({
 
       {/* ── Mobile Card View ── */}
       {renderMobileCard ? (
-        <div className="md:hidden flex-1 overflow-y-auto bg-gray-50/30 p-4 space-y-[var(--spacing-content)]">
+        <div className="md:hidden flex-1 overflow-y-auto bg-slate-50/30 p-4 space-y-3 no-scrollbar [scrollbar-width:none]">
           {data.map((row, index) => (
             <React.Fragment key={getRowId(row, index)}>
               {renderMobileCard(row, index)}
@@ -322,15 +307,15 @@ export default function DataTable({
           ))}
         </div>
       ) : (
-        /* Fallback: horizontally scrollable table on mobile */
-        <div className="md:hidden overflow-x-auto">
-          <table className="w-full min-w-[600px] border-separate border-spacing-0">
-            <thead className="bg-gray-50/80">
+        /* Fallback: horizontally scrollable table on mobile without scrollbar */
+        <div className="md:hidden overflow-x-auto no-scrollbar [scrollbar-width:none]">
+          <table className="w-full min-w-[600px] border-separate border-spacing-0 font-outfit">
+            <thead className="bg-slate-50/80">
               <tr>
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className="text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 whitespace-nowrap px-4 py-3"
+                    className="text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500 whitespace-nowrap px-4 py-3"
                   >
                     {column.label}
                   </th>
@@ -343,13 +328,13 @@ export default function DataTable({
                 return (
                   <tr
                     key={id}
-                    className="border-b border-gray-100 transition-colors hover:bg-gray-50/60"
+                    className="border-b border-slate-100 transition-colors hover:bg-slate-50/60"
                     onClick={() => onRowClick && onRowClick(row)}
                   >
                     {columns.map((column) => {
                       const value = row[column.key];
                       return (
-                        <td key={column.key} className="text-sm text-gray-700 px-4 py-3">
+                        <td key={column.key} className="text-xs text-slate-700 px-4 py-3">
                           {column.render ? column.render(value, row) : value}
                         </td>
                       );

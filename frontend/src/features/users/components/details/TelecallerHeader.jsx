@@ -1,12 +1,20 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Edit2, UserCheck, UserX, Mail, Phone as PhoneIcon, Building, Calendar } from "lucide-react";
-import Button from "@/components/ui/Button";
+import { 
+  Pencil, 
+  UserCheck, 
+  UserX, 
+  Mail, 
+  Phone as PhoneIcon, 
+  Building, 
+  Calendar, 
+  Camera, 
+  Shield 
+} from "lucide-react";
 import EditUserDialog from "../dialogs/EditUserDialog";
 import useUpdateTelecallerStatus from "@/features/users/hooks/useUpdateTelecallerStatus";
 import useUploadTelecallerAvatar from "@/features/users/hooks/useUploadTelecallerAvatar";
-import Avatar from "@/components/ui/Avatar";
 
 export default function TelecallerHeader({ profile }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -32,33 +40,47 @@ export default function TelecallerHeader({ profile }) {
     if (file) {
       uploadAvatar(file);
     }
-    e.target.value = ""; // Reset input so same file can be selected again
+    e.target.value = "";
   };
 
   if (!profile) return null;
 
+  const initials = (profile.name || "Telecaller")
+    .split(" ")
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase() || "TC";
+
+  const isActive = (profile.status || "ACTIVE").toUpperCase() === "ACTIVE";
+
   return (
-    <div className="bg-white px-6 py-6 rounded-[20px] border border-[#ECECEC] shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div className="bg-white p-6 md:p-8 rounded-[24px] border border-slate-200/80 shadow-sm font-outfit transition-all">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         
         {/* Profile Info */}
-        <div className="flex items-start md:items-center gap-6">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          {/* Avatar with Camera Upload Badge */}
           <div className="relative group shrink-0">
-            <Avatar 
-              src={profile.avatar}
-              name={profile.name}
-              size="2xl"
-              onClick={handleAvatarClick}
-              isLoading={isUploadingAvatar}
-              className="border-2 border-white shadow-md bg-gray-100"
-              colorClass="bg-[#7A1F2B]/5 text-[#7A1F2B]"
-            />
-            
             <div 
               onClick={handleAvatarClick}
-              className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer"
+              className="w-20 h-20 md:w-22 md:h-22 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white text-2xl font-black shadow-md border-2 border-white cursor-pointer hover:opacity-95 transition-all"
             >
-              <span className="text-white text-[10px] font-medium tracking-wide uppercase">Upload</span>
+              {profile.avatar ? (
+                <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover rounded-2xl" />
+              ) : (
+                <span>{initials}</span>
+              )}
+            </div>
+            
+            {/* Camera / Image Icon Badge */}
+            <div 
+              onClick={handleAvatarClick}
+              className="absolute -bottom-1 -right-1 bg-admin-primary hover:bg-admin-primary-hover text-white p-1.5 rounded-full border-2 border-white flex items-center justify-center shadow-xs cursor-pointer transition-transform hover:scale-110"
+              title="Upload photo"
+            >
+              <Camera size={13} className="text-white" />
             </div>
             
             <input 
@@ -70,74 +92,77 @@ export default function TelecallerHeader({ profile }) {
             />
           </div>
 
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold text-gray-900 leading-tight">{profile.name}</h1>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#7A1F2B]/10 text-[#7A1F2B]">
-                {profile.role}
+          {/* Name & Role Details */}
+          <div className="flex flex-col text-center sm:text-left space-y-1.5">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                {profile.name}
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80">
+                {profile.role || "Telecaller"}
               </span>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  profile.status === "ACTIVE"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-rose-100 text-rose-700"
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold border shadow-2xs ${
+                  isActive
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200/80"
+                    : "bg-rose-50 text-rose-700 border-rose-200/80"
                 }`}
               >
-                {profile.status === "ACTIVE" ? "Active" : "Inactive"}
+                {isActive ? "Active" : "Inactive"}
               </span>
             </div>
             
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-3 text-sm text-gray-500 font-medium">
+            {/* Contact Pills in Good Colors */}
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-1 text-xs font-medium text-slate-600">
               {profile.email && (
-                <div className="flex items-center gap-1.5">
-                  <Mail size={14} className="text-gray-400" />
-                  {profile.email}
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-lg hover:text-blue-600 transition-colors">
+                  <Mail size={13} className="text-slate-400" />
+                  <span>{profile.email}</span>
                 </div>
               )}
               {profile.phone && (
-                <div className="flex items-center gap-1.5">
-                  <PhoneIcon size={14} className="text-gray-400" />
-                  {profile.phone}
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-lg hover:text-blue-600 transition-colors">
+                  <PhoneIcon size={13} className="text-slate-400" />
+                  <span>{profile.phone}</span>
                 </div>
               )}
               {profile.department && (
-                <div className="flex items-center gap-1.5">
-                  <Building size={14} className="text-gray-400" />
-                  {profile.department}
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-lg">
+                  <Building size={13} className="text-slate-400" />
+                  <span>{profile.department}</span>
                 </div>
               )}
               {profile.joiningDate && (
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={14} className="text-gray-400" />
-                  Joined {profile.joiningDate}
+                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-lg">
+                  <Calendar size={13} className="text-slate-400" />
+                  <span>Joined {profile.joiningDate}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3 shrink-0">
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2 h-10 px-4 rounded-xl border-[#ECECEC] text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+        {/* Actions (Prominent Edit User button & Activate/Deactivate) */}
+        <div className="flex flex-wrap items-center justify-center sm:justify-start lg:justify-end gap-3 shrink-0">
+          <button 
             onClick={() => setIsEditOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200/90 text-slate-700 hover:text-admin-primary-text hover:border-admin-primary-border text-xs font-bold rounded-xl shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
           >
-            <Edit2 size={16} />
-            Edit User
-          </Button>
+            <Pencil size={14} />
+            <span>Edit User</span>
+          </button>
+
           <button
-            title={profile.status === "ACTIVE" ? "Deactivate User" : "Activate User"}
             onClick={handleToggleStatus}
             disabled={isUpdatingStatus}
-            className={`flex items-center gap-2 h-10 px-4 rounded-xl font-medium transition-colors border ${
-              profile.status === "ACTIVE"
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-2xs border cursor-pointer active:scale-95 ${
+              isActive
                 ? "border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100"
                 : "border-emerald-200 text-emerald-600 bg-emerald-50 hover:bg-emerald-100"
             } ${isUpdatingStatus ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {profile.status === "ACTIVE" ? <UserX size={16} /> : <UserCheck size={16} />}
-            {profile.status === "ACTIVE" ? "Deactivate" : "Activate"}
+            {isActive ? <UserX size={14} /> : <UserCheck size={14} />}
+            <span>{isActive ? "Deactivate" : "Activate"}</span>
           </button>
         </div>
       </div>

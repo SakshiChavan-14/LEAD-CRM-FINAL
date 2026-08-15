@@ -47,12 +47,12 @@ export default function TablePagination({
   // ── Load More Mode ──
   if (mode === "loadMore") {
     return (
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/50">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50/50 font-outfit">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
           <span>
-            Showing <span className="font-medium text-gray-900">1</span> to{" "}
-            <span className="font-medium text-gray-900">{currentCount}</span> of{" "}
-            <span className="font-medium text-gray-900">{totalItems}</span> results
+            Showing <span className="font-mono font-bold text-slate-900">1</span> to{" "}
+            <span className="font-mono font-bold text-slate-900">{currentCount}</span> of{" "}
+            <span className="font-mono font-bold text-slate-900">{totalItems}</span> results
           </span>
         </div>
 
@@ -62,24 +62,24 @@ export default function TablePagination({
           className={`
             flex items-center gap-2
             px-4 py-2
-            border border-gray-200 rounded-lg
-            text-sm font-medium
-            transition-colors
+            border border-slate-200 rounded-xl
+            text-xs font-bold
+            transition-all active:scale-95 shadow-2xs
             ${hasNextPage
-              ? "text-gray-700 hover:bg-gray-100 bg-white cursor-pointer"
-              : "text-gray-400 bg-gray-50 cursor-not-allowed opacity-50"
+              ? "text-blue-700 bg-blue-50/60 hover:bg-blue-600 hover:text-white hover:border-blue-600 cursor-pointer"
+              : "text-slate-400 bg-slate-50 cursor-not-allowed opacity-50"
             }
           `}
         >
           {isFetchingNextPage ? (
             <>
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+              <div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
               Loading…
             </>
           ) : hasNextPage ? (
             <>
               Load More
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </>
           ) : (
             "All loaded"
@@ -114,14 +114,14 @@ export default function TablePagination({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-3.5 border-t border-gray-200 bg-gray-50/50 gap-4">
+    <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50/50 gap-4 font-outfit">
       {/* Left — result count + rows per page */}
-      <div className="flex items-center gap-4 text-sm text-gray-600 w-full sm:w-auto justify-between sm:justify-start">
+      <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 w-full sm:w-auto justify-between sm:justify-start">
         <span className="hidden sm:inline">
           Showing{" "}
-          <span className="font-medium text-gray-900">{startItem}</span> to{" "}
-          <span className="font-medium text-gray-900">{endItem}</span> of{" "}
-          <span className="font-medium text-gray-900">{totalItems}</span> results
+          <span className="font-mono font-bold text-slate-900">{startItem}</span> to{" "}
+          <span className="font-mono font-bold text-slate-900">{endItem}</span> of{" "}
+          <span className="font-mono font-bold text-slate-900">{totalItems}</span> results
         </span>
         <span className="sm:hidden font-medium">
           Page {currentPage + 1} of {totalPages}
@@ -129,11 +129,11 @@ export default function TablePagination({
 
         {onPageSizeChange && (
           <div className="hidden md:flex items-center gap-2">
-            <span className="text-gray-500">Rows per page:</span>
+            <span className="text-slate-400">Rows per page:</span>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="border border-gray-300 rounded-lg text-sm focus:ring-[#8B0D16] focus:border-[#8B0D16] text-gray-700 bg-white shadow-sm py-1 px-2 outline-none"
+              className="border border-slate-200 rounded-lg text-xs font-bold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 bg-white shadow-2xs py-1 px-2.5 outline-none cursor-pointer"
             >
               {[10, 25, 50, 100].map((size) => (
                 <option key={size} value={size}>
@@ -146,30 +146,30 @@ export default function TablePagination({
       </div>
 
       {/* Right — page buttons */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 bg-white transition-colors"
+          className="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 bg-white transition-all shadow-2xs active:scale-95 cursor-pointer"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Previous</span>
         </button>
 
-        <div className="hidden sm:flex items-center gap-1 px-2">
+        <div className="hidden sm:flex items-center gap-1 px-1">
           {getPageNumbers().map((page, idx) =>
             page === "…" ? (
-              <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 font-medium">
+              <span key={`ellipsis-${idx}`} className="px-2 text-slate-400 font-bold text-xs">
                 …
               </span>
             ) : (
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`w-8 h-8 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center ${
+                className={`w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer active:scale-95 ${
                   currentPage === page
-                    ? "bg-[#8B0D16] text-white shadow-sm"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-blue-600 text-white shadow-xs font-extrabold ring-2 ring-blue-500/20"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                 }`}
               >
                 {page + 1}
@@ -181,10 +181,10 @@ export default function TablePagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages - 1}
-          className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 bg-white transition-colors"
+          className="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 bg-white transition-all shadow-2xs active:scale-95 cursor-pointer"
         >
           <span className="hidden sm:inline">Next</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

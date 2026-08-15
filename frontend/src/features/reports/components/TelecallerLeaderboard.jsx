@@ -38,7 +38,6 @@ export default function TelecallerLeaderboard({ data, isLoading, onRowClick }) {
               
               <div className="text-right">
                 <p className="text-[13px] font-medium text-slate-700 leading-tight">{user.calls} calls</p>
-                <p className="text-[12px] font-medium text-emerald-600 mt-0.5">+{(Math.random() * 15 + 2).toFixed(1)}%</p>
               </div>
             </div>
           ))}

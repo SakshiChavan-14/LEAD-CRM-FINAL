@@ -37,6 +37,14 @@ export default function Button({
       hover:bg-[#4a0808]
       shadow-[var(--shadow-md)]
     `,
+    "admin-primary": `
+      bg-admin-primary
+      hover:bg-admin-primary-hover
+      active:bg-admin-primary-active
+      text-white
+      hover:-translate-y-0.5
+      hover:shadow-[var(--shadow-md)]
+    `,
   };
 
   return (

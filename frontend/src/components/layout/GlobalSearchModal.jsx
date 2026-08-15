@@ -4,13 +4,16 @@ import { useSearchController } from "@/hooks/useSearchController";
 import { useRecentSearches } from "@/hooks/useRecentSearches";
 import useAuthStore from "@/store/authStore";
 import { rankSearchResults } from "@/utils/searchRanking";
+import axiosInstance from "@/utils/axiosInstance";
+import { useRouter } from "next/navigation";
 
 /**
- * Global Search Modal (Client Aggregation Mode - Phase 1)
+ * Global Search Modal (API Search Mode)
  * This modal acts as the UI shell and implements the search state machine,
- * recent searches, and result ranking pending a unified backend global search endpoint.
+ * recent searches, and result ranking hitting a unified backend global search endpoint.
  */
 export default function GlobalSearchModal({ isOpen, onClose }) {
+  const router = useRouter();
   const { user } = useAuthStore();
   const { recentSearches, addSearch } = useRecentSearches(user?.id);
   const inputRef = useRef(null);
@@ -46,7 +49,7 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Client Aggregation Mock (To be replaced with actual parallel API calls)
+  // Hitting actual Overview lead search API
   useEffect(() => {
     if (!debouncedSearch) {
       setResults([]);
@@ -56,15 +59,18 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     const fetchAggregation = async () => {
       setLoading(true);
       try {
-        // Phase 2: Implement Promise.all with leadService, userService, etc.
-        // For now, simulating API latency and structure
-        await new Promise(res => setTimeout(res, 400));
+        const response = await axiosInstance.get(`/api/leads/overview?search=${encodeURIComponent(debouncedSearch)}`);
+        const data = response.data?.data;
+        const leadsList = Array.isArray(data?.content) ? data.content : Array.isArray(data) ? data : [];
         
-        const mockResults = [
-          { id: 'LD-101', name: debouncedSearch + " (Lead Mock)", type: "Lead", phone: "9876543210" },
-        ];
+        const mappedResults = leadsList.map(lead => ({
+          id: lead.enquiryNo || lead.id,
+          name: lead.name || "Student",
+          type: "Lead",
+          phone: lead.mobileNo || lead.phone || ""
+        }));
         
-        const ranked = rankSearchResults(mockResults, debouncedSearch);
+        const ranked = rankSearchResults(mappedResults, debouncedSearch);
         setResults(ranked);
         addSearch(debouncedSearch);
       } catch (e) {
@@ -76,6 +82,18 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
 
     fetchAggregation();
   }, [debouncedSearch, addSearch]);
+
+  const handleItemClick = (item) => {
+    onClose();
+    if (item.type === "Lead") {
+      const isTelecallerPath = window.location.pathname.startsWith("/telecaller");
+      if (isTelecallerPath) {
+        router.push(`/telecaller/leads/${item.id}`);
+      } else {
+        router.push(`/dashboard/leads/${item.id}`);
+      }
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -155,7 +173,11 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
               </h3>
               <ul className="space-y-1">
                 {results.map((item, idx) => (
-                  <li key={idx} className="px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer flex justify-between items-center">
+                  <li 
+                    key={idx} 
+                    onClick={() => handleItemClick(item)}
+                    className="px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer flex justify-between items-center"
+                  >
                     <div>
                       <div className="font-medium">{item.name}</div>
                       {item.phone && <div className="text-xs text-gray-500">{item.phone}</div>}

@@ -9,9 +9,14 @@ export const useTelecallerLeads = (filters = {}, page = 0, size = 10) => {
       const rawData = await telecallerLeadService.getMyLeads({ page, size, ...filters });
       
 
+      const leadsArray =
+        rawData?.content ||
+        rawData?.leads ||
+        (Array.isArray(rawData) ? rawData : []);
+
       return {
         ...rawData,
-        leads: Array.isArray(rawData.leads) ? rawData.leads.map(mapLeadOverview) : []
+        leads: leadsArray.map(mapLeadOverview),
       };
     },
     staleTime: 5 * 60 * 1000,

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useMemo } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
@@ -9,7 +11,6 @@ import { toast } from "sonner";
 import { Clock } from "lucide-react";
 
 export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, existingFollowups = [], allFollowups = [], initialLeadId = "", leads = [] }) {
-  console.log("[ScheduleFollowupModal] render", { isOpen, defaultDate, existingFollowupsCount: existingFollowups.length, initialLeadId });
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
@@ -50,7 +51,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
       enquiryNo,
       scheduledDate: date,
       scheduledTime: time.length === 5 ? `${time}:00` : time,
-      priority: priority,  // Send as title-case: "High", "Medium", "Low"
+      priority: priority,
       remarks: notes
     };
 
@@ -58,6 +59,7 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
       payload,
       {
         onSuccess: () => {
+          toast.success("Follow-up scheduled successfully");
           onClose();
         },
         onError: (error) => {
@@ -74,25 +76,27 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Schedule for ${formattedDate}`}>
-      <div className="flex flex-col">
+      <div className="flex flex-col font-outfit">
         
         {/* Existing Follow-ups Section */}
         {existingFollowups.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Existing Follow-ups ({existingFollowups.length})</h4>
+            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
+              Existing Follow-ups ({existingFollowups.length})
+            </h4>
             <div className="max-h-[160px] overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-2">
               {existingFollowups.map(f => (
-                <div key={f.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-lg">
+                <div key={f.id} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
-                      {f.name || "Unknown Lead"}
+                    <span className="text-xs font-bold text-slate-900 truncate max-w-[200px]">
+                      {f.name || "Student"}
                     </span>
-                    <span className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                      <Clock size={10} /> {f.scheduledTime || "TBA"}
+                    <span className="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                      <Clock size={11} className="text-blue-600" /> {f.scheduledTime || "TBA"}
                     </span>
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${
-                    f.priority === 'High' ? 'text-red-700 bg-red-50 border-red-200' :
+                  <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs ${
+                    f.priority === 'High' ? 'text-rose-700 bg-rose-50 border-rose-200' :
                     f.priority === 'Medium' ? 'text-amber-700 bg-amber-50 border-amber-200' :
                     'text-blue-700 bg-blue-50 border-blue-200'
                   }`}>
@@ -101,14 +105,14 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
                 </div>
               ))}
             </div>
-            <div className="h-px w-full bg-slate-200 mt-6"></div>
+            <div className="h-px w-full bg-slate-100 mt-5"></div>
           </div>
         )}
 
         {/* Schedule Form Section */}
         <form onSubmit={handleSubmit} className="space-y-4">
           
-          <h4 className="text-sm font-semibold text-gray-700">Schedule New Follow-up</h4>
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Schedule New Follow-up</h4>
 
           {!initialLeadId && leads.length > 0 && (
             <Select 
@@ -161,18 +165,21 @@ export default function ScheduleFollowupModal({ isOpen, onClose, defaultDate, ex
             onChange={(e) => setNotes(e.target.value)}
           />
 
-          <div className="flex justify-end gap-3 pt-5 mt-2 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose} className="h-10 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border-slate-200">
+          <div className="flex justify-end gap-2.5 pt-4 mt-2 border-t border-slate-100">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+            >
               Cancel
-            </Button>
-            <Button 
+            </button>
+            <button 
               type="submit" 
-              variant="primary" 
-              className="h-10 text-sm font-semibold bg-[#7A1F2B] hover:bg-[#6F1D28] text-white shadow-sm transition-colors border-none"
-              disabled={createMutation.isPending || !selectedLeadId}
+              className="px-5 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+              disabled={createMutation.isPending || (!initialLeadId && !selectedLeadId)}
             >
               {createMutation.isPending ? "Scheduling..." : "Confirm Schedule"}
-            </Button>
+            </button>
           </div>
         </form>
       </div>

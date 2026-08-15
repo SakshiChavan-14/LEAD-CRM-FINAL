@@ -14,10 +14,13 @@ export default function LeadDetailsClient({ leadId }) {
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
   const telecallerId = searchParams.get("userId");
+  const backUrl = searchParams.get("backUrl");
   const confirm = useConfirm();
 
   const handleBack = () => {
-    if (from === "telecaller" && telecallerId) {
+    if (backUrl) {
+      router.push(backUrl);
+    } else if (from === "telecaller" && telecallerId) {
       router.push(`/dashboard/management/user-directory/${telecallerId}`);
     } else {
       router.push("/dashboard/management/leads");
@@ -31,7 +34,7 @@ export default function LeadDetailsClient({ leadId }) {
   const handleDelete = async () => {
     const confirmed = await confirm({
       title: "Delete Lead?",
-      description: "This action cannot be undone.",
+      description: "Are you sure you want to delete this lead? This action cannot be undone.",
       variant: "danger",
       confirmText: "Delete",
     });
@@ -41,7 +44,7 @@ export default function LeadDetailsClient({ leadId }) {
   const isAssigned = viewModel?.assignment?.telecaller && viewModel.assignment.telecaller !== "Unassigned";
   const currentTelecallerId = rawData?.lead?.assignedTo?._id || rawData?.lead?.assignedTo?.id || rawData?.telecallerId || rawData?.assigneeId;
 
-  // Admin-specific hero actions (Assign Lead only — Edit & Delete are always in ProfileHero)
+  // Admin-specific hero actions (Assign Lead only — Edit & Delete are in ProfileHeader)
   const actions = (
     <AssignLeadAction 
       leadId={leadId} 
@@ -51,14 +54,14 @@ export default function LeadDetailsClient({ leadId }) {
   );
 
   return (
-    <div className="flex flex-col mt-4 max-w-6xl mx-auto">
+    <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit">
       <div className="flex items-center gap-4 mb-4">
         <button
           onClick={handleBack}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium text-gray-700"
+          className="px-3.5 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-xl transition-all flex items-center gap-2 text-xs font-bold text-slate-700 shadow-2xs cursor-pointer active:scale-95"
         >
-          <ArrowLeft size={16} />
-          Back
+          <ArrowLeft size={15} />
+          {backUrl ? "Back" : "Back to Leads"}
         </button>
       </div>
 

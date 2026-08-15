@@ -1,4 +1,4 @@
-import { MoreHorizontal } from "lucide-react";
+
 
 export default function ChartCard({
   title,
@@ -10,7 +10,7 @@ export default function ChartCard({
   skeletonHeight = "300px"
 }) {
   return (
-    <div className={`bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col ${className}`}>
+    <div className={`bg-white rounded-3xl border border-slate-200/85 shadow-xs hover:shadow-lg hover:border-blue-250 hover:scale-[1.01] transition-all duration-300 p-6 flex flex-col ${className}`}>
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
@@ -19,9 +19,6 @@ export default function ChartCard({
         </div>
         <div className="flex items-center gap-2">
           {action}
-          <button className="text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-50 transition-colors">
-            <MoreHorizontal size={20} />
-          </button>
         </div>
       </div>
       

@@ -1,14 +1,17 @@
+"use client";
+
 import React, { useRef, useState, useEffect } from "react";
-import { Play, Pause, Download, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, RotateCcw, FastForward } from "lucide-react";
 import { formatDuration } from "../utils/callMapper";
 
-export default function RecordingPlayer({ src, duration }) {
+export default function RecordingPlayer({ src, duration = 180 }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const [isHoveringVolume, setIsHoveringVolume] = useState(false);
 
   useEffect(() => {
@@ -16,10 +19,9 @@ export default function RecordingPlayer({ src, duration }) {
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      if (audio.duration) {
-        setProgress((audio.currentTime / audio.duration) * 100);
-        setCurrentTime(audio.currentTime);
-      }
+      const d = audio.duration || duration || 1;
+      setProgress((audio.currentTime / d) * 100);
+      setCurrentTime(audio.currentTime);
     };
     const handleEnded = () => {
       setIsPlaying(false);
@@ -33,109 +35,112 @@ export default function RecordingPlayer({ src, duration }) {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [duration]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio) {
+      setIsPlaying(!isPlaying);
+      return;
+    }
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play();
+      audio.play().catch(() => {
+        // Fallback simulation if no active audio stream
+      });
     }
     setIsPlaying(!isPlaying);
   };
 
+  const toggleSpeed = () => {
+    const speeds = [1, 1.25, 1.5, 2];
+    const nextSpeed = speeds[(speeds.indexOf(playbackRate) + 1) % speeds.length];
+    setPlaybackRate(nextSpeed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextSpeed;
+    }
+  };
+
   const toggleMute = () => {
     const audio = audioRef.current;
-    if (!audio) return;
-    audio.muted = !isMuted;
+    if (audio) {
+      audio.muted = !isMuted;
+    }
     setIsMuted(!isMuted);
   };
 
-  const handleVolumeChange = (e) => {
-    const val = parseFloat(e.target.value);
-    const audio = audioRef.current;
-    if (audio) {
-      audio.volume = val;
-      setVolume(val);
-      if (val === 0) {
-        audio.muted = true;
-        setIsMuted(true);
-      } else if (isMuted) {
-        audio.muted = false;
-        setIsMuted(false);
-      }
+  const handleSeek = (i) => {
+    const pct = (i / 40);
+    const newTime = pct * (duration || 180);
+    setCurrentTime(newTime);
+    setProgress(pct * 100);
+    if (audioRef.current && audioRef.current.duration) {
+      audioRef.current.currentTime = newTime;
     }
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-xl font-outfit space-y-4">
       <audio ref={audioRef} src={src} preload="metadata" />
 
-      {/* Play/Pause Button */}
-      <button
-        onClick={togglePlay}
-        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm ${
-          isPlaying
-            ? "bg-[#7A1F2B] text-white"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-        }`}
-      >
-        {isPlaying ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
-      </button>
+      {/* Main Controls Row */}
+      <div className="flex items-center justify-between gap-4">
+        {/* Play / Pause button */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={togglePlay}
+            className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30 active:scale-95 transition-all cursor-pointer"
+          >
+            {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5 fill-white" />}
+          </button>
 
-      {/* Waveform Visualization (CSS Approximation) */}
-      <div className="flex-1 h-8 flex items-center gap-[2px]">
-        {Array.from({ length: 30 }).map((_, i) => {
-          // Generates a nice looking fake waveform pattern
-          const barHeight = Math.max(12, Math.abs(Math.sin((i * 0.7) + 1.2)) * 100);
-          const filled = (i / 30) * 100 <= progress;
-          return (
-            <div
-              key={i}
-              className={`w-[3px] rounded-full transition-all ${
-                filled ? "bg-[#7A1F2B]" : "bg-gray-200"
-              }`}
-              style={{ height: `${barHeight}%` }}
-            />
-          );
-        })}
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-slate-200">Call Audio Recording</span>
+            <span className="text-[11px] font-mono text-slate-400">
+              {formatDuration(currentTime)} / {formatDuration(duration)}
+            </span>
+          </div>
+        </div>
+
+        {/* Playback speed & Mute controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSpeed}
+            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 text-xs font-mono font-bold transition-all border border-slate-700 cursor-pointer"
+            title="Change Playback Speed"
+          >
+            {playbackRate}x
+          </button>
+
+          <button
+            onClick={toggleMute}
+            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition-all border border-slate-700 cursor-pointer"
+          >
+            {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
+        </div>
       </div>
 
-      {/* Time Display */}
-      <div className="text-xs font-mono text-gray-500 shrink-0 w-[85px] text-right">
-        {formatDuration(currentTime)} / {formatDuration(duration)}
-      </div>
-
-      {/* Volume Control */}
-      <div 
-        className="relative flex items-center"
-        onMouseEnter={() => setIsHoveringVolume(true)}
-        onMouseLeave={() => setIsHoveringVolume(false)}
-      >
-        <button
-          onClick={toggleMute}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
-        >
-          {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
-        </button>
-        
-        {/* Volume Slider (shows on hover) */}
-        <div 
-          className={`absolute right-full mr-1 bg-white border border-[#ECECEC] rounded-xl shadow-lg p-2 transition-all origin-right ${
-            isHoveringVolume ? "opacity-100 scale-100 visible" : "opacity-0 scale-95 invisible"
-          }`}
-        >
-          <input 
-            type="range" 
-            min="0" 
-            max="1" 
-            step="0.05"
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
-            className="w-20 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#7A1F2B]"
-          />
+      {/* Modern Waveform Visualizer */}
+      <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/80">
+        <div className="h-10 flex items-center gap-[3px] cursor-pointer">
+          {Array.from({ length: 40 }).map((_, i) => {
+            const barHeight = Math.max(15, Math.abs(Math.sin(i * 0.45 + 1.2) * 85 + Math.cos(i * 0.2) * 15));
+            const filled = (i / 40) * 100 <= progress;
+            return (
+              <div
+                key={i}
+                onClick={() => handleSeek(i)}
+                className={`flex-1 rounded-full transition-all duration-150 hover:scale-y-125 ${
+                  filled 
+                    ? "bg-gradient-to-t from-blue-600 to-indigo-400" 
+                    : "bg-slate-800 hover:bg-slate-700"
+                }`}
+                style={{ height: `${barHeight}%` }}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

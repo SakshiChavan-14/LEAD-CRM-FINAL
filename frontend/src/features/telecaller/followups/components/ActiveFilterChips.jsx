@@ -1,24 +1,26 @@
+"use client";
+
 import { X } from "lucide-react";
 import React from "react";
 
 export default function ActiveFilterChips({ filters, datePreset, onRemoveFilter, onClearAll }) {
-  const activeEntries = Object.entries(filters).filter(([_, value]) => !!value);
+  const activeEntries = Object.entries(filters || {}).filter(([_, value]) => !!value);
   
   if (activeEntries.length === 0 && datePreset === "all") return null;
 
   return (
-    <div className="pt-2 pb-2 w-full flex flex-col gap-2">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+    <div className="pt-2 pb-1 w-full flex flex-col gap-2 font-outfit">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {datePreset !== "all" && (
-            <div className="flex items-center gap-2 h-[32px] px-3 bg-gray-50 text-gray-700 rounded-full text-xs font-medium border border-gray-200 shadow-sm transition hover:bg-gray-100">
+            <div className="flex items-center gap-2 h-8 px-3 bg-blue-50 text-blue-900 rounded-full text-xs font-semibold border border-blue-200/80 shadow-2xs transition hover:bg-blue-100">
               <span className="flex items-center">
-                <span className="text-gray-500 mr-1.5">Date:</span> 
-                <span className="text-[#7A1F2B] font-semibold">{datePreset.replace("_", " ").toUpperCase()}</span>
+                <span className="text-blue-600 font-bold mr-1">Date:</span> 
+                <span className="text-blue-900 font-extrabold">{datePreset.replace("_", " ").toUpperCase()}</span>
               </span>
               <button
                 onClick={() => onRemoveFilter('datePreset')}
-                className="p-1 hover:bg-gray-200 rounded-full transition-colors ml-1 text-gray-400 hover:text-gray-900 focus:outline-none"
+                className="p-0.5 hover:bg-blue-200 rounded-full transition-colors ml-1 text-blue-500 hover:text-blue-900 focus:outline-none cursor-pointer"
               >
                 <X size={12} strokeWidth={2.5} />
               </button>
@@ -30,15 +32,15 @@ export default function ActiveFilterChips({ filters, datePreset, onRemoveFilter,
             return (
               <div 
                 key={key} 
-                className="flex items-center gap-2 h-[32px] px-3 bg-gray-50 text-gray-700 rounded-full text-xs font-medium border border-gray-200 shadow-sm transition hover:bg-gray-100"
+                className="flex items-center gap-2 h-8 px-3 bg-blue-50 text-blue-900 rounded-full text-xs font-semibold border border-blue-200/80 shadow-2xs transition hover:bg-blue-100"
               >
                 <span className="flex items-center">
-                  <span className="text-gray-500 mr-1.5">{label}:</span> 
-                  <span className="text-[#7A1F2B] font-semibold">{value}</span>
+                  <span className="text-blue-600 font-bold mr-1">{label}:</span> 
+                  <span className="text-blue-900 font-extrabold">{value}</span>
                 </span>
                 <button
                   onClick={() => onRemoveFilter(key)}
-                  className="p-1 hover:bg-gray-200 rounded-full transition-colors ml-1 text-gray-400 hover:text-gray-900 focus:outline-none"
+                  className="p-0.5 hover:bg-blue-200 rounded-full transition-colors ml-1 text-blue-500 hover:text-blue-900 focus:outline-none cursor-pointer"
                 >
                   <X size={12} strokeWidth={2.5} />
                 </button>
@@ -49,9 +51,9 @@ export default function ActiveFilterChips({ filters, datePreset, onRemoveFilter,
         
         <button 
           onClick={onClearAll}
-          className="text-xs text-[#7A1F2B] hover:underline font-medium shrink-0 pt-1 sm:pt-2 transition-colors"
+          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-bold shrink-0 transition-colors cursor-pointer"
         >
-          Clear All
+          Clear All Filters
         </button>
       </div>
     </div>

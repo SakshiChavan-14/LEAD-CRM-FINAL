@@ -16,7 +16,6 @@ import NextCallsCard from "@/features/telecaller/calls/components/NextCallsCard"
 
 // Pipeline & Analytics
 import PipelineSection from "@/features/telecaller/dashboard/components/PipelineSection";
-import AnalyticsTrends from "@/features/telecaller/dashboard/components/AnalyticsTrends";
 import WeeklyPerformance from "@/features/telecaller/dashboard/components/WeeklyPerformance";
 
 // Followups & Activity
@@ -33,7 +32,7 @@ import { useTelecallerLeads } from "@/features/telecaller/hooks/useMyLeads";
 
 export default function TelecallerDashboard() {
   const { data: dashboardData, isLoading: dashboardLoading, error } = useTelecallerDashboard();
-  const { data: leadsData, isLoading: leadsLoading } = useTelecallerLeads({}, 0, 5000);
+  const { data: leadsData, isLoading: leadsLoading } = useTelecallerLeads({}, 0, 100);
   
   const isLoading = dashboardLoading || leadsLoading;
   const [isLogCallOpen, setIsLogCallOpen] = useState(false);
@@ -58,21 +57,15 @@ export default function TelecallerDashboard() {
   // If there's a hard error loading the whole dashboard (e.g. 500)
   if (error) {
     return (
-      <div className="p-8 text-center text-red-600 bg-red-50 rounded-2xl border border-red-100">
+      <div className="p-8 text-center text-red-600 bg-red-50 rounded-2xl border border-red-100 font-outfit">
         Failed to load dashboard data. Please refresh.
       </div>
     );
   }
 
-  // The page acts as a lightweight composition layer. 
-  // It passes isLoading and specific data slices to widgets.
-  // Each widget is responsible for rendering its own skeleton if isLoading is true,
-  // or its own empty state if data is missing.
-
   return (
     <div 
-      className="bg-[#FFFFFF] min-h-screen" 
-      style={{ fontFamily: "var(--font-outfit), sans-serif" }}
+      className="bg-[#FFFFFF] min-h-screen font-outfit" 
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6 lg:py-8 space-y-6 animate-in fade-in duration-500">
         {/* ── HEADER SECTION ────────────────────────────────────────────────── */}
@@ -114,7 +107,7 @@ export default function TelecallerDashboard() {
           />
           <WeeklyPerformance 
             isLoading={isLoading} 
-            weeklyPerformance={dashboardData?.weeklyPerformance} 
+            performance={dashboardData?.performance} 
             summary={dashboardData?.summary}
           />
           <RecentActivity 

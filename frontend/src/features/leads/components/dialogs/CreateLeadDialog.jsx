@@ -39,7 +39,7 @@ export default function CreateLeadDialog({ open, onClose }) {
         title: "Create Lead?",
         description: "Are you sure you want to create this lead?",
         confirmText: "Create",
-        variant: "primary",
+        variant: "admin-primary",
       });
 
       if (isConfirmed) {
@@ -59,19 +59,20 @@ export default function CreateLeadDialog({ open, onClose }) {
       onClose={handleClose}
       title="Create Lead"
       footer={
-        <>
+        <div className="flex items-center justify-end gap-3 w-full">
           <Button variant="secondary" onClick={handleClose} disabled={isPending}>
             Cancel
           </Button>
           <Button
             type="submit"
             form="create-lead-form"
+            variant="admin-primary"
             loading={isPending}
             loadingText="Creating..."
           >
             Create Lead
           </Button>
-        </>
+        </div>
       }
     >
       <form

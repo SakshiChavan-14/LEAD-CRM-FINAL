@@ -1,0 +1,7 @@
+export const LEAD_STAGES = [
+  "ENQUIRY",
+  "CONTACTED",
+  "QUALIFIED",
+  "APPLICATION",
+  "ADMISSION",
+];

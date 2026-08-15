@@ -8,14 +8,20 @@ import Avatar from "@/components/ui/Avatar";
 import useAuthStore from "@/store/authStore";
 import authService from "@/features/auth/services/authService";
 import { ROLES } from "@/constants/roles";
+import { useProfile } from "@/features/profile/hooks/useProfile";
+import { toast } from "sonner";
+import LogoutConfirmModal from "@/components/layout/LogoutConfirmModal";
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
   
   const user = useAuthStore((state) => state.user);
   const logoutState = useAuthStore((state) => state.logout);
+  const { data: profile } = useProfile();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -28,22 +34,30 @@ export default function ProfileDropdown() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = async () => {
+  const handleLogoutRequest = () => {
+    setIsOpen(false);
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
     try {
       await authService.logout();
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
       logoutState();
-      
       // Clear cookies
       document.cookie.split(";").forEach((c) => {
         document.cookie = c
           .replace(/^ +/, "")
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
-      
-      router.push("/");
+      toast.success("Logged out successfully. See you next time!");
+      setShowLogoutModal(false);
+      setTimeout(() => {
+        router.push("/");
+      }, 400);
     }
   };
 
@@ -59,49 +73,65 @@ export default function ProfileDropdown() {
 
   if (!user) return null;
 
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center rounded-full hover:ring-2 hover:ring-[#7A1F2B]/20 transition-all focus:outline-none"
-      >
-        <Avatar 
-          name={user.username || "User"} 
-          className="w-10 h-10 border border-gray-200 shadow-sm"
-        />
-      </button>
+  const displayName = profile?.name || user.name || (user.username === "telecaller" ? "Karun Poojari" : user.username) || "User";
+  const avatarSource = profile?.avatarUrl || user.avatarUrl || user.photo;
 
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 overflow-hidden transform origin-top-right transition-all">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-semibold text-gray-900 truncate">{user.username}</p>
-            <p className="text-xs text-gray-500 truncate mt-0.5">{user.userGroup.replace('_', '-')}</p>
-          </div>
-          
-          <div className="py-1">
-            {menuItems.map((item, index) => (
+  return (
+    <>
+      <div className="relative font-outfit" ref={dropdownRef}>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-center rounded-full hover:ring-2 hover:ring-blue-500/30 transition-all focus:outline-none cursor-pointer"
+          aria-label="User profile menu"
+        >
+          <Avatar 
+            src={avatarSource}
+            name={displayName} 
+            colorClass="bg-admin-primary-subtle text-admin-primary-text border border-admin-primary-border"
+            className="w-10 h-10 border border-slate-200 shadow-2xs hover:scale-105 transition-transform"
+          />
+        </button>
+
+        {isOpen && (
+          <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-slate-100 py-1 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-4 py-3.5 border-b border-slate-100 bg-slate-50/50">
+              <p className="text-xs font-extrabold text-slate-900 truncate">{displayName}</p>
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mt-0.5">{user.userGroup?.replace('_', '-') || "TELECALLER"}</p>
+            </div>
+            
+            <div className="py-1.5 px-1">
+              {menuItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={item.onClick}
+                  className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-blue-50/60 hover:text-blue-600 rounded-xl transition-colors cursor-pointer"
+                >
+                  <item.icon size={15} className="text-slate-400" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+            
+            <div className="border-t border-slate-100 py-1.5 px-1">
               <button
-                key={index}
-                onClick={item.onClick}
-                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={handleLogoutRequest}
+                className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
               >
-                <item.icon size={16} className="text-gray-400" />
-                {item.label}
+                <LogOut size={15} />
+                <span>Logout</span>
               </button>
-            ))}
+            </div>
           </div>
-          
-          <div className="border-t border-gray-100 py-1">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-            >
-              <LogOut size={16} />
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => !isLoggingOut && setShowLogoutModal(false)}
+        onConfirm={handleLogoutConfirm}
+        isLoggingOut={isLoggingOut}
+      />
+    </>
   );
 }
