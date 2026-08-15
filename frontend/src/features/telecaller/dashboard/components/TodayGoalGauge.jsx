@@ -23,10 +23,10 @@ export default function TodayGoalGauge({ isLoading, summary }) {
     );
   }
 
-  const goal = summary?.goal || 60;
-  const completed = summary?.callsToday || 18;
-  const connected = summary?.connected || 14;
-  const interested = summary?.interested || 5;
+  const goal = summary?.goal || 0;
+  const completed = summary?.callsToday || 0;
+  const connected = summary?.connected || 0;
+  const interested = summary?.interested || 0;
 
   const safeGoal = Math.max(1, goal);
   const percentage = Math.min(100, Math.round((completed / safeGoal) * 100));

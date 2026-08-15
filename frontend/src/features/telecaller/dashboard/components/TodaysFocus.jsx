@@ -65,7 +65,7 @@ export default function TodaysFocus({ isLoading, focus }) {
       <div className="space-y-2 flex-1 flex flex-col justify-center py-1">
         <FocusItem 
           title="High Priority Leads" 
-          count={safeFocus.highPriority || 12}
+          count={safeFocus.highPriority || 0}
           badgeBg="bg-blue-50 border-blue-200/80"
           badgeText="text-blue-700"
           icon={Flame}
@@ -73,7 +73,7 @@ export default function TodaysFocus({ isLoading, focus }) {
         />
         <FocusItem 
           title="Overdue Follow-ups" 
-          count={safeFocus.overdueFollowups || 4}
+          count={safeFocus.overdueFollowups || 0}
           badgeBg="bg-blue-50 border-blue-200/80"
           badgeText="text-blue-700"
           icon={AlertCircle}
@@ -81,7 +81,7 @@ export default function TodaysFocus({ isLoading, focus }) {
         />
         <FocusItem 
           title="Calls Remaining" 
-          count={safeFocus.callsRemaining || 42}
+          count={safeFocus.callsRemaining || 0}
           badgeBg="bg-blue-50 border-blue-200/80"
           badgeText="text-blue-700"
           icon={PhoneCall}
@@ -89,7 +89,7 @@ export default function TodaysFocus({ isLoading, focus }) {
         />
         <FocusItem 
           title="Near Conversion" 
-          count={safeFocus.nearConversion || 6}
+          count={safeFocus.nearConversion || 0}
           badgeBg="bg-blue-50 border-blue-200/80"
           badgeText="text-blue-700"
           icon={CheckCircle}

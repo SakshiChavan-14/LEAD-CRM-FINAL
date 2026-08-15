@@ -87,12 +87,12 @@ export default function TelecallerLeadsPage() {
 
   const kpiData = useMemo(() => {
     return {
-      totalAssigned: totalItems || 38,
-      newLeads: allLeads.filter(l => (l.status||'').toUpperCase().includes('NEW')).length || 12,
-      inProgress: allLeads.filter(l => (l.status||'').toUpperCase().includes('PROGRESS') || (l.status||'').toUpperCase().includes('FOLLOW')).length || 14,
-      interested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('INTERESTED') || (l.opinion||'').toUpperCase().includes('HOT')).length || 8,
-      notInterested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('NOT')).length || 2,
-      converted: allLeads.filter(l => (l.status||'').toUpperCase().includes('ADMISSION') || (l.status||'').toUpperCase().includes('ENROLLED')).length || 2,
+      totalAssigned: totalItems || 0,
+      newLeads: allLeads.filter(l => (l.status||'').toUpperCase().includes('NEW')).length,
+      inProgress: allLeads.filter(l => (l.status||'').toUpperCase().includes('PROGRESS') || (l.status||'').toUpperCase().includes('FOLLOW')).length,
+      interested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('INTERESTED') || (l.opinion||'').toUpperCase().includes('HOT')).length,
+      notInterested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('NOT')).length,
+      converted: allLeads.filter(l => (l.status||'').toUpperCase().includes('ADMISSION') || (l.status||'').toUpperCase().includes('ENROLLED')).length,
     };
   }, [allLeads, totalItems]);
 

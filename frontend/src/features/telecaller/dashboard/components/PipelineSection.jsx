@@ -3,26 +3,12 @@
 import React, { useState } from "react";
 import { Filter, ChevronDown, TrendingUp } from "lucide-react";
 
-const PIPELINE_DATA_BY_TIMEFRAME = {
-  today: [
-    { stage: "New Lead", count: 8, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
-    { stage: "Contacted", count: 6, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
-    { stage: "Interested", count: 3, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
-    { stage: "Converted", count: 1, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
-  ],
-  week: [
-    { stage: "New Lead", count: 28, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
-    { stage: "Contacted", count: 22, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
-    { stage: "Interested", count: 14, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
-    { stage: "Converted", count: 5, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
-  ],
-  month: [
-    { stage: "New Lead", count: 84, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
-    { stage: "Contacted", count: 62, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
-    { stage: "Interested", count: 38, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
-    { stage: "Converted", count: 16, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
-  ]
-};
+const DEFAULT_PIPELINE = [
+  { stage: "New Lead", count: 0, color: "bg-blue-500", text: "text-blue-600", light: "bg-blue-50" },
+  { stage: "Contacted", count: 0, color: "bg-cyan-500", text: "text-cyan-600", light: "bg-cyan-50" },
+  { stage: "Interested", count: 0, color: "bg-amber-500", text: "text-amber-600", light: "bg-amber-50" },
+  { stage: "Converted", count: 0, color: "bg-emerald-500", text: "text-emerald-600", light: "bg-emerald-50" },
+];
 
 export default function PipelineSection({ isLoading, pipeline = [] }) {
   const [timeframe, setTimeframe] = useState("month");
@@ -43,7 +29,11 @@ export default function PipelineSection({ isLoading, pipeline = [] }) {
     );
   }
 
-  const rawData = PIPELINE_DATA_BY_TIMEFRAME[timeframe] || PIPELINE_DATA_BY_TIMEFRAME.month;
+  const rawData = DEFAULT_PIPELINE.map(defaultStage => {
+    const found = pipeline.find(p => p.stage?.toUpperCase() === defaultStage.stage.toUpperCase());
+    return { ...defaultStage, count: found ? found.count : 0 };
+  });
+
   const totalCount = rawData.reduce((sum, s) => sum + s.count, 0) || 1;
   const maxCount = Math.max(...rawData.map(s => s.count)) || 1;
 

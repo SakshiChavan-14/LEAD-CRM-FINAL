@@ -42,19 +42,19 @@ export default function AnalyticsCards() {
     },
     {
       label: "Avg Duration",
-      value: formatDuration(analytics?.avgDuration || 145),
+      value: formatDuration(analytics?.avgDuration || 0),
       icon: Timer,
       variant: "purple",
     },
     {
       label: "Total Talk Time",
-      value: formatDuration(analytics?.totalDuration || 1350),
+      value: formatDuration(analytics?.totalDuration || 0),
       icon: Clock,
       variant: "info",
     },
     {
       label: "Connection Rate",
-      value: `${analytics?.connectionRate || 75}%`,
+      value: `${analytics?.connectionRate || 0}%`,
       icon: BarChart3,
       variant: "cyan",
     },

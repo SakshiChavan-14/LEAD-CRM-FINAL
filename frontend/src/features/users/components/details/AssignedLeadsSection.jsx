@@ -27,15 +27,7 @@ export default function AssignedLeadsSection({ leads, userId }) {
 
   const { data, isError } = useTelecallerAssignedLeads(userId, filters);
 
-  const fallbackLeads = [
-    { enquiryNo: "2", studentName: "Rahul Sharma", mobile: "9338495402", source: "Referral", status: "ENQUIRY", temperature: "HOT", stage: "Enquiry", assignedDate: "13 Jul 2026" },
-    { enquiryNo: "4", studentName: "Rohan Patil", mobile: "9722760329", source: "Instagram", status: "NEW", temperature: "WARM", stage: "New Lead", assignedDate: "12 Jul 2026" },
-    { enquiryNo: "8", studentName: "Aisha Khan", mobile: "9638414555", source: "Instagram", status: "INTERESTED", temperature: "WARM", stage: "Qualified", assignedDate: "10 Jul 2026" },
-    { enquiryNo: "9", studentName: "Arjun Kumar", mobile: "9599370916", source: "Website", status: "CONTACTED", temperature: "WARM", stage: "Contacted", assignedDate: "09 Jul 2026" },
-    { enquiryNo: "12", studentName: "Sneha Reddy", mobile: "9876543210", source: "Direct", status: "CONVERTED", temperature: "HOT", stage: "Admission", assignedDate: "08 Jul 2026" },
-  ];
-
-  const displayLeads = (data?.data?.length > 0 ? data.data : leads?.length > 0 ? leads : fallbackLeads).map((l, i) => ({
+  const displayLeads = (data?.data?.length > 0 ? data.data : leads?.length > 0 ? leads : []).map((l, i) => ({
     ...l,
     assignedDate: l.assignedDate ? formatDisplayDate(l.assignedDate) : `1${i + 1} Jul 2026`,
   }));

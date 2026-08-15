@@ -57,11 +57,11 @@ export default function TelecallerPerformanceCard() {
       return directoryTelecallers.map((user, idx) => {
         const report = reportsMap.get(String(user.id || user.userId || user.empId)) || reportsMap.get((user.name || "").toLowerCase()) || {};
         
-        const totalCalls = report.totalCalls || report.calls || user.totalCalls || Math.floor(45 + (idx * 17) % 55);
-        const connectedCalls = report.connectedCalls || Math.round(totalCalls * 0.72);
-        const interested = report.interested || Math.round(connectedCalls * 0.35);
-        const followupsCount = report.followupsCount || Math.round(totalCalls * 0.4);
-        const conversions = report.conversions || report.admissions || Math.floor(4 + (idx * 3) % 9);
+        const totalCalls = report.totalCalls || report.calls || user.totalCalls || 0;
+        const connectedCalls = report.connectedCalls || 0;
+        const interested = report.interested || 0;
+        const followupsCount = report.followupsCount || 0;
+        const conversions = report.conversions || report.admissions || 0;
 
         return {
           id: user.id || user.empId || idx + 1,

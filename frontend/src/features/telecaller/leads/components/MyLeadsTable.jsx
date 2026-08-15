@@ -157,7 +157,7 @@ const getColumns = (onCall, onRowClick) => [
       const isHot = (value || "").toUpperCase().includes("HIGH") || (value || "").toUpperCase().includes("INTERESTED");
       return (
         <span className={`text-xs font-bold ${isHot ? "text-emerald-600" : "text-slate-600"}`}>
-          {toTitleCase(value) || "Interested"}
+          {toTitleCase(value) || "-"}
         </span>
       );
     },
@@ -169,7 +169,7 @@ const getColumns = (onCall, onRowClick) => [
     headerClassName: "!h-[48px] !py-2.5 !bg-slate-50/80 !text-slate-500 !uppercase !tracking-wider !text-[11px] !font-extrabold font-outfit text-center border-b border-slate-200/80",
     cellClassName: "!py-3.5 !min-h-[70px] text-center font-outfit",
     render: (value, row) => {
-      const count = value || row.callCount || 1;
+      const count = value ?? row.callCount ?? 0;
       return (
         <div className="inline-flex items-center gap-1.5 font-mono text-xs font-extrabold text-slate-800">
           <PhoneForwarded size={12} className="text-blue-500" />

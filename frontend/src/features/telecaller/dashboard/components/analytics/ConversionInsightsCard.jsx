@@ -124,7 +124,7 @@ export default function ConversionInsightsCard({ isLoading, data }) {
           </div>
           <div>
             <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Conversion Rate</p>
-            <p className="text-base font-mono font-extrabold text-slate-900">{safeData.conversionRate || 13.3}%</p>
+            <p className="text-base font-mono font-extrabold text-slate-900">{safeData.conversionRate || 0}%</p>
             <p className="text-[10px] font-medium text-slate-400">Assigned to Enrolled</p>
           </div>
         </div>

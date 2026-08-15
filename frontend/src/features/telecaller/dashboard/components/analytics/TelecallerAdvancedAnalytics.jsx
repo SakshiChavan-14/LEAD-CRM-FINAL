@@ -50,7 +50,7 @@ export default function TelecallerAdvancedAnalytics({ dashboardData, leadsData, 
       const contacted = summary.connected || 0;
       const interested = summary.interested || 0;
       const converted = summary.admissions || 0;
-      const followups = Math.round(interested * 0.61) || 0;
+      const followups = summary.followups || 0;
       const conversionRate = assigned > 0 ? Number(((converted / assigned) * 100).toFixed(1)) : 0.0;
       
       return {
@@ -64,12 +64,12 @@ export default function TelecallerAdvancedAnalytics({ dashboardData, leadsData, 
     }
 
     return {
-      assigned: 150,
-      contacted: 98,
-      interested: 18,
-      followups: 11,
-      converted: 3,
-      conversionRate: 2.0
+      assigned: 0,
+      contacted: 0,
+      interested: 0,
+      followups: 0,
+      converted: 0,
+      conversionRate: 0.0
     };
   }, [dashboardData]);
 

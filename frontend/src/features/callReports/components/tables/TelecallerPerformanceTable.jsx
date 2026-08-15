@@ -44,13 +44,6 @@ export default function TelecallerPerformanceTable() {
     pageSize
   );
 
-  const fallbackRows = [
-    { userId: "1", name: "Karun Poojari", email: "poojari@gmail.com", status: "Online", totalCalls: 48, connectedCalls: 38, totalTalkTime: 8400, avgDuration: 195, conversions: 12, recordingsCount: 26, lastActive: new Date().toISOString() },
-    { userId: "2", name: "Aarav Sharma", email: "aarav@gmu.edu", status: "In Call", totalCalls: 36, connectedCalls: 28, totalTalkTime: 6200, avgDuration: 210, conversions: 8, recordingsCount: 20, lastActive: new Date().toISOString() },
-    { userId: "3", name: "Pooja Patel", email: "pooja@gmu.edu", status: "Online", totalCalls: 42, connectedCalls: 34, totalTalkTime: 7100, avgDuration: 185, conversions: 10, recordingsCount: 22, lastActive: new Date().toISOString() },
-    { userId: "4", name: "Vikram Malhotra", email: "vikram@gmu.edu", status: "Idle", totalCalls: 22, connectedCalls: 16, totalTalkTime: 3400, avgDuration: 160, conversions: 4, recordingsCount: 14, lastActive: new Date().toISOString() },
-  ];
-
   const rawRows = Array.isArray(data?.content)
     ? data.content
     : Array.isArray(data?.users)
@@ -59,7 +52,7 @@ export default function TelecallerPerformanceTable() {
     ? data
     : [];
 
-  const rows = rawRows.length > 0 ? rawRows : fallbackRows;
+  const rows = rawRows;
 
   const totalPages = data?.totalPages ?? (rows.length > 0 ? 1 : 0);
   const totalItems = data?.totalElements ?? data?.totalItems ?? rows.length;
@@ -75,15 +68,15 @@ export default function TelecallerPerformanceTable() {
       durationSecs += parseDurationToSeconds(row.duration || row.avgDuration);
     });
 
-    const avgSecs = rows.length > 0 ? Math.round(durationSecs / rows.length) : 195;
+    const avgSecs = rows.length > 0 ? Math.round(durationSecs / rows.length) : 0;
 
     return {
-      totalCalls: totalCalls > 0 ? totalCalls : 148,
-      connectedCalls: connectedCalls > 0 ? connectedCalls : 116,
-      avgDuration: avgSecs > 0 ? formatDuration(avgSecs) : "03m 15s",
-      recordings: 82,
-      successRate: totalCalls > 0 && connectedCalls > 0 ? Math.round((connectedCalls / totalCalls) * 100) : 78,
-      todaysCalls: 34
+      totalCalls: totalCalls,
+      connectedCalls: connectedCalls,
+      avgDuration: avgSecs > 0 ? formatDuration(avgSecs) : "00m 00s",
+      recordings: 0,
+      successRate: totalCalls > 0 && connectedCalls > 0 ? Math.round((connectedCalls / totalCalls) * 100) : 0,
+      todaysCalls: 0
     };
   }, [rows]);
 
