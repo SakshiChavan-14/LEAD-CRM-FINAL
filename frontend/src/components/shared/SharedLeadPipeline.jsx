@@ -34,15 +34,20 @@ export default function SharedLeadPipeline({ enquiryNo, currentStatus }) {
   const safeStatus = String(currentStatus || "").toUpperCase();
   const isNotInterested = safeStatus === "NOT_INTERESTED";
 
-  let currentStageIndex = LEAD_STAGES.indexOf(safeStatus);
-  if (currentStageIndex === -1) {
-    if (isNotInterested) {
-      // Find the last stage they were in before NOT_INTERESTED, or default to ENQUIRY
-      const lastHistoryStatus = history.reverse().find(h => LEAD_STAGES.includes(h.newStatus || h.status));
-      currentStageIndex = lastHistoryStatus ? LEAD_STAGES.indexOf(lastHistoryStatus.newStatus || lastHistoryStatus.status) : 0;
-    } else {
-      currentStageIndex = 0; // default to new lead if unknown
-    }
+  const getNormalizedStageIndex = (status) => {
+    const s = String(status || "").toUpperCase().trim();
+    if (["ENROLLED", "ADMISSION", "ADMITTED", "COMPLETED"].includes(s)) return 4;
+    if (["APPLICATION", "APPLIED"].includes(s)) return 3;
+    if (["HOT", "INTERESTED", "QUALIFIED"].includes(s)) return 2;
+    if (["COLD", "WARM", "CONTACTED", "FOLLOW_UP", "FOLLOWUP"].includes(s)) return 1;
+    return 0;
+  };
+
+  let currentStageIndex = getNormalizedStageIndex(safeStatus);
+  if (isNotInterested) {
+    // Find the last stage they were in before NOT_INTERESTED, or default to ENQUIRY
+    const lastHistoryStatus = [...history].reverse().find(h => LEAD_STAGES.includes(h.newStatus || h.status));
+    currentStageIndex = lastHistoryStatus ? getNormalizedStageIndex(lastHistoryStatus.newStatus || lastHistoryStatus.status) : 0;
   }
 
   const progressPercentage = isNotInterested 

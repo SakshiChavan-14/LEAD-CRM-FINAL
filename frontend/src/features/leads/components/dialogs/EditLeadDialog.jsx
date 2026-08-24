@@ -48,21 +48,21 @@ export default function EditLeadDialog({ open, onClose, lead }) {
   useEffect(() => {
     if (open && lead) {
       formik.setValues({
-        enquiryNo: lead.enquiryNo || "",
-        name: lead.name || "",
-        mobileNo: lead.mobileNo || "",
-        email: lead.email || "",
-        source: lead.source || "",
-        collegeStudied: lead.collegeStudied || "",
-        state: lead.state || "",
-        district: lead.district || "",
-        taluk: lead.taluk || "",
-        programme: lead.programme || "",
-        course: lead.course || "",
-        discipline: lead.discipline || "",
-        opinion: lead.opinion || "",
+        enquiryNo: lead.enquiryNo || lead.lead?.enquiryNo || "",
+        name: lead.student?.name || lead.name || "",
+        mobileNo: lead.student?.mobile || lead.student?.mobileNo || lead.mobileNo || "",
+        email: lead.student?.email || lead.email || "",
+        source: lead.lead?.source || lead.source || "",
+        collegeStudied: lead.education?.college || lead.collegeStudied || "",
+        state: lead.location?.state || lead.state || "",
+        district: lead.location?.district || lead.district || "",
+        taluk: lead.location?.city || lead.location?.taluk || lead.taluk || "",
+        programme: lead.education?.programme || lead.programme || "",
+        course: lead.education?.course || lead.course || "",
+        discipline: lead.education?.discipline || lead.discipline || "",
+        opinion: lead.lead?.temperature || lead.opinion || "",
         remarks: lead.remarks || "",
-        status: lead.status || "",
+        status: lead.lead?.status || lead.status || "",
       });
     } else {
       formik.resetForm();

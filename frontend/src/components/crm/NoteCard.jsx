@@ -4,14 +4,15 @@ import React, { useState } from "react";
 import { Pencil, Trash2, Check, X } from "lucide-react";
 
 export default function NoteCard({ note, onEditNote, onDeleteNote }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedText, setEditedText] = useState(note?.content || "");
-  const [isSaving, setIsSaving] = useState(false);
-
   if (!note) return null;
   const { id, _id, author = "Karun Poojari", createdBy, createdAt, content } = note;
   const noteId = id || _id;
   const noteAuthor = author || createdBy || "Karun Poojari";
+  const noteContent = content || note?.telecallerNotes || note?.notes || note?.remarks || note?.comment || "";
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(noteContent);
+  const [isSaving, setIsSaving] = useState(false);
 
   const formattedTime = createdAt ? new Date(createdAt).toLocaleString("en-IN", {
     day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
@@ -104,7 +105,7 @@ export default function NoteCard({ note, onEditNote, onDeleteNote }) {
               </div>
             </div>
           ) : (
-            <p className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{content}</p>
+            <p className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed font-medium">{noteContent}</p>
           )}
         </div>
       </div>

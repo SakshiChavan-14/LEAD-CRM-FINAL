@@ -126,7 +126,7 @@ export default function TelecallerCallLogsPage() {
            (c.callOutcome || c.outcome || c.status || "").toLowerCase() === "answered"
     ).length;
     const recordingsCount = filteredLogs.filter(
-      c => Boolean(c.recordingUrl || c.hasRecording || c.recording)
+      c => Boolean(c.recordingUrl && String(c.recordingUrl).trim() !== "")
     ).length;
     
     const parseDur = (dur) => {
@@ -138,10 +138,12 @@ export default function TelecallerCallLogsPage() {
       return 0;
     };
 
-    const validDurations = filteredLogs.map(c => parseDur(c.callDuration || c.duration)).filter(d => d > 0);
+    const validDurations = filteredLogs
+      .map(c => parseDur(c.callDurationSeconds !== undefined && c.callDurationSeconds !== null ? c.callDurationSeconds : (c.callDuration || c.duration)))
+      .filter(d => d > 0);
     const avgDuration = validDurations.length > 0 
       ? Math.round(validDurations.reduce((a, b) => a + b, 0) / validDurations.length)
-      : 195;
+      : 0;
 
     return {
       totalCalls,

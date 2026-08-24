@@ -19,19 +19,11 @@ export default function TelecallerLeadDetailsClient({ enquiryNo }) {
   const router = useRouter();
   const [isLogCallOpen, setIsLogCallOpen] = useState(false);
   const [isScheduleFollowupOpen, setIsScheduleFollowupOpen] = useState(false);
-  const { postCallEnquiryNo, setPostCallEnquiryNo } = useVoice();
+  const { postCallEnquiryNo, setPostCallEnquiryNo, callContext } = useVoice();
 
   // Fetch all followups to pass to modal for duplicate validation
   const { data: allFollowupsData } = useFollowups("all");
   const allFollowups = Array.isArray(allFollowupsData) ? allFollowupsData : [];
-
-  // If a call just ended for this enquiry, open the log call modal automatically
-  useEffect(() => {
-    if (postCallEnquiryNo === enquiryNo && !isLogCallOpen) {
-      setIsLogCallOpen(true);
-      setPostCallEnquiryNo(null);
-    }
-  }, [postCallEnquiryNo, enquiryNo, isLogCallOpen, setPostCallEnquiryNo]);
 
   const handleBack = () => router.push("/telecaller/leads");
 

@@ -69,17 +69,17 @@ export default function UpcomingFollowups({ isLoading, followups = [] }) {
         {items.map((item, idx) => {
           return (
             <div 
-              key={item.id || idx} 
+              key={`${item.id || item.enquiryNo || 'item'}-${idx}`} 
               className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-blue-200 hover:shadow-2xs transition-all duration-200 group gap-3"
             >
               <div className="flex flex-col min-w-0">
                 <span className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
-                  {item.name}
+                  {item.name || item.studentName || item.student || item.leadName || `Lead #${item.enquiryNo || item.id}`}
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-50 text-blue-600 border border-blue-200">
                     <Clock size={10} />
-                    {item.time || "Scheduled"}
+                    {item.time || item.scheduledTime || "Scheduled"}
                   </span>
                 </div>
               </div>

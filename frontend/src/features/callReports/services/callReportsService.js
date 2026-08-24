@@ -8,7 +8,7 @@ const callReportsService = {
    * @param {Object} params - { page, size, search, dateFrom, dateTo }
    */
   getTelecallerPerformance: async (params = {}) => {
-    const { page = 0, size = 10, search = "", date = "" } = params;
+    const { page = 0, size = 10, search = "", date = "", dateFrom = "", dateTo = "" } = params;
 
     const queryParams = new URLSearchParams({
       page: page.toString(),
@@ -16,9 +16,29 @@ const callReportsService = {
     });
 
     if (search) queryParams.append("search", search);
-    if (date) {
-      queryParams.append("dateFrom", `${date}T00:00:00`);
-      queryParams.append("dateTo", `${date}T23:59:59`);
+
+    const getInclusiveDateTo = (dStr) => {
+      if (!dStr) return "";
+      const base = dStr.split("T")[0];
+      const d = new Date(base);
+      if (isNaN(d.getTime())) return base;
+      d.setDate(d.getDate() + 1);
+      return d.toISOString().split("T")[0];
+    };
+
+    if (dateFrom && dateTo) {
+      const fromStr = dateFrom.split("T")[0];
+      const toStr = dateTo.split("T")[0];
+      queryParams.append("dateFrom", fromStr);
+      queryParams.append("dateTo", getInclusiveDateTo(toStr));
+    } else if (dateFrom) {
+      queryParams.append("dateFrom", dateFrom.split("T")[0]);
+    } else if (dateTo) {
+      queryParams.append("dateTo", getInclusiveDateTo(dateTo));
+    } else if (date) {
+      const dateStr = date.split("T")[0];
+      queryParams.append("dateFrom", dateStr);
+      queryParams.append("dateTo", getInclusiveDateTo(dateStr));
     }
 
     const response = await axiosInstance.get(

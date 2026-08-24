@@ -104,7 +104,7 @@ export default function DashboardSidebar({
     }
   };
 
-  const displayName = profile?.name || user.name || (user.username === "telecaller" ? "Karun Poojari" : user.username) || "User";
+  const displayName = profile?.name || user.name || user.fullName || (user.username === "telecaller" || user.username === "leesha" ? "Karun Poojari" : user.username) || "User";
   const avatarSource = profile?.avatarUrl || user.avatarUrl || user.photo;
 
   // Sidebar content — shared between desktop and mobile

@@ -79,7 +79,7 @@ export default function LeadDetailsView({
       )}
 
       {/* ── Statistics Section ─────────────────────────────────────────────────── */}
-      {showStats && <LeadStatisticsSection viewModel={viewModel} rawData={rawData} isTelecaller={isTelecaller} />}
+      {showStats && <LeadStatisticsSection leadId={leadId} viewModel={viewModel} rawData={rawData} isTelecaller={isTelecaller} />}
 
       {/* ── Tabs Navigation (Standard Slate UI with Smooth Active Indicator) ───── */}
       <nav className="flex items-center gap-2 border-b border-slate-200/80 overflow-x-auto [scrollbar-width:none]">

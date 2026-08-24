@@ -30,13 +30,17 @@ export default function MyLeadsFilterToolbar({
   }, [initialSearch]);
 
   const handleApplySearch = () => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     if (localSearch.trim()) {
       params.set("search", localSearch.trim());
     } else {
       params.delete("search");
     }
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v) params.set(k, v);
+      else params.delete(k);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleKeyDown = (e) => {

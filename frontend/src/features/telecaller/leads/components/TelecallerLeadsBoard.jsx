@@ -2,18 +2,17 @@
 
 import React, { useState } from "react";
 import { Search } from "lucide-react";
-import { LEAD_STAGES } from "@/features/leads/constants/leadStages";
 import { useTelecallerUpdateLeadStatus } from "@/features/telecaller/hooks/useTelecallerUpdateLeadStatus";
 import { formatDisplayDate } from "@/utils/dateUtils";
 
-// We append NOT_INTERESTED to the board columns
-const BOARD_COLUMNS = [...LEAD_STAGES, "NOT_INTERESTED"];
+const TELECALLER_STAGES = ["ENQUIRY", "COLD", "WARM", "HOT", "COMPLETED"];
+const BOARD_COLUMNS = [...TELECALLER_STAGES, "NOT_INTERESTED"];
 
 const normalizeStatus = (status) => {
   const s = String(status || "ENQUIRY").trim().toUpperCase();
 
   if (s === "NOT INTERESTED" || s === "NOT_INTERESTED") return "NOT_INTERESTED";
-  if (s === "COMPLETED" || s === "ENROLLED" || s === "ADMITTED") return "ADMISSION";
+  if (s === "COMPLETED" || s === "ENROLLED" || s === "ADMITTED") return "COMPLETED";
 
   return s.replace(/\s+/g, "_");
 };
@@ -27,7 +26,7 @@ const calculateScore = (lead) => {
   score += Math.min((lead.followupCount || 0) * 15, 30);
   
   // Pipeline progression score
-  const stageIndex = LEAD_STAGES.indexOf(normalizeStatus(lead.status));
+  const stageIndex = TELECALLER_STAGES.indexOf(normalizeStatus(lead.status));
   if (stageIndex > 0) score += (stageIndex * 15);
   
   return Math.min(Math.max(score, 10), 100);
@@ -143,8 +142,8 @@ export default function TelecallerLeadsBoard({ leads, onRowClick }) {
                 columnLeads.map((lead) => {
                   const normalizedLeadStatus = normalizeStatus(lead.status);
                   const isNotInterested = normalizedLeadStatus === "NOT_INTERESTED";
-                  const stageIndex = LEAD_STAGES.indexOf(normalizedLeadStatus);
-                  const progress = isNotInterested ? 0 : Math.round(((stageIndex + 1) / LEAD_STAGES.length) * 100);
+                  const stageIndex = TELECALLER_STAGES.indexOf(normalizedLeadStatus);
+                  const progress = (isNotInterested || stageIndex === -1) ? 0 : Math.round(((stageIndex + 1) / TELECALLER_STAGES.length) * 100);
                   const isHighPriority = progress > 80 && !isNotInterested;
 
                   return (

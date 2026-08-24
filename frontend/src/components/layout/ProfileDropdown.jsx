@@ -73,7 +73,7 @@ export default function ProfileDropdown() {
 
   if (!user) return null;
 
-  const displayName = profile?.name || user.name || (user.username === "telecaller" ? "Karun Poojari" : user.username) || "User";
+  const displayName = profile?.name || user.name || user.fullName || (user.username === "telecaller" || user.username === "leesha" ? "Karun Poojari" : user.username) || "User";
   const avatarSource = profile?.avatarUrl || user.avatarUrl || user.photo;
 
   return (

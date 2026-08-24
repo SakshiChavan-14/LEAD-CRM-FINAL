@@ -14,9 +14,9 @@ const getAvatarColor = (name) => {
 };
 
 const formatCompactDate = (dateStr) => {
-  if (!dateStr) return "Today • 10:30 AM";
+  if (!dateStr) return "-";
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return "Today • 10:30 AM";
+  if (isNaN(date.getTime())) return "-";
   
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -31,8 +31,7 @@ const formatCompactDate = (dateStr) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ` • ${time}`;
 };
 
-const DEFAULT_COURSES = ["Computer Science", "Mechanical Eng", "Data Science", "Electronics", "Information Tech", "Civil Eng", "Biotechnology"];
-const DEFAULT_DISTRICTS = ["Bangalore", "Mysore", "Mangalore", "Belgaum", "Hubli", "Dharwad", "Udupi"];
+
 
 export const getRecentCallsColumns = (onPlayRecording) => [
   {
@@ -40,7 +39,7 @@ export const getRecentCallsColumns = (onPlayRecording) => [
     label: "Lead Student",
     render: (_, call, idx) => {
       const name = call.leadName || call.name || call.studentName || call.lead?.name || "Lead";
-      const enquiryNo = call.enquiryNo || call.leadId || call.id || (101 + idx);
+      const enquiryNo = call.enquiryNo || call.leadId || call.id || "-";
       
       return (
         <div className="flex items-center gap-3 min-w-0">
@@ -64,7 +63,7 @@ export const getRecentCallsColumns = (onPlayRecording) => [
     label: "Phone",
     render: (_, call) => (
       <span className="text-slate-700 font-mono font-bold text-xs truncate group-hover:text-blue-600 transition-colors">
-        {call.phone || call.leadPhone || call.mobile || call.mobileNo || "9338495402"}
+        {call.phone || call.leadPhone || call.mobile || call.mobileNo || "-"}
       </span>
     ),
   },
@@ -95,7 +94,7 @@ export const getRecentCallsColumns = (onPlayRecording) => [
     key: "duration",
     label: "Duration",
     render: (_, call, idx) => {
-      const duration = call.callDurationSeconds || call.callDuration || call.duration || (145 + (idx * 25));
+      const duration = call.callDurationSeconds || call.callDuration || call.duration || 0;
       return (
         <span className="font-mono text-xs font-extrabold text-slate-800 bg-slate-100/80 px-2.5 py-1 rounded-lg border border-slate-200/60 shadow-2xs group-hover:border-blue-200 group-hover:bg-blue-50/50 group-hover:text-blue-700 transition-colors">
           {formatDuration(duration)}
@@ -136,7 +135,7 @@ export const getRecentCallsColumns = (onPlayRecording) => [
     key: "course",
     label: "Course",
     render: (_, call, idx) => {
-      const course = call.course || call.courseName || call.programme || call.lead?.course || call.leadCourse || DEFAULT_COURSES[idx % DEFAULT_COURSES.length];
+      const course = call.course || call.courseName || call.programme || call.lead?.course || call.leadCourse || "N/A";
       return (
         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 group-hover:text-blue-600 transition-colors">
           <GraduationCap size={13} className="text-blue-500 shrink-0" />
@@ -149,7 +148,7 @@ export const getRecentCallsColumns = (onPlayRecording) => [
     key: "district",
     label: "District",
     render: (_, call, idx) => {
-      const district = call.district || call.districtName || call.city || call.location || call.lead?.district || call.lead?.city || DEFAULT_DISTRICTS[idx % DEFAULT_DISTRICTS.length];
+      const district = call.district || call.districtName || call.city || call.location || call.lead?.district || call.lead?.city || "N/A";
       return (
         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 group-hover:text-emerald-600 transition-colors">
           <MapPin size={13} className="text-emerald-500 shrink-0" />

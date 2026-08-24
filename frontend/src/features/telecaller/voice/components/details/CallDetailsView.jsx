@@ -26,15 +26,15 @@ const CallDetailsSkeleton = () => (
 );
 
 export default function CallDetailsView({ callId, callData, defaultTab = "summary", showRecording = true }) {
-  const { data: fetchedCall, isLoading, isError } = useCallDetails(callId, { enabled: !callData });
+  const { data: fetchedCall, isLoading, isError } = useCallDetails(callId, { enabled: !!callId });
   const [activeTab, setActiveTab] = useState(defaultTab);
   
-  if (isLoading) return <CallDetailsSkeleton />;
-  if (isError || (!callData && !fetchedCall)) {
+  if (isLoading && !callData) return <CallDetailsSkeleton />;
+  if (isError && !callData && !fetchedCall) {
     return <EmptyState title="Call Details Unavailable" description="Could not load the requested call details." />;
   }
   
-  const call = callData || fetchedCall;
+  const call = { ...(callData || {}), ...(fetchedCall || {}) };
 
   const tabs = [
     { id: "summary", label: "Summary", icon: LayoutDashboard },

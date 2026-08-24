@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { 
   User, 
@@ -20,6 +20,7 @@ import { formatDisplayDate } from "@/utils/dateUtils";
 import { useLeadCalls } from "@/features/telecaller/hooks/useLeadCalls";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 import UpdateLeadStatusModule from "@/features/telecaller/leads/components/UpdateLeadStatusModule";
+import CallDetailsModal from "@/features/telecaller/voice/components/details/CallDetailsModal";
 
 const PRIORITY_STYLES = {
   HIGH: "bg-rose-50 text-rose-700 border-rose-200/80",
@@ -28,7 +29,15 @@ const PRIORITY_STYLES = {
 };
 
 export default function LeadOverviewLayout({ data, rawData, isTelecaller = false }) {
-  const enquiryNo = rawData?.lead?.enquiryNo || rawData?.enquiryNo || rawData?.id;
+  const [selectedCall, setSelectedCall] = useState(null);
+  const enquiryNoRaw = rawData?.lead?.enquiryNo || rawData?.enquiryNo || rawData?.id;
+  const enquiryNo = enquiryNoRaw ? String(enquiryNoRaw).replace(/[^\d]/g, "") : "";
+
+  // Debug: log what data we actually receive
+  console.log("[LeadOverviewLayout] rawData keys:", rawData ? Object.keys(rawData) : "null");
+  console.log("[LeadOverviewLayout] rawData:", JSON.stringify(rawData, null, 2)?.substring(0, 1500));
+  console.log("[LeadOverviewLayout] data (viewModel):", JSON.stringify(data, null, 2)?.substring(0, 1500));
+  console.log("[LeadOverviewLayout] enquiryNo:", enquiryNo);
 
   const { data: callsData, isLoading: isCallsLoading } = useLeadCalls(enquiryNo);
   const calls = Array.isArray(callsData) && callsData.length > 0 ? callsData : (rawData?.calls || []);
@@ -36,7 +45,7 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
   const { data: allFollowupsData } = useFollowups("all");
   const allFollowups = Array.isArray(allFollowupsData) ? allFollowupsData : [];
   const leadFollowups = allFollowups.length > 0 
-    ? allFollowups.filter((f) => String(f.enquiryNo || f.leadId) === String(enquiryNo)) 
+    ? allFollowups.filter((f) => String(f.enquiryNo || f.leadId).replace(/[^\d]/g, "") === String(enquiryNo)) 
     : (rawData?.followups || []);
 
   const totalFollowups = leadFollowups.length;
@@ -52,28 +61,33 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
   const missedCalls = totalCalls - connectedCalls;
   const connectionRate = totalCalls > 0 ? Math.round((connectedCalls / totalCalls) * 100) : 0;
 
-  // Personal Info Mapping
-  const leadName = data?.header?.name || rawData?.name || "Student";
-  const dob = rawData?.student?.dateOfBirth ? formatDisplayDate(rawData.student.dateOfBirth) : "N/A";
-  const gender = rawData?.student?.gender || "N/A";
-  const category = rawData?.student?.category || "N/A";
-  const nationality = rawData?.student?.nationality || "Indian";
-  const languages = rawData?.student?.languages?.join(", ") || "English, Hindi, Kannada";
-  const address = data?.contact?.locationStr || rawData?.location || "N/A";
+  // ── Personal Info Mapping (handles both nested and flat API responses) ──
+  const leadName = data?.header?.name || rawData?.student?.name || rawData?.studentName || rawData?.name || "Student";
+  const dob = (rawData?.student?.dateOfBirth || rawData?.dateOfBirth) 
+    ? formatDisplayDate(rawData?.student?.dateOfBirth || rawData?.dateOfBirth) : "N/A";
+  const gender = rawData?.student?.gender || rawData?.gender || "N/A";
+  const category = rawData?.student?.category || rawData?.category || "N/A";
+  const nationality = rawData?.student?.nationality || rawData?.nationality || "N/A";
+  const languages = (rawData?.student?.languages || rawData?.languages || []);
+  const languagesStr = Array.isArray(languages) && languages.length > 0 ? languages.join(", ") : "N/A";
+  const address = data?.contact?.locationStr 
+    || [rawData?.location?.city, rawData?.location?.district, rawData?.location?.state].filter(Boolean).join(", ")
+    || [rawData?.city, rawData?.district, rawData?.state].filter(Boolean).join(", ")
+    || rawData?.location || "N/A";
 
-  // Academic Interest Mapping
-  const programme = rawData?.lead?.programme || "N/A";
-  const course = rawData?.lead?.course || "N/A";
-  const session = rawData?.lead?.session || "2026-27";
-  const preferredCourse = rawData?.lead?.preferredCourse || "N/A";
-  const education = rawData?.lead?.education || "12th Passed";
-  const stream = rawData?.lead?.stream || "Commerce";
-  const collegePreference = rawData?.lead?.collegePreference || rawData?.lead?.college || "GM University";
+  // ── Academic Interest Mapping ──
+  const programme = rawData?.education?.programme || rawData?.lead?.programme || rawData?.programme || "N/A";
+  const course = rawData?.education?.course || rawData?.lead?.course || rawData?.course || "N/A";
+  const session = rawData?.lead?.session || rawData?.session || "N/A";
+  const preferredCourse = rawData?.education?.preferredCourse || rawData?.lead?.preferredCourse || rawData?.preferredCourse || "N/A";
+  const education = rawData?.education?.qualification || rawData?.lead?.education || rawData?.qualification || "N/A";
+  const stream = rawData?.education?.stream || rawData?.lead?.stream || rawData?.stream || "N/A";
+  const collegePreference = rawData?.education?.college || rawData?.lead?.collegePreference || rawData?.lead?.college || rawData?.collegeStudied || "N/A";
 
-  // Assigned Telecaller Mapping
-  const telecallerName = data?.assignment?.telecaller || rawData?.callerName || rawData?.assignedTo?.name || "Unassigned";
+  // ── Assigned Telecaller Mapping ──
+  const telecallerName = data?.assignment?.telecaller || rawData?.lead?.assignedTo?.name || rawData?.assignedTo?.name || rawData?.lead?.assignedToName || rawData?.assignedToName || rawData?.callerName || rawData?.telecallerName || "Unassigned";
   const telecallerRole = "Telecaller";
-  const telecallerEmpId = rawData?.assignedTo?.empId || rawData?.assignedTo?.id || "EMP0001";
+  const telecallerEmpId = rawData?.lead?.assignedTo?.empId || rawData?.assignedTo?.empId || rawData?.lead?.assignedTo?.employeeId || rawData?.assignedTo?.employeeId || rawData?.telecallerEmpId || rawData?.lead?.assignedTo?.id || rawData?.assignedTo?.id || "";
 
   // Next Follow-up logic
   const nextFollowup = useMemo(() => {
@@ -85,6 +99,15 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
       return dateA - dateB;
     })[0];
   }, [leadFollowups]);
+
+  const latestCall = useMemo(() => {
+    if (!calls || calls.length === 0) return null;
+    return [...calls].sort((a, b) => new Date(b.callDateTime || b.createdAt || b.date || 0) - new Date(a.callDateTime || a.createdAt || a.date || 0))[0];
+  }, [calls]);
+
+  const lastActiveDate = latestCall 
+    ? formatDisplayDate(latestCall.callDateTime || latestCall.createdAt || latestCall.date)
+    : (rawData?.updatedAt || rawData?.lead?.updatedAt ? formatDisplayDate(rawData.updatedAt || rawData.lead.updatedAt) : "N/A");
 
   return (
     <div className="flex flex-col gap-6 w-full font-outfit">
@@ -131,7 +154,7 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
               </div>
               <div className="flex justify-between items-center py-2.5">
                 <span className="font-semibold text-slate-400">Languages</span>
-                <span className="font-medium text-slate-700 truncate max-w-[150px]">{languages}</span>
+                <span className="font-medium text-slate-700 truncate max-w-[150px]">{languagesStr}</span>
               </div>
               <div className="flex justify-between items-start py-2.5">
                 <span className="font-semibold text-slate-400">Address</span>
@@ -249,7 +272,7 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
                         {call.recordingUrl || call.recording ? (
                           <button 
                             type="button" 
-                            onClick={() => alert("Playing call recording...")}
+                            onClick={() => setSelectedCall(call)}
                             className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center justify-center border border-blue-200 shadow-3xs cursor-pointer"
                           >
                             <Play size={10} className="fill-blue-600 text-blue-600" />
@@ -403,14 +426,24 @@ export default function LeadOverviewLayout({ data, rawData, isTelecaller = false
               </div>
               <div className="flex flex-col">
                 <span className="text-[9px] uppercase font-bold text-slate-400">Last Active</span>
-                <span className="font-medium text-slate-700 mt-1 truncate max-w-[65px]" title={rawData?.updatedAt ? formatDisplayDate(rawData.updatedAt) : "N/A"}>
-                  {rawData?.updatedAt ? formatDisplayDate(rawData.updatedAt) : "N/A"}
+                <span className="font-medium text-slate-700 mt-1 truncate max-w-[65px]" title={lastActiveDate}>
+                  {lastActiveDate}
                 </span>
               </div>
             </div>
           </div>
         </section>
       </div>
+
+      {selectedCall && (
+        <CallDetailsModal
+          callId={selectedCall.id || selectedCall.callId || selectedCall.interactionId}
+          callData={selectedCall}
+          open={!!selectedCall}
+          onClose={() => setSelectedCall(null)}
+          showRecording={true}
+        />
+      )}
     </div>
   );
 }

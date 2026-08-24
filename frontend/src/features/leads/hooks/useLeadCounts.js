@@ -6,43 +6,55 @@ export function useLeadCounts() {
   return useQuery({
     queryKey: LEAD_KEYS.counts(),
     queryFn: async () => {
-      // 1. Fetch base counts from backend stats/counts API
-      let baseCounts = {};
       try {
-        const data = await leadService.getLeadCounts();
-        console.log("📡 [useLeadCounts] Raw leadCounts from API:", data);
-        baseCounts = mapLeadCounts(data);
-        console.log("📡 [useLeadCounts] Mapped baseCounts:", baseCounts);
+        const [countsData, leadsRaw] = await Promise.all([
+          leadService.getLeadCounts().catch(() => ({})),
+          leadService.getOverviewLeads({ size: 10000 }).catch(() => ({}))
+        ]);
+
+        console.log("📡 [useLeadCounts] Raw leadCounts from API:", countsData);
+        const baseCounts = mapLeadCounts(countsData);
+
+        const leads = leadsRaw?.leads || leadsRaw?.content || (Array.isArray(leadsRaw) ? leadsRaw : []);
+        
+        // Compute accurate hot, warm, and cold counts from the real leads list
+        let hotCount = 0;
+        let warmCount = 0;
+        let coldCount = 0;
+
+        leads.forEach(l => {
+          const statusUpper = (l.status || "").toUpperCase();
+          const opinionUpper = (l.opinion || l.temperature || "").toUpperCase();
+          if (statusUpper === "HOT" || opinionUpper === "HOT" || opinionUpper === "INTERESTED") {
+            hotCount++;
+          } else if (statusUpper === "COLD" || opinionUpper === "COLD" || opinionUpper === "NOT INTERESTED") {
+            coldCount++;
+          } else {
+            warmCount++;
+          }
+        });
+
+        // Override with accurate client-computed counts
+        baseCounts.hot = hotCount;
+        baseCounts.warm = warmCount;
+        baseCounts.cold = coldCount;
+
+        console.log("📡 [useLeadCounts] Mapped baseCounts with dynamic hot/warm/cold override:", baseCounts);
+        return baseCounts;
       } catch (e) {
         console.error("📡 [useLeadCounts] Error fetching base counts:", e);
+        return {
+          all: 0,
+          new: 0,
+          hot: 0,
+          warm: 0,
+          cold: 0,
+          alloted: 0,
+          "not-alloted": 0,
+          "not-consulted": 0,
+          "opinion-reassign": 0,
+        };
       }
-
-      // 2. Fetch live exact DB counts for all lead bucket types from /api/leads/overview
-      const bucketKeys = ["all", "new", "hot", "cold", "alloted", "not-alloted", "not-consulted", "opinion-reassign"];
-      const liveCounts = { ...baseCounts };
-
-      const fetches = bucketKeys.map(async (key) => {
-        try {
-          const params = { size: 10, page: 0 };
-          if (key !== "all") {
-            params.type = key;
-          }
-          const res = await leadService.getOverviewLeads(params);
-          console.log(`📡 [useLeadCounts] Fetched key '${key}' res:`, res);
-          const total = res.totalItems ?? res.totalElements ?? res.page?.totalElements ?? 0;
-          console.log(`📡 [useLeadCounts] Key '${key}' parsed total:`, total);
-          if (typeof total === "number") {
-            liveCounts[key] = total;
-          }
-        } catch (e) {
-          console.error(`📡 [useLeadCounts] Error fetching key '${key}':`, e);
-        }
-      });
-
-      await Promise.all(fetches);
-      console.log("📡 [useLeadCounts] Final liveCounts:", liveCounts);
-
-      return liveCounts;
     },
     staleTime: 30 * 1000, // 30 seconds
     retry: 2,
@@ -59,6 +71,7 @@ function mapLeadCounts(data) {
     all: stats.total || stats.all || stats.totalLeads || stats.allLeads || 0,
     new: stats.recent || stats.new || stats.newLeads || 0,
     hot: stats.hot || stats.hotLeads || stats.hot_leads || 0,
+    warm: stats.warm || stats.warmLeads || stats.warm_leads || 0,
     cold: stats.cold || stats.coldLeads || stats.cold_leads || 0,
     alloted: stats.alloted || stats.allotted || stats.allotedLeads || stats.allottedLeads || 0,
     "not-alloted": stats.notAlloted || stats.not_allotted || stats["not-alloted"] || stats.notAllottedLeads || stats.unassigned || 0,

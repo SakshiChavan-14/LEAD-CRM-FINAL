@@ -5,9 +5,10 @@ export function createCallQueueModel(leads = [], followups = [], calls = []) {
 
   // Add followups
   followups.forEach((f) => {
-    if (f.status === "Completed") return;
+    const statusUpper = String(f.status || "").toUpperCase();
+    if (statusUpper === "COMPLETED") return;
 
-    const isOverdue = f.status === "Missed" || (f.status === "Pending" && f.scheduledDate < todayStr);
+    const isOverdue = statusUpper === "MISSED" || (statusUpper === "PENDING" && f.scheduledDate < todayStr);
     const isToday = f.scheduledDate === todayStr;
 
     if (!isOverdue && !isToday && f.scheduledDate > todayStr) return; // Future followup
@@ -48,7 +49,7 @@ export function createCallQueueModel(leads = [], followups = [], calls = []) {
     let reason = "Assigned Lead";
     let priorityType = "Normal";
 
-    const temperature = (l.temperature || "").toLowerCase();
+    const temperature = (l.temperature || l.opinion || l.status || "").toLowerCase();
     
     if (status === "NEW") {
       priorityScore = 40;
@@ -99,8 +100,14 @@ export function createCallQueueModel(leads = [], followups = [], calls = []) {
   const queue = queueItems.slice(1);
 
   // Compute Summary
-  const pendingFollowups = followups.filter((f) => f.status === "Pending" && f.scheduledDate >= todayStr).length;
-  const overdueCalls = followups.filter((f) => f.status === "Missed" || (f.status === "Pending" && f.scheduledDate < todayStr)).length;
+  const pendingFollowups = followups.filter((f) => {
+    const statusUpper = String(f.status || "").toUpperCase();
+    return statusUpper === "PENDING" && f.scheduledDate >= todayStr;
+  }).length;
+  const overdueCalls = followups.filter((f) => {
+    const statusUpper = String(f.status || "").toUpperCase();
+    return statusUpper === "MISSED" || (statusUpper === "PENDING" && f.scheduledDate < todayStr);
+  }).length;
   
   const callsToday = calls.filter(c => {
     const callDate = new Date(c.callDateTime || c.createdAt || c.date).toISOString().split("T")[0];

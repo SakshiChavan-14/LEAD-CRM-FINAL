@@ -171,7 +171,26 @@ export default function ImportLeadsDialog({ open, onClose }) {
                 <span className="text-[11px] font-semibold text-gray-400 block">Auto Assign</span>
                 <span className="text-sm font-bold text-gray-800">{isAuto ? "Yes (Round Robin)" : "No"}</span>
               </div>
+              {statusData?.processingTimeMs !== undefined && (
+                <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-2xs">
+                  <span className="text-[11px] font-semibold text-gray-400 block">Processing Time</span>
+                  <span className="text-lg font-bold text-gray-900">{statusData.processingTimeMs} ms</span>
+                </div>
+              )}
             </div>
+            {statusData?.distributionByCaller && Object.keys(statusData.distributionByCaller).length > 0 && (
+              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-2xs space-y-2 mt-3">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Lead Assignment Distribution</span>
+                <div className="grid grid-cols-2 gap-2.5 text-xs font-medium text-slate-600 font-mono">
+                  {Object.entries(statusData.distributionByCaller).map(([empId, count]) => (
+                    <div key={empId} className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500">{empId}:</span>
+                      <span className="font-bold text-slate-800">{count} {count === 1 ? 'lead' : 'leads'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       );

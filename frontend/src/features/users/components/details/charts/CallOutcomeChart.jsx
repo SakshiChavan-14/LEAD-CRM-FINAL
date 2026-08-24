@@ -68,10 +68,12 @@ export default function CallOutcomeChart({ data }) {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const d = payload[0].payload;
+                        const itemVal = Number(d.value || 0);
+                        const pct = total > 0 ? ((itemVal / total) * 100).toFixed(1) : "0.0";
                         return (
                           <div className="bg-slate-900/95 text-white px-3 py-1.5 rounded-xl text-xs font-outfit shadow-xl border border-slate-800">
                             <span className="font-bold">{d.name}: </span>
-                            <span className="font-mono text-emerald-400">{d.value}%</span>
+                            <span className="font-mono text-emerald-400">{pct}% ({itemVal} calls)</span>
                           </div>
                         );
                       }
@@ -88,15 +90,19 @@ export default function CallOutcomeChart({ data }) {
 
             {/* Legend */}
             <div className="grid grid-cols-2 gap-2.5 w-full">
-              {chartData.map((item, idx) => (
-                <div key={idx} className="bg-slate-50 border border-slate-200/60 p-2.5 rounded-xl flex items-center gap-2 hover:bg-slate-100/80 transition-colors">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[11px] font-bold text-slate-800 truncate">{item.name}</span>
-                    <span className="text-[10px] font-mono text-slate-400">{item.value}%</span>
+              {chartData.map((item, idx) => {
+                const itemVal = Number(item.value || 0);
+                const pct = total > 0 ? ((itemVal / total) * 100).toFixed(1) : "0.0";
+                return (
+                  <div key={idx} className="bg-slate-50 border border-slate-200/60 p-2.5 rounded-xl flex items-center gap-2 hover:bg-slate-100/80 transition-colors">
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[11px] font-bold text-slate-800 truncate">{item.name}</span>
+                      <span className="text-[10px] font-mono text-slate-500 font-semibold">{pct}% ({itemVal})</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         ) : (

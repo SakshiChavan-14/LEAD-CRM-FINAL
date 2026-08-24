@@ -14,53 +14,53 @@ export default function KPISection({ isLoading, summary }) {
   }
 
   const safeSummary = summary || {
-    assigned: 38,
-    callsToday: 18,
-    connected: 14,
-    interested: 6,
-    admissions: 2,
-    goal: 68
+    assigned: 0,
+    callsToday: 0,
+    connected: 0,
+    interested: 0,
+    admissions: 0,
+    goal: 0
   };
 
   const kpis = [
     {
       title: "Assigned",
-      value: safeSummary.assigned ?? 38,
+      value: safeSummary.assigned ?? 0,
       icon: Users,
       variant: "blue",
       href: "/telecaller/leads?status=ALL",
     },
     {
       title: "Calls Today",
-      value: safeSummary.callsToday ?? 18,
+      value: safeSummary.callsToday ?? 0,
       icon: PhoneCall,
       variant: "warning",
       href: "/telecaller/calls?date=today",
     },
     {
       title: "Connected",
-      value: safeSummary.connected ?? 14,
+      value: safeSummary.connected ?? 0,
       icon: PhoneOutgoing,
       variant: "success",
       href: "/telecaller/calls?status=CONNECTED",
     },
     {
       title: "Interested",
-      value: safeSummary.interested ?? 6,
+      value: safeSummary.interested ?? 0,
       icon: Heart,
       variant: "purple",
       href: "/telecaller/leads?status=INTERESTED",
     },
     {
       title: "Admissions",
-      value: safeSummary.admissions ?? 2,
+      value: safeSummary.admissions ?? 0,
       icon: CheckCircle2,
       variant: "primary",
       href: "/telecaller/leads?status=ADMISSION",
     },
     {
       title: "Goal %",
-      value: `${safeSummary.goal ?? 68}%`,
+      value: `${safeSummary.goal ?? 0}%`,
       icon: Target,
       variant: "danger",
     },

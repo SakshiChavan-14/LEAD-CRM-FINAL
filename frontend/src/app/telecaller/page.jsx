@@ -38,17 +38,6 @@ export default function TelecallerDashboard() {
   const [isLogCallOpen, setIsLogCallOpen] = useState(false);
   const [selectedEnquiryNo, setSelectedEnquiryNo] = useState(null);
   
-  const { postCallEnquiryNo, setPostCallEnquiryNo } = useVoice();
-
-  // If a call just ended, open the log call modal automatically
-  useEffect(() => {
-    if (postCallEnquiryNo) {
-      setSelectedEnquiryNo(postCallEnquiryNo);
-      setIsLogCallOpen(true);
-      setPostCallEnquiryNo(null);
-    }
-  }, [postCallEnquiryNo, setPostCallEnquiryNo]);
-
   const handleCloseLogCall = () => {
     setIsLogCallOpen(false);
     setSelectedEnquiryNo(null);
@@ -77,8 +66,8 @@ export default function TelecallerDashboard() {
           summary={dashboardData?.summary} 
         />
 
-        {/* ── CONTENT GRID 1 (3 Cols) ───────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr] gap-6 items-stretch">
+        {/* ── CONTENT GRID 1 (2 Cols: Next Best Leads & Upcoming Follow-ups) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           <NextCallsCard 
             isLoading={isLoading} 
             nextCalls={dashboardData?.nextCalls} 
@@ -87,14 +76,9 @@ export default function TelecallerDashboard() {
               setIsLogCallOpen(true);
             }} 
           />
-          <TodaysFocus 
-            isLoading={isLoading} 
-            focus={dashboardData?.todaysFocus} 
-            leads={leadsData?.leads}
-          />
           <UpcomingFollowups 
             isLoading={isLoading} 
-            followups={dashboardData?.nextCalls}
+            followups={dashboardData?.followups || dashboardData?.nextCalls}
             leads={leadsData?.leads}
           />
         </div>

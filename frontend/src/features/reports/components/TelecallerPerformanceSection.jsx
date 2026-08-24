@@ -16,15 +16,11 @@ export default function TelecallerPerformanceSection({ data, isLoading, range = 
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="w-full">
       <TelecallerLeaderboard
         data={data?.leaderboard}
         isLoading={isLoading}
         onRowClick={handleRowClick}
-      />
-      <MonthlyPerformanceTable
-        data={data?.productivityTrend}
-        isLoading={isLoading}
       />
     </div>
   );

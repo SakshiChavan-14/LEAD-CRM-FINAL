@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
 export default function QueryProvider({ children }) {
@@ -9,16 +10,16 @@ export default function QueryProvider({ children }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 5 * 60 * 1000,      // 5 minutes
-            gcTime: 10 * 60 * 1000,         // 10 minutes
-            retry: 1,                        // retry once before failing
+            staleTime: 5 * 60 * 1000,
+            gcTime: 10 * 60 * 1000,
+            retry: 1,
             retryDelay: (attempt) =>
-              Math.min(1000 * 2 ** attempt, 30000), // exponential backoff
+              Math.min(1000 * 2 ** attempt, 30000),
             refetchOnWindowFocus: false,
             refetchOnReconnect: true,
           },
           mutations: {
-            retry: false,                    // never auto-retry mutations
+            retry: false,
           },
         },
       })
@@ -27,6 +28,11 @@ export default function QueryProvider({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+
+      <ReactQueryDevtools
+        initialIsOpen={false}
+        buttonPosition="bottom-right"
+      />
     </QueryClientProvider>
   );
 }

@@ -129,7 +129,7 @@ export function computeVoiceAnalytics(calls) {
   };
 }
 
-export function computeWeeklyPerformance(calls, interestedCount, admissionsCount) {
+export function computeWeeklyPerformance(calls, interestedCount, admissionsCount, targets) {
   const now = new Date();
   const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
   
@@ -139,9 +139,9 @@ export function computeWeeklyPerformance(calls, interestedCount, admissionsCount
   }).length;
   
   return {
-    calls: { current: weeklyCallsCount, target: 350 },
-    interested: { current: interestedCount, target: 100 },
-    admissions: { current: admissionsCount, target: 15 }
+    calls: { current: weeklyCallsCount, target: targets?.weeklyCallTarget ?? 350 },
+    interested: { current: interestedCount, target: targets?.weeklyInterestedTarget ?? 100 },
+    admissions: { current: admissionsCount, target: targets?.weeklyAdmissionTarget ?? 15 }
   };
 }
 

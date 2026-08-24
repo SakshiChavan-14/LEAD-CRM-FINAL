@@ -11,6 +11,7 @@ export const useTelecallerDashboard = () => {
       return {
         ...mapped,
         performance: rawData?.performance || { daily: [], monthly: [], weekly: [] },
+        targets: rawData?.targets || null,
       };
     },
     staleTime: 5 * 60 * 1000,

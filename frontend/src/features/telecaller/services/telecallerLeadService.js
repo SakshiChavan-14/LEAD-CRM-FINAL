@@ -2,7 +2,7 @@ import axiosInstance from "@/lib/axios";
 import API_ENDPOINTS from "@/utils/apiEndpoints";
 
 export const telecallerLeadService = {
-  getMyLeads: async (params) => {
+  getMyLeads: async (params = {}) => {
     const { page = 0, size = 10, search = "", ...filters } = params;
     
     const queryParams = new URLSearchParams({
@@ -10,18 +10,22 @@ export const telecallerLeadService = {
       size: size.toString(),
     });
 
-    if (search) queryParams.append("search", search);
+    if (search && String(search).trim()) {
+      queryParams.append("search", String(search).trim());
+    }
     
     // Add remaining filters dynamically
     Object.entries(filters).forEach(([key, value]) => {
-      if (value) queryParams.append(key, value);
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        queryParams.append(key, String(value).trim());
+      }
     });
 
     const response = await axiosInstance.get(
       `${API_ENDPOINTS.TELECALLER.LEADS}?${queryParams.toString()}`
     );
 
-    return response.data.data;
+    return response.data?.data ?? response.data;
   },
 
   getLeadDetails: async (enquiryNo) => {

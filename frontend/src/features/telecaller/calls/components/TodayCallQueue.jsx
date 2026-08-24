@@ -7,12 +7,13 @@ import { EmptyState } from "@/components/dashboard-ui/EmptyState";
 import { CardSkeleton } from "@/components/ui/Skeletons";
 import StatusBadge from "@/components/table/StatusBadge";
 import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function TodayCallQueue() {
   const { summary, recommendedLead, queue, isLoading } = useTodayCallQueue();
-  const { startCall, setSelectedLead } = useVoice();
+  const { setSelectedLead } = useVoice();
   const router = useRouter();
+  const pathname = usePathname();
   
   const scrollContainerRef = useRef(null);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -43,11 +44,9 @@ export default function TodayCallQueue() {
 
   const handleCall = (e, lead) => {
     e.stopPropagation();
-    setSelectedLead({
-      ...lead,
-      phone: lead.mobileNo || lead.phone
-    });
-    startCall(lead.enquiryNo || lead.id, lead.mobileNo || lead.phone);
+    // Navigate to the dedicated Calling Page
+    const returnTo = encodeURIComponent(pathname || "/telecaller");
+    router.push(`/telecaller/calling/${lead.enquiryNo || lead.id}?returnTo=${returnTo}`);
   };
 
   const handleOpenLead = (id) => {
@@ -92,7 +91,7 @@ export default function TodayCallQueue() {
           </div>
         ) : (
           <>
-            {visibleItems.map((lead) => {
+            {visibleItems.map((lead, idx) => {
               const initials = (lead.name || "Student")
                 .split(" ")
                 .filter(Boolean)
@@ -103,7 +102,7 @@ export default function TodayCallQueue() {
 
               return (
                 <div 
-                  key={lead.id || lead.enquiryNo}
+                  key={`${lead.id || lead.enquiryNo || 'lead'}-${idx}`}
                   onClick={() => handleOpenLead(lead.enquiryNo || lead.id)}
                   className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white hover:bg-blue-50/30 hover:border-blue-200 hover:shadow-xs transition-all duration-200 cursor-pointer group"
                 >

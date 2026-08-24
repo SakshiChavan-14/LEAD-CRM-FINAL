@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import DataTable from "@/components/table/DataTable";
 import { Play, PhoneOff, Phone, MapPin, GraduationCap, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { useDashboardRawData } from "@/features/reports/hooks/useReportsQueries";
 
 const AVATAR_COLORS = [
   "bg-blue-500", "bg-emerald-500", "bg-purple-500", 
@@ -90,7 +91,7 @@ function formatDate(dateStr) {
 const DEFAULT_COURSES = ["Computer Science", "Mechanical Eng", "Data Science", "Electronics", "Information Tech", "Civil Eng"];
 const DEFAULT_DISTRICTS = ["Bangalore", "Mysore", "Mangalore", "Belgaum", "Hubli", "Dharwad"];
 
-const getColumns = (startIndex, onPlayRecording) => [
+const getColumns = (startIndex, onPlayRecording, leadsMap) => [
   {
     key: "slNo",
     label: "#",
@@ -171,7 +172,9 @@ const getColumns = (startIndex, onPlayRecording) => [
     label: "Course",
     width: "140px",
     render: (_, row) => {
-      const course = row.course || row.courseName || row.programme || DEFAULT_COURSES[(row._index || 0) % DEFAULT_COURSES.length];
+      const enq = String(row.enquiryNo || row.leadId || "").replace(/[^\d]/g, "");
+      const lead = leadsMap?.get(enq);
+      const course = lead?.course || lead?.programme || row.course || row.courseName || row.programme || "Not specified";
       return (
         <div className="flex items-center gap-1 text-xs font-semibold text-slate-700">
           <GraduationCap size={13} className="text-blue-500 shrink-0" />
@@ -185,7 +188,9 @@ const getColumns = (startIndex, onPlayRecording) => [
     label: "District",
     width: "120px",
     render: (_, row) => {
-      const district = row.district || row.districtName || row.city || row.location || DEFAULT_DISTRICTS[(row._index || 0) % DEFAULT_DISTRICTS.length];
+      const enq = String(row.enquiryNo || row.leadId || "").replace(/[^\d]/g, "");
+      const lead = leadsMap?.get(enq);
+      const district = lead?.district || lead?.location || row.district || row.districtName || row.city || row.location || "N/A";
       return (
         <div className="flex items-center gap-1 text-xs font-semibold text-slate-600">
           <MapPin size={12} className="text-emerald-500 shrink-0" />
@@ -200,15 +205,21 @@ const getColumns = (startIndex, onPlayRecording) => [
     width: "100px",
     headerClassName: "text-center",
     cellClassName: "text-center",
-    render: (_, row) => (
-      <button 
-        onClick={(e) => { e.stopPropagation(); onPlayRecording(row); }}
-        className="w-8 h-8 inline-flex rounded-xl bg-purple-50 text-purple-700 border border-purple-200/80 items-center justify-center hover:bg-purple-100 hover:scale-105 transition-all shadow-2xs cursor-pointer active:scale-95"
-        title="Play Call Recording"
-      >
-        <Play size={13} className="ml-0.5 fill-purple-600" />
-      </button>
-    ),
+    render: (_, row) => {
+      const hasRecording = Boolean(row.recordingUrl && String(row.recordingUrl).trim() !== "");
+      if (!hasRecording) {
+        return <span className="text-slate-300 font-mono text-sm">—</span>;
+      }
+      return (
+        <button 
+          onClick={(e) => { e.stopPropagation(); onPlayRecording(row); }}
+          className="w-8 h-8 inline-flex rounded-xl bg-purple-50 text-purple-700 border border-purple-200/80 items-center justify-center hover:bg-purple-100 hover:scale-105 transition-all shadow-2xs cursor-pointer active:scale-95"
+          title="Play Call Recording"
+        >
+          <Play size={13} className="ml-0.5 fill-purple-600" />
+        </button>
+      );
+    },
   },
 ];
 
@@ -219,17 +230,22 @@ export default function StitchCallReportTable({
   onPlayRecording, 
   startIndex = 1 
 }) {
-  const fallbackData = [
-    { callId: "1", name: "Rahul Sharma", phone: "9338495402", duration: "03:45", callOutcome: "Connected", course: "Computer Science", district: "Bangalore" },
-    { callId: "2", name: "Rohan Patil", phone: "9722760329", duration: "01:20", callOutcome: "Callback", course: "Mechanical Eng", district: "Mysore" },
-    { callId: "3", name: "Aisha Khan", phone: "9638414555", duration: "04:12", callOutcome: "Interested", course: "Data Science", district: "Mangalore" },
-    { callId: "4", name: "Arjun Kumar", phone: "9599370916", duration: "02:30", callOutcome: "Connected", course: "Electronics", district: "Belgaum" },
-    { callId: "5", name: "Sneha Reddy", phone: "9876543210", duration: "05:10", callOutcome: "Connected", course: "Information Tech", district: "Hubli" },
-  ];
+  const { data: rawLeadsData } = useDashboardRawData();
+  const leads = rawLeadsData?.leads || [];
+  const leadsMap = useMemo(() => {
+    const map = new Map();
+    leads.forEach(l => {
+      const enq = String(l.enquiryNo || l.id || "").replace(/[^\d]/g, "");
+      if (enq) {
+        map.set(enq, l);
+      }
+    });
+    return map;
+  }, [leads]);
 
   const effectiveData = data;
   const indexedData = effectiveData.map((item, idx) => ({ ...item, _index: idx }));
-  const columns = getColumns(startIndex, onPlayRecording);
+  const columns = getColumns(startIndex, onPlayRecording, leadsMap);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs font-outfit">

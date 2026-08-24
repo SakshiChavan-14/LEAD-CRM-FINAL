@@ -25,30 +25,61 @@ const NEXT_STAGE_MAP = {
   ADMISSION: null,
 };
 
+const TELECALLER_STAGE_LABELS = {
+  ENQUIRY: "New Lead",
+  COLD: "Cold Lead",
+  WARM: "Warm Lead",
+  HOT: "Hot Lead",
+  COMPLETED: "Completed",
+};
+
+const TELECALLER_NEXT_STAGE_MAP = {
+  ENQUIRY: "COLD",
+  COLD: "WARM",
+  WARM: "HOT",
+  HOT: "COMPLETED",
+  COMPLETED: null,
+};
+
+const TELECALLER_STAGES = ["ENQUIRY", "COLD", "WARM", "HOT", "COMPLETED"];
+
+
 export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTelecaller = false }) {
   const safeCurrent = String(currentStatus || "ENQUIRY").toUpperCase();
-  const nextStage = NEXT_STAGE_MAP[safeCurrent];
   
-  const [selectedStatus, setSelectedStatus] = useState(nextStage || safeCurrent);
+  const stages = isTelecaller ? TELECALLER_STAGES : LEAD_STAGES;
+  const stageLabels = isTelecaller ? TELECALLER_STAGE_LABELS : STAGE_LABELS;
+  const nextStageMap = isTelecaller ? TELECALLER_NEXT_STAGE_MAP : NEXT_STAGE_MAP;
+  
+  const nextStage = nextStageMap[safeCurrent] || null;
+  
+  const initialStatus = stages.includes(safeCurrent)
+    ? (nextStage || safeCurrent)
+    : (stages[0] || "ENQUIRY");
+  
+  const [selectedStatus, setSelectedStatus] = useState(initialStatus);
   const [note, setNote] = useState("");
-
+ 
   const telecallerMutation = useTelecallerUpdateLeadStatus();
   const adminMutation = useUpdateLeadStatus();
-
+ 
   const mutation = isTelecaller ? telecallerMutation : adminMutation;
   const { mutateAsync: updateStatus, isPending } = mutation;
-
+ 
   const { data: history = [] } = useLeadStatusHistory(enquiryNo);
-
+ 
   // Update default selected status whenever currentStatus changes
   useEffect(() => {
-    const next = NEXT_STAGE_MAP[safeCurrent];
-    setSelectedStatus(next || safeCurrent);
-  }, [safeCurrent]);
-
+    const next = nextStageMap[safeCurrent] || null;
+    const initial = stages.includes(safeCurrent)
+      ? (next || safeCurrent)
+      : (stages[0] || "ENQUIRY");
+    setSelectedStatus(initial);
+  }, [safeCurrent, isTelecaller]);
+ 
   const handleUpdate = async (statusToSubmit) => {
     if (!statusToSubmit) return;
-
+ 
     try {
       await updateStatus({
         enquiryNo,
@@ -60,7 +91,7 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
       console.error("Failed to update lead status:", err);
     }
   };
-
+ 
   // Get status since timestamp
   const statusSinceStr = useMemo(() => {
     const recentHistory = Array.isArray(history) ? history : [];
@@ -74,7 +105,7 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
     }
     return "Since just now";
   }, [history, safeCurrent]);
-
+ 
   // Status badge style
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -83,10 +114,13 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
         return "bg-purple-50 text-purple-700 border-purple-200/80";
       case "QUALIFIED":
       case "INTERESTED":
+      case "HOT":
         return "bg-emerald-50 text-emerald-700 border-emerald-200/80";
       case "CONTACTED":
+      case "WARM":
         return "bg-blue-50 text-blue-700 border-blue-200/80";
       case "NOT_INTERESTED":
+      case "COLD":
         return "bg-rose-50 text-rose-700 border-rose-200/80";
       default:
         return "bg-slate-100 text-slate-600 border-slate-200";
@@ -115,7 +149,7 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
                 {safeCurrent}
               </span>
             </div>
-            <h4 className="text-xl font-black text-slate-800 mt-3 leading-tight">{STAGE_LABELS[safeCurrent] || safeCurrent}</h4>
+            <h4 className="text-xl font-black text-slate-800 mt-3 leading-tight">{stageLabels[safeCurrent] || safeCurrent}</h4>
             <p className="text-[10px] text-slate-400 font-semibold mt-1">{statusSinceStr}</p>
           </div>
           <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 mt-4 shrink-0">
@@ -135,7 +169,7 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
                 className="w-full py-2.5 px-4 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <CheckCircle2 size={13} />
-                <span>Move to {STAGE_LABELS[nextStage]}</span>
+                <span>Move to {stageLabels[nextStage]}</span>
               </button>
             ) : (
               <div className="py-2.5 px-3 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl text-xs font-bold text-center">
@@ -143,15 +177,17 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
               </div>
             )}
             
-            <button
-              type="button"
-              onClick={() => handleUpdate("NOT_INTERESTED")}
-              disabled={isPending || safeCurrent === "NOT_INTERESTED"}
-              className="w-full py-2.5 px-4 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <XCircle size={13} />
-              <span>Not Interested</span>
-            </button>
+            {!isTelecaller && (
+              <button
+                type="button"
+                onClick={() => handleUpdate("NOT_INTERESTED")}
+                disabled={isPending || safeCurrent === "NOT_INTERESTED"}
+                className="w-full py-2.5 px-4 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <XCircle size={13} />
+                <span>Not Interested</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -165,12 +201,12 @@ export default function UpdateLeadStatusModule({ enquiryNo, currentStatus, isTel
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 appearance-none outline-none focus:border-blue-500 focus:bg-white transition-colors cursor-pointer"
               >
-                {LEAD_STAGES.map((stg) => (
+                {stages.map((stg) => (
                   <option key={stg} value={stg}>
-                    {STAGE_LABELS[stg] || stg}
+                    {stageLabels[stg] || stg}
                   </option>
                 ))}
-                <option value="NOT_INTERESTED">Not Interested</option>
+                {!isTelecaller && <option value="NOT_INTERESTED">Not Interested</option>}
               </select>
               <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             </div>

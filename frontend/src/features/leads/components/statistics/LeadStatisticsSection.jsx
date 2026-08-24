@@ -16,13 +16,14 @@ import SharedLeadPipeline from "@/components/shared/SharedLeadPipeline";
 import { useLeadCalls } from "@/features/telecaller/hooks/useLeadCalls";
 import { useFollowups } from "@/features/telecaller/hooks/useFollowups";
 
-export default function LeadStatisticsSection({ viewModel, rawData, isTelecaller = false }) {
-  const enquiryNo = rawData?.lead?.enquiryNo || rawData?.enquiryNo || rawData?.id;
+export default function LeadStatisticsSection({ viewModel, rawData, isTelecaller = false, leadId = null }) {
+  const enquiryNoRaw = leadId || rawData?.lead?.enquiryNo || rawData?.enquiryNo || rawData?.id;
+  const enquiryNo = enquiryNoRaw ? String(enquiryNoRaw).replace(/[^\d]/g, "") : "";
   const stage = (viewModel?.status?.currentStatus && viewModel.status.currentStatus !== "N/A")
     ? viewModel.status.currentStatus
     : (viewModel?.status?.stage && viewModel.status.stage !== "N/A")
       ? viewModel.status.stage
-      : rawData?.status || "ENQUIRY";
+      : rawData?.lead?.status || rawData?.status || "ENQUIRY";
 
   const { data: callsData } = useLeadCalls(enquiryNo);
   const calls = Array.isArray(callsData) && callsData.length > 0 ? callsData : (rawData?.calls || []);
@@ -30,19 +31,16 @@ export default function LeadStatisticsSection({ viewModel, rawData, isTelecaller
   const { data: allFollowupsData } = useFollowups("all");
   const allFollowups = Array.isArray(allFollowupsData) ? allFollowupsData : [];
   const leadFollowups = allFollowups.length > 0 
-    ? allFollowups.filter((f) => String(f.enquiryNo || f.leadId) === String(enquiryNo)) 
+    ? allFollowups.filter((f) => String(f.enquiryNo || f.leadId).replace(/[^\d]/g, "") === String(enquiryNo)) 
     : (rawData?.followups || []);
 
   const totalCalls = calls.length;
   const connectedCalls = calls.filter((c) => {
     const statusVal = String(c.status || c.outcome || c.interactionStatus || c.callOutcome || "").toUpperCase();
-    return statusVal === "CONNECTED" || statusVal === "COMPLETED";
+    return statusVal === "CONNECTED" || statusVal === "COMPLETED" || statusVal === "ANSWERED";
   }).length;
   const followupsCount = leadFollowups.length;
-  const missedCalls = calls.filter((c) => {
-    const statusVal = String(c.status || c.outcome || c.interactionStatus || c.callOutcome || "").toUpperCase();
-    return statusVal === "MISSED" || statusVal === "NO_RESPONSE" || statusVal === "FAILED";
-  }).length;
+  const missedCalls = Math.max(0, totalCalls - connectedCalls);
 
   return (
     <div className="space-y-6 font-outfit">

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Search, Phone, User, PhoneCall, Check, X } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { useVoice } from "../context/VoiceProvider";
 import { VOICE_STATES } from "../utils/twilioEvents";
 import { useTelecallerLeads } from "../../hooks/useMyLeads";
@@ -10,6 +11,8 @@ export default function QuickDialCard() {
   const voiceCtx = useVoice();
   const voiceState = voiceCtx?.voiceState || "IDLE";
   const { selectedLead, setSelectedLead } = voiceCtx;
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [mode, setMode] = useState("search"); // "search" | "manual"
   const [searchQuery, setSearchQuery] = useState(selectedLead?.name || "");
@@ -51,12 +54,14 @@ export default function QuickDialCard() {
       return;
     }
 
+    const returnTo = encodeURIComponent(pathname || "/telecaller");
+
     if (mode === "search" && selectedLead) {
-      voiceCtx?.startCall(selectedLead.enquiryNo || selectedLead.id, selectedLead.phone);
+      router.push(`/telecaller/calling/${selectedLead.enquiryNo || selectedLead.id}?returnTo=${returnTo}`);
     } else if (mode === "search" && !selectedLead && manualPhone.trim().length >= 10) {
-      voiceCtx?.startCall(null, manualPhone.trim());
+      router.push(`/telecaller/calling/manual?phone=${encodeURIComponent(manualPhone.trim())}&returnTo=${returnTo}`);
     } else if (mode === "manual" && manualPhone.trim().length >= 10) {
-      voiceCtx?.startCall(null, manualPhone.trim());
+      router.push(`/telecaller/calling/manual?phone=${encodeURIComponent(manualPhone.trim())}&returnTo=${returnTo}`);
     } else {
       alert("Please select a lead or enter a valid 10-digit phone number.");
     }

@@ -13,11 +13,14 @@ import {
   Shield 
 } from "lucide-react";
 import EditUserDialog from "../dialogs/EditUserDialog";
+import ManageTargetsDialog from "../dialogs/ManageTargetsDialog";
 import useUpdateTelecallerStatus from "@/features/users/hooks/useUpdateTelecallerStatus";
 import useUploadTelecallerAvatar from "@/features/users/hooks/useUploadTelecallerAvatar";
+import { Target } from "lucide-react";
 
 export default function TelecallerHeader({ profile }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isTargetsOpen, setIsTargetsOpen] = useState(false);
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateTelecallerStatus(profile?.empId);
 
   const handleToggleStatus = () => {
@@ -152,6 +155,14 @@ export default function TelecallerHeader({ profile }) {
             <span>Edit User</span>
           </button>
 
+          <button 
+            onClick={() => setIsTargetsOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200/90 text-slate-700 hover:text-admin-primary-text hover:border-admin-primary-border text-xs font-bold rounded-xl shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+          >
+            <Target size={14} className="text-slate-500" />
+            <span>Set Targets</span>
+          </button>
+
           <button
             onClick={handleToggleStatus}
             disabled={isUpdatingStatus}
@@ -171,6 +182,12 @@ export default function TelecallerHeader({ profile }) {
         open={isEditOpen}
         user={profile}
         onClose={() => setIsEditOpen(false)}
+      />
+
+      <ManageTargetsDialog
+        open={isTargetsOpen}
+        profile={profile}
+        onClose={() => setIsTargetsOpen(false)}
       />
     </div>
   );

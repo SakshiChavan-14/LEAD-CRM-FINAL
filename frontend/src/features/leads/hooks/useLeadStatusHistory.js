@@ -4,10 +4,11 @@ import axiosInstance from "@/lib/axios";
 import API_ENDPOINTS from "@/utils/apiEndpoints";
 
 export const useLeadStatusHistory = (enquiryNo) => {
+  const cleanId = enquiryNo ? String(enquiryNo).replace(/[^\d]/g, "") : "";
   return useQuery({
-    queryKey: ["lead-status-history", enquiryNo],
+    queryKey: ["lead-status-history", cleanId],
     queryFn: async () => {
-      const endpoint = API_ENDPOINTS.LEADS.STATUS_HISTORY(enquiryNo);
+      const endpoint = API_ENDPOINTS.LEADS.STATUS_HISTORY(cleanId);
       
       try {
         const { data } = await axiosInstance.get(endpoint);
@@ -18,7 +19,7 @@ export const useLeadStatusHistory = (enquiryNo) => {
         throw error;
       }
     },
-    enabled: !!enquiryNo,
+    enabled: !!cleanId,
     staleTime: 0,
     gcTime: 300000,
   });

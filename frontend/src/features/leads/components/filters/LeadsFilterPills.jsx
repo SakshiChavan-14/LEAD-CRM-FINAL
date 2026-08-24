@@ -6,6 +6,7 @@ export default function LeadsFilterPills({ activeFilter = "", onSelect, counts =
   const pills = [
     { id: "",                label: "All Leads",       icon: null,                     iconColor: "" },
     { id: "hot",            label: "Hot Leads",        icon: "local_fire_department",  iconColor: "text-orange-500" },
+    { id: "warm",           label: "Warm Leads",       icon: "wb_sunny",               iconColor: "text-amber-500" },
     { id: "cold",           label: "Cold Leads",       icon: "ac_unit",                iconColor: "text-blue-400" },
     { id: "alloted",        label: "Alloted",          icon: null,                     iconColor: "" },
     { id: "not-alloted",    label: "Not Alloted",      icon: null,                     iconColor: "" },

@@ -106,7 +106,7 @@ const getColumns = (onCall, onRowClick) => [
       return (
         <div className="flex items-center gap-2">
           <button
-            onClick={(e) => { e.stopPropagation(); onCall && onCall(number); }}
+            onClick={(e) => { e.stopPropagation(); onCall && onCall(row); }}
             aria-label={`Call ${row.name || number}`}
             className="w-7 h-7 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-[#00C853] flex items-center justify-center transition-all duration-200 shadow-2xs cursor-pointer active:scale-95 shrink-0"
           >

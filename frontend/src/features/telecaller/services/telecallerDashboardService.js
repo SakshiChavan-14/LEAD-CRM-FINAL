@@ -10,22 +10,63 @@ export const telecallerDashboardService = {
     try {
       const response = await axiosInstance.get(API_ENDPOINTS.TELECALLER.DASHBOARD_V2);
       const v2Data = response.data?.data || response.data || {};
-      const baseDashboard = await telecallerDashboardService.getDashboard();
+      const baseDashboard = await telecallerDashboardService.getDashboard(v2Data.targets);
+      
+      // Override callsRemaining with the target value directly
+      if (baseDashboard?.todaysFocus && v2Data.targets) {
+        baseDashboard.todaysFocus.callsRemaining = v2Data.targets.callsRemainingToday ?? 0;
+      }
+
+      const defaultPerformance = {
+        daily: [
+          { name: "Calls", achieved: baseDashboard?.summary?.callsToday ?? 0, target: v2Data.targets?.dailyCallTarget ?? 50 }
+        ],
+        weekly: [
+          { name: "Calls", achieved: baseDashboard?.weeklyPerformance?.calls?.current ?? 0, target: v2Data.targets?.weeklyCallTarget ?? 350 },
+          { name: "Interested", achieved: baseDashboard?.weeklyPerformance?.interested?.current ?? 0, target: v2Data.targets?.weeklyInterestedTarget ?? 100 },
+          { name: "Admissions", achieved: baseDashboard?.weeklyPerformance?.admissions?.current ?? 0, target: v2Data.targets?.weeklyAdmissionTarget ?? 15 }
+        ],
+        monthly: [
+          { name: "Calls", achieved: baseDashboard?.summary?.callsToday ?? 0, target: (v2Data.targets?.dailyCallTarget ?? 50) * 20 }
+        ]
+      };
+
+      const hasPerformanceData = v2Data.performance && 
+                                 Array.isArray(v2Data.performance.weekly) && 
+                                 v2Data.performance.weekly.length > 0;
+
       return {
         ...baseDashboard,
-        performance: v2Data.performance || { daily: [], monthly: [], weekly: [] },
+        performance: hasPerformanceData ? v2Data.performance : defaultPerformance,
+        targets: v2Data.targets || null,
       };
     } catch (error) {
       console.error("Dashboard V2 load failed:", error);
       const baseDashboard = await telecallerDashboardService.getDashboard();
+      
+      const defaultPerformance = {
+        daily: [
+          { name: "Calls", achieved: baseDashboard?.summary?.callsToday ?? 0, target: 50 }
+        ],
+        weekly: [
+          { name: "Calls", achieved: baseDashboard?.weeklyPerformance?.calls?.current ?? 0, target: 350 },
+          { name: "Interested", achieved: baseDashboard?.weeklyPerformance?.interested?.current ?? 0, target: 100 },
+          { name: "Admissions", achieved: baseDashboard?.weeklyPerformance?.admissions?.current ?? 0, target: 15 }
+        ],
+        monthly: [
+          { name: "Calls", achieved: baseDashboard?.summary?.callsToday ?? 0, target: 1000 }
+        ]
+      };
+
       return {
         ...baseDashboard,
-        performance: { daily: [], monthly: [], weekly: [] }
+        performance: defaultPerformance,
+        targets: null,
       };
     }
   },
 
-  getDashboard: async () => {
+  getDashboard: async (targets) => {
     try {
       // 1. Fetch data concurrently
       const [leadsData, followupsData, callsData] = await Promise.all([
@@ -34,7 +75,11 @@ export const telecallerDashboardService = {
         callHistoryService.getCallHistory().catch(() => [])
       ]);
 
-      const leads = Array.isArray(leadsData?.leads) ? leadsData.leads : [];
+      const leads = Array.isArray(leadsData?.leads) 
+        ? leadsData.leads 
+        : (Array.isArray(leadsData?.content) 
+            ? leadsData.content 
+            : (Array.isArray(leadsData) ? leadsData : []));
       const followups = Array.isArray(followupsData) ? followupsData : [];
       const calls = Array.isArray(callsData) ? callsData : [];
 
@@ -43,8 +88,21 @@ export const telecallerDashboardService = {
       
       const todayStr = new Date().toISOString().split("T")[0];
 
-      const interestedCount = leads.filter(l => l.status === "INTERESTED" || l.stage === "Interested" || l.leadStatus === "INTERESTED").length;
-      const admissionsCount = leads.filter(l => l.status === "ENROLLED" || l.stage === "Admission" || l.leadStatus === "ENROLLED").length;
+      const interestedCount = leads.filter(l => 
+        (l.status || "").toUpperCase() === "INTERESTED" || 
+        (l.stage || "").toUpperCase() === "INTERESTED" || 
+        (l.leadStatus || "").toUpperCase() === "INTERESTED" ||
+        (l.opinion || "").toUpperCase().includes("INTERESTED") ||
+        (l.opinion || "").toUpperCase().includes("HOT") ||
+        (l.status || "").toUpperCase() === "HOT"
+      ).length;
+      const admissionsCount = leads.filter(l => 
+        (l.status || "").toUpperCase() === "ENROLLED" || 
+        (l.stage || "").toUpperCase() === "ADMISSION" || 
+        (l.leadStatus || "").toUpperCase() === "ENROLLED" ||
+        (l.status || "").toUpperCase() === "ADMISSION" ||
+        (l.status || "").toUpperCase() === "COMPLETED"
+      ).length;
 
       // 3. Compute dashboard summary
       const summary = {
@@ -53,16 +111,16 @@ export const telecallerDashboardService = {
         connected: voiceAnalytics.connected, // Sourced from calls history
         interested: interestedCount,
         admissions: admissionsCount,
-        goal: 68
+        goal: 0
       };
 
       const stageMapping = {
-        "Lead In": ["NEW", "LEAD IN", "LEAD_IN"],
-        "Contacted": ["CONTACTED", "IN_PROGRESS"],
-        "Interested": ["INTERESTED"],
+        "Lead In": ["NEW", "LEAD IN", "LEAD_IN", "ENQUIRY"],
+        "Contacted": ["CONTACTED", "IN_PROGRESS", "COLD", "WARM"],
+        "Interested": ["INTERESTED", "HOT"],
         "Application": ["APPLICATION", "APPLIED"],
         "Documents": ["DOCUMENTS", "DOCUMENT_VERIFICATION"],
-        "Admission": ["ENROLLED", "ADMISSION", "ADMITTED"]
+        "Admission": ["ENROLLED", "ADMISSION", "ADMITTED", "COMPLETED"]
       };
 
       const pipeline = Object.entries(stageMapping).map(([stageName, matchingStatuses]) => {
@@ -84,23 +142,75 @@ export const telecallerDashboardService = {
         };
       });
 
-      const nextCalls = followups
-        .filter(f => f.status === "Pending")
+      // Cross-reference followups with leads to guarantee student name and details are always resolved
+      const mappedFollowups = followups.map(f => {
+        const leadId = f.leadId || f.enquiryNo || f.id;
+        const leadMatch = leads.find(l => String(l.enquiryNo || l.id) === String(leadId));
+        const resolvedName = (f.name && f.name !== "Unknown" ? f.name : null) || 
+                             f.studentName || 
+                             f.student || 
+                             f.leadName || 
+                             leadMatch?.name || 
+                             leadMatch?.studentName || 
+                             leadMatch?.student?.name || 
+                             "Student";
+        const course = f.course || leadMatch?.course || leadMatch?.programme || "B.Tech";
+        const phone = f.phone || f.mobileNo || f.mobile || leadMatch?.mobileNo || leadMatch?.phone || "";
+        const priority = (f.priority || leadMatch?.opinion || leadMatch?.temperature || "HOT").toUpperCase();
+        return {
+          ...f,
+          id: leadId,
+          enquiryNo: leadId,
+          name: resolvedName,
+          course,
+          phone,
+          priority,
+          time: f.scheduledTime || f.time || "Scheduled",
+          scheduledDate: f.scheduledDate || f.date || todayStr,
+          scheduledTime: f.scheduledTime || f.time || "10:00 AM",
+          status: String(f.status || "PENDING").toUpperCase(),
+        };
+      });
+
+      // Next best leads: pending followups or high-priority leads
+      let nextCalls = mappedFollowups
+        .filter(f => String(f.status || "").toUpperCase() === "PENDING")
         .sort((a, b) => new Date(`${a.scheduledDate}T${a.scheduledTime}`) - new Date(`${b.scheduledDate}T${b.scheduledTime}`))
-        .slice(0, 5)
-        .map(f => ({
-          id: f.leadId,
-          name: f.student || f.leadName,
-          course: f.course,
-          time: f.scheduledTime,
-          status: (f.priority || "Normal").toUpperCase()
-        }));
+        .slice(0, 5);
+
+      // If no pending followups, populate nextCalls from hot/warm leads
+      if (nextCalls.length === 0 && leads.length > 0) {
+        nextCalls = leads
+          .filter(l => (l.status || "").toUpperCase() !== "ENROLLED" && (l.status || "").toUpperCase() !== "COMPLETED")
+          .slice(0, 5)
+          .map(l => ({
+            id: l.enquiryNo || l.id,
+            enquiryNo: l.enquiryNo || l.id,
+            name: l.name || l.studentName || l.student?.name || l.fullName || "Student",
+            course: l.course || l.programme || "B.Tech",
+            phone: l.mobileNo || l.phone || l.mobile || "",
+            priority: ((l.opinion || l.temperature || "HOT").toUpperCase() === "HOT" ? "HOT" : "WARM"),
+            time: "Today",
+            status: "PENDING"
+          }));
+      }
 
       const todaysFocus = {
-        highPriority: followups.filter(f => f.status === "Pending" && f.priority === "High" && f.scheduledDate === todayStr).length,
-        overdueFollowups: followups.filter(f => f.status === "Missed" || (f.status === "Pending" && f.scheduledDate < todayStr)).length,
-        callsRemaining: Math.max(0, 50 - summary.callsToday),
-        nearConversion: leads.filter(l => l.temperature === "Hot" && l.status !== "ENROLLED").length
+        highPriority: mappedFollowups.filter(f => 
+          String(f.status || "").toUpperCase() === "PENDING" && 
+          String(f.priority || "").toUpperCase() === "HIGH" && 
+          f.scheduledDate === todayStr
+        ).length,
+        overdueFollowups: mappedFollowups.filter(f => 
+          String(f.status || "").toUpperCase() === "MISSED" || 
+          (String(f.status || "").toUpperCase() === "PENDING" && f.scheduledDate < todayStr)
+        ).length,
+        callsRemaining: 0,
+        nearConversion: leads.filter(l => 
+          ((l.opinion || l.temperature || "").toUpperCase() === "HOT") && 
+          (l.status || "").toUpperCase() !== "ENROLLED" && 
+          (l.status || "").toUpperCase() !== "COMPLETED"
+        ).length
       };
 
       const analytics = Array.from({ length: 7 }).map((_, i) => {
@@ -109,7 +219,7 @@ export const telecallerDashboardService = {
         return { date: d.toISOString().split("T")[0], calls: 0, interested: 0 };
       });
 
-      const weeklyPerformance = computeWeeklyPerformance(calls, interestedCount, admissionsCount);
+      const weeklyPerformance = computeWeeklyPerformance(calls, interestedCount, admissionsCount, targets);
       const activities = formatRecentActivity(calls, leads, 10);
 
       return {
@@ -121,7 +231,7 @@ export const telecallerDashboardService = {
         weeklyPerformance,
         activities,
         leads,
-        followups
+        followups: mappedFollowups
       };
     } catch (error) {
       console.error("Dashboard calculation failed:", error);

@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Play, Pause, Volume2, VolumeX, RotateCcw, FastForward } from "lucide-react";
 import { formatDuration } from "../utils/callMapper";
 
-export default function RecordingPlayer({ src, duration = 180 }) {
+export default function RecordingPlayer({ src, duration = 180, isLoading = false, error = null }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -13,6 +13,8 @@ export default function RecordingPlayer({ src, duration = 180 }) {
   const [volume, setVolume] = useState(1);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isHoveringVolume, setIsHoveringVolume] = useState(false);
+
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -28,29 +30,42 @@ export default function RecordingPlayer({ src, duration = 180 }) {
       setProgress(0);
       setCurrentTime(0);
     };
+    const handleError = () => {
+      setLoadError(true);
+      setIsPlaying(false);
+    };
+    const handleCanPlay = () => {
+      setLoadError(false);
+    };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+    audio.addEventListener("canplay", handleCanPlay);
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
+      audio.removeEventListener("canplay", handleCanPlay);
     };
-  }, [duration]);
+  }, [duration, src]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
-    if (!audio) {
-      setIsPlaying(!isPlaying);
-      return;
-    }
+    if (!audio) return;
+
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
-      audio.play().catch(() => {
-        // Fallback simulation if no active audio stream
+      audio.play().then(() => {
+        setIsPlaying(true);
+        setLoadError(false);
+      }).catch(() => {
+        setLoadError(true);
+        setIsPlaying(false);
       });
     }
-    setIsPlaying(!isPlaying);
   };
 
   const toggleSpeed = () => {
@@ -90,7 +105,8 @@ export default function RecordingPlayer({ src, duration = 180 }) {
         <div className="flex items-center gap-3">
           <button
             onClick={togglePlay}
-            className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30 active:scale-95 transition-all cursor-pointer"
+            disabled={!src || isLoading || Boolean(error)}
+            className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30 active:scale-95 transition-all cursor-pointer"
           >
             {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5 fill-white" />}
           </button>
@@ -122,26 +138,36 @@ export default function RecordingPlayer({ src, duration = 180 }) {
         </div>
       </div>
 
-      {/* Modern Waveform Visualizer */}
+      {/* Modern Waveform Visualizer / Media Status */}
       <div className="bg-slate-950/60 rounded-xl p-3 border border-slate-800/80">
-        <div className="h-10 flex items-center gap-[3px] cursor-pointer">
-          {Array.from({ length: 40 }).map((_, i) => {
-            const barHeight = Math.max(15, Math.abs(Math.sin(i * 0.45 + 1.2) * 85 + Math.cos(i * 0.2) * 15));
-            const filled = (i / 40) * 100 <= progress;
-            return (
-              <div
-                key={i}
-                onClick={() => handleSeek(i)}
-                className={`flex-1 rounded-full transition-all duration-150 hover:scale-y-125 ${
-                  filled 
-                    ? "bg-gradient-to-t from-blue-600 to-indigo-400" 
-                    : "bg-slate-800 hover:bg-slate-700"
-                }`}
-                style={{ height: `${barHeight}%` }}
-              />
-            );
-          })}
-        </div>
+        {isLoading ? (
+          <div className="h-10 flex items-center justify-center gap-2 text-slate-400 text-xs font-semibold animate-pulse">
+            <span>Loading audio recording...</span>
+          </div>
+        ) : (error || loadError) ? (
+          <div className="h-10 flex items-center justify-center gap-2 text-rose-400 text-xs font-semibold">
+            <span>{error || "Audio stream requires telecaller/provider credentials or is unavailable."}</span>
+          </div>
+        ) : (
+          <div className="h-10 flex items-center gap-[3px] cursor-pointer">
+            {Array.from({ length: 40 }).map((_, i) => {
+              const barHeight = Math.max(15, Math.abs(Math.sin(i * 0.45 + 1.2) * 85 + Math.cos(i * 0.2) * 15));
+              const filled = (i / 40) * 100 <= progress;
+              return (
+                <div
+                  key={i}
+                  onClick={() => handleSeek(i)}
+                  className={`flex-1 rounded-full transition-all duration-150 hover:scale-y-125 ${
+                    filled 
+                      ? "bg-gradient-to-t from-blue-600 to-indigo-400" 
+                      : "bg-slate-800 hover:bg-slate-700"
+                  }`}
+                  style={{ height: `${barHeight}%` }}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { X, Phone, PhoneCall, MicOff, Mic, Pause, PhoneOff, Loader2 } from "lucide-react";
 import { useVoice } from "../../voice/context/VoiceProvider";
 import { VOICE_STATES } from "../../voice/utils/twilioEvents";
@@ -8,6 +9,8 @@ import QuickCallLeadSearch from "./QuickCallLeadSearch";
 import QuickCallKeypad from "./QuickCallKeypad";
 
 export default function QuickCallSheet({ onClose, isCallsPage }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const voiceCtx = useVoice();
   const voiceState = voiceCtx?.voiceState || "IDLE";
   
@@ -25,14 +28,18 @@ export default function QuickCallSheet({ onClose, isCallsPage }) {
 
   const handleCall = () => {
     if (manualPhone.trim().length >= 10) {
-      voiceCtx?.startCall(null, manualPhone.trim());
+      const returnTo = encodeURIComponent(pathname || "/telecaller");
+      onClose?.();
+      router.push(`/telecaller/calling/manual?phone=${encodeURIComponent(manualPhone.trim())}&returnTo=${returnTo}`);
     } else {
       alert("Please enter a valid 10-digit phone number.");
     }
   };
 
   const handleSelectLead = (lead) => {
-    voiceCtx?.startCall(lead.enquiryNo || lead.id, lead.mobileNo || lead.phone);
+    const returnTo = encodeURIComponent(pathname || "/telecaller");
+    onClose?.();
+    router.push(`/telecaller/calling/${lead.enquiryNo || lead.id}?returnTo=${returnTo}`);
   };
 
   const handleEndCall = () => {

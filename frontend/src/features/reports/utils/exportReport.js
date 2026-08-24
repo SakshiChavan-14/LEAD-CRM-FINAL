@@ -1,20 +1,41 @@
 // features/reports/utils/exportReport.js
 
-export const exportTeamPDF = (range = "this-month", team = "all") => {
+import reportsService from "../services/reportsService";
+
+export const exportTeamPDF = async (range = "this-month", team = "all") => {
+  const blob = await reportsService.exportTeamReport("pdf", range, team);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
   const teamFormatted = team === "all" ? "all-teams" : team;
-  console.log(`Mock exporting Team Report as PDF: reports-${range}-${teamFormatted}.pdf`);
-  // In reality, this would use html2canvas + jspdf, or a backend endpoint
-  return new Promise((resolve) => setTimeout(resolve, 1000));
+  a.href = url;
+  a.download = `reports-${range}-${teamFormatted}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
-export const exportTeamExcel = (range = "this-month", team = "all") => {
+export const exportTeamExcel = async (range = "this-month", team = "all") => {
+  const blob = await reportsService.exportTeamReport("xlsx", range, team);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
   const teamFormatted = team === "all" ? "all-teams" : team;
-  console.log(`Mock exporting Team Report as Excel: reports-${range}-${teamFormatted}.xlsx`);
-  // In reality, this would use SheetJS (xlsx) or a backend endpoint
-  return new Promise((resolve) => setTimeout(resolve, 1000));
+  a.href = url;
+  a.download = `reports-${range}-${teamFormatted}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
-export const exportTelecallerPDF = (telecallerId) => {
-  console.log(`Mock exporting individual report for Telecaller ID ${telecallerId} as PDF...`);
-  return new Promise((resolve) => setTimeout(resolve, 1000));
+export const exportTelecallerPDF = async (telecallerId) => {
+  const blob = await reportsService.exportTelecallerReport(telecallerId, "pdf");
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `telecaller-${telecallerId}-report.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };

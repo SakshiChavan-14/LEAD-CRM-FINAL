@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
 import { useCallReportsSummary } from "@/features/callReports/hooks/useCallReports";
+import { useDashboardRawData } from "@/features/reports/hooks/useReportsQueries";
 import ReportHeader from "@/features/reports/components/ReportHeader";
 import ReportsToolbar from "@/features/reports/components/ReportsToolbar";
 import ReportKPIGrid from "@/features/reports/components/ReportKPIGrid";
@@ -36,7 +37,10 @@ export default function ReportsDashboard() {
     dateTo: toDate
   }, 0, 100);
 
-  const isLoading = isDashboardLoading || isTelecallersLoading;
+  // Fetch raw call logs and leads for monthly trends
+  const { data: rawReportData, isLoading: isRawLoading } = useDashboardRawData();
+
+  const isLoading = isDashboardLoading || isTelecallersLoading || isRawLoading;
 
   // Calculate stats based on date range
   const reportData = useMemo(() => {
@@ -47,7 +51,7 @@ export default function ReportsDashboard() {
       return isNaN(n) ? 0 : n;
     };
 
-    const telecallerList = Array.isArray(telecallersData) ? telecallersData : [];
+    const telecallerList = telecallersData?.content || telecallersData?.users || (Array.isArray(telecallersData) ? telecallersData : []);
     
     let totalCalls = 0;
     let totalAdmissions = 0;
@@ -63,6 +67,14 @@ export default function ReportsDashboard() {
       totalFollowups += toNumber(t.followupsCount || t.followups);
     });
 
+    const opinionStats = dashboardData?.opinionStats || dashboardData?.stats?.opinionStats || [];
+    const statusStats = dashboardData?.statusStats || dashboardData?.stats?.statusStats || [];
+    const interestedFromStats = 
+      toNumber(opinionStats.find(o => (o.groupName || "").toLowerCase() === "interested")?.total) ||
+      toNumber(statusStats.find(s => (s.groupName || "").toUpperCase() === "HOT")?.total) || 0;
+
+    const finalInterested = totalInterested > 0 ? totalInterested : interestedFromStats;
+
     const conversionRate = totalCalls > 0 ? ((totalAdmissions / totalCalls) * 100).toFixed(1) + "%" : "0.0%";
 
     // Build leaderboard from real telecallers list
@@ -70,9 +82,9 @@ export default function ReportsDashboard() {
       const itemCalls = toNumber(t.totalCalls || t.calls);
       const itemAdmissions = toNumber(t.totalAdmissions || t.admissions);
       return {
-        id: t.empId || t.id || idx,
+        id: t.userId || t.empId || t.id || idx,
         rank: idx + 1,
-        name: t.empName || t.name || "Telecaller",
+        name: t.name || t.empName || "Telecaller",
         admissions: itemAdmissions,
         conversion: Number((itemCalls > 0 ? (itemAdmissions / itemCalls) * 100 : 0).toFixed(1)) || toNumber(t.conversionRate || t.conversion),
         calls: itemCalls
@@ -86,7 +98,7 @@ export default function ReportsDashboard() {
     const funnel = [
       { name: "Assigned", value: totalCalls },
       { name: "Connected", value: totalConnected },
-      { name: "Interested", value: totalInterested },
+      { name: "Interested", value: finalInterested },
       { name: "Follow-up", value: totalFollowups },
       { name: "Converted", value: totalAdmissions }
     ];
@@ -100,11 +112,81 @@ export default function ReportsDashboard() {
         }))
       : [];
 
+    // Build monthly performance trend across the last 6 months
+    const allCalls = rawReportData?.allCalls || [];
+    const rawLeads = rawReportData?.leads || [];
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const now = new Date();
+    const trendBuckets = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      trendBuckets.push({
+        month: `${monthNames[d.getMonth()]} ${String(d.getFullYear()).slice(-2)}`,
+        monthIndex: d.getMonth(),
+        year: d.getFullYear(),
+        calls: 0,
+        interested: 0,
+        admissions: 0,
+      });
+    }
+
+    allCalls.forEach(c => {
+      const dateStr = c.callDateTime || c.createdAt || c.date || c.created_at;
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      const mIdx = d.getMonth();
+      const yr = d.getFullYear();
+      const bucket = trendBuckets.find(b => b.monthIndex === mIdx && b.year === yr);
+      if (bucket) {
+        bucket.calls++;
+        const opinionUpper = String(c.studentOpinion || c.opinion || "").toUpperCase();
+        const outcomeUpper = String(c.callOutcome || c.outcome || "").toUpperCase();
+        if (opinionUpper === "INTERESTED" || opinionUpper === "HOT" || outcomeUpper.includes("INTEREST")) {
+          bucket.interested++;
+        }
+        if (outcomeUpper.includes("ADMISSION") || outcomeUpper.includes("CONVERT") || outcomeUpper.includes("ENROLL")) {
+          bucket.admissions++;
+        }
+      }
+    });
+
+    rawLeads.forEach(l => {
+      const dateStr = l.createdAt || l.created_at || l.date;
+      if (!dateStr) return;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return;
+      const mIdx = d.getMonth();
+      const yr = d.getFullYear();
+      const bucket = trendBuckets.find(b => b.monthIndex === mIdx && b.year === yr);
+      if (bucket) {
+        const statusUpper = String(l.status || "").toUpperCase();
+        if (["ENROLLED", "ADMISSION", "ADMITTED", "COMPLETED"].includes(statusUpper)) {
+          bucket.admissions++;
+        }
+      }
+    });
+
+    // If allCalls is empty but totalCalls has data for current month, populate current month
+    const currentMonthBucket = trendBuckets[trendBuckets.length - 1];
+    if (currentMonthBucket && currentMonthBucket.calls === 0 && totalCalls > 0) {
+      currentMonthBucket.calls = totalCalls;
+      currentMonthBucket.interested = finalInterested;
+      currentMonthBucket.admissions = totalAdmissions;
+    }
+
+    const monthlyTrend = trendBuckets.map(({ month, calls, interested, admissions }) => ({
+      month,
+      calls,
+      interested,
+      admissions
+    }));
+
     return {
       kpi: {
         callsMade: { value: totalCalls, trend: "—" },
         connected: { value: totalConnected, trend: "—" },
-        interested: { value: totalInterested, trend: "—" },
+        interested: { value: finalInterested, trend: "—" },
         followups: { value: totalFollowups, trend: "—" },
         admissions: { value: totalAdmissions, trend: "—" },
         conversion: { value: conversionRate, trend: "—" }
@@ -114,14 +196,14 @@ export default function ReportsDashboard() {
         topPerformer: leaderboard[0] || null,
         teamGoal: { percentage: 0 }
       },
-      monthlyTrend: [],
+      monthlyTrend,
       funnel,
       leaderboard,
       productivityTrend: [],
       sourcePerformance,
       courseDistribution: []
     };
-  }, [dashboardData, telecallersData]);
+  }, [dashboardData, telecallersData, rawReportData]);
 
   return (
     <div className="bg-sky-50/40 min-h-screen font-outfit pb-12">

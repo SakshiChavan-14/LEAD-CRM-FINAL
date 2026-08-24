@@ -49,7 +49,6 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
   // Build sub-filters object (everything except page/size/sort)
   const subFilters = {
     ...(search ? { search } : {}),
-    ...(type ? { type } : {}),
     ...(source ? { source } : {}),
     ...(status ? { status } : {}),
     ...(callerName ? { callerName } : {}),
@@ -74,15 +73,68 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
     setIsAssignModalOpen(false);
   });
 
+  // Fetch all leads if tab/type is active to filter and paginate on client-side
+  const querySize = type ? 10000 : size;
+  const queryPage = type ? 0 : page;
+
   // Call hook with the correct signature: ({ filters, page, size, sort })
-  const query = useLeadOverview({ filters: subFilters, page, size, sort });
+  const query = useLeadOverview({ filters: subFilters, page: queryPage, size: querySize, sort });
   const { data, isLoading, isError, error, isFetching } = query;
 
-  const leadsData = data?.leads || [];
-  const totalResults = data?.totalItems || 0;
-  const currentPage = data?.currentPage ?? page;
-  const totalPages = data?.totalPages || 1;
-  const pageSize = data?.pageSize || size;
+  const rawLeadsData = data?.leads || [];
+  
+  // Filter leads based on selected tab/type
+  const filteredLeads = useMemo(() => {
+    if (type === "hot") {
+      return rawLeadsData.filter(l => {
+        const s = (l.status || "").toUpperCase();
+        const o = (l.opinion || l.temperature || "").toUpperCase();
+        return s === "HOT" || o === "HOT" || o === "INTERESTED";
+      });
+    }
+    if (type === "cold") {
+      return rawLeadsData.filter(l => {
+        const s = (l.status || "").toUpperCase();
+        const o = (l.opinion || l.temperature || "").toUpperCase();
+        const isHot = s === "HOT" || o === "HOT" || o === "INTERESTED";
+        if (isHot) return false;
+        return s === "COLD" || o === "COLD" || o === "NOT INTERESTED";
+      });
+    }
+    if (type === "warm") {
+      return rawLeadsData.filter(l => {
+        const s = (l.status || "").toUpperCase();
+        const o = (l.opinion || l.temperature || "").toUpperCase();
+        const isHot = s === "HOT" || o === "HOT" || o === "INTERESTED";
+        const isCold = s === "COLD" || o === "COLD" || o === "NOT INTERESTED";
+        return !isHot && !isCold;
+      });
+    }
+    return rawLeadsData;
+  }, [rawLeadsData, type]);
+
+  // Client-side pagination when type/tab is active
+  const leadsData = useMemo(() => {
+    if (type) {
+      const start = page * size;
+      const end = start + size;
+      return filteredLeads.slice(start, end);
+    }
+    return filteredLeads;
+  }, [filteredLeads, page, size, type]);
+
+  const totalResults = useMemo(() => {
+    if (type) {
+      return filteredLeads.length;
+    }
+    return data?.totalItems || 0;
+  }, [data?.totalItems, filteredLeads.length, type]);
+
+  const currentPage = page;
+  const pageSize = size;
+  const totalPages = type 
+    ? Math.ceil(totalResults / pageSize) 
+    : (data?.totalPages || 1);
 
   const { data: bucketCounts = {} } = useLeadCounts();
 

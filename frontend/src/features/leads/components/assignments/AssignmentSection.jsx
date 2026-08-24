@@ -1,10 +1,22 @@
 import { Mail, Phone } from "lucide-react";
 
 export default function AssignmentSection({ data }) {
-  if (!data?.assignment) return null;
-  const { telecaller, assignee, phone, email, assignedDate, assignedBy, status } = data.assignment;
+  if (!data?.assignment && !data?.rawData) return null;
+  const { telecaller, assignee, phone, email, assignedDate, assignedBy, status } = data?.assignment || {};
 
-  const displayName = assignee || telecaller || "Unassigned";
+  const rawAssigned = assignee || 
+                      telecaller || 
+                      data?.rawData?.lead?.assignedTo?.name || 
+                      data?.rawData?.assignedTo?.name || 
+                      data?.rawData?.lead?.assignedTo || 
+                      data?.rawData?.assignedTo || 
+                      data?.rawData?.callerName || 
+                      data?.rawData?.telecallerName || 
+                      "Unassigned";
+
+  const displayName = typeof rawAssigned === "object" && rawAssigned !== null
+    ? (rawAssigned.name || rawAssigned.fullName || rawAssigned.username || rawAssigned.empName || "Unassigned")
+    : (typeof rawAssigned === "string" && rawAssigned.trim() !== "" && rawAssigned !== "null" && rawAssigned !== "undefined" ? rawAssigned.trim() : "Unassigned");
 
   return (
     <dl className="flex flex-col gap-5">

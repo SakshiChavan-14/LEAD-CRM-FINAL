@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { X, Users, Sparkles, LayoutGrid, List } from "lucide-react";
 import { useTelecallerLeads } from "@/features/telecaller/hooks/useMyLeads";
+import { useLeadFilterOptions } from "@/features/telecaller/hooks/useLeadFilterOptions";
 
 import TelecallerLeadsBoard from "@/features/telecaller/leads/components/TelecallerLeadsBoard";
 
@@ -22,64 +23,133 @@ const toTitleCase = (str) => {
     .join(" ");
 };
 
-
+const FILTER_KEYS = ["status", "source", "course", "opinion"];
 
 export default function TelecallerLeadsPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get("search") || "";
   
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
-  const [filters, setFilters] = useState({});
+  
+  // Read initial filters from URL search params
+  const [filters, setFilters] = useState(() => {
+    const initial = {};
+    for (const key of FILTER_KEYS) {
+      const val = searchParams.get(key);
+      if (val) initial[key] = val;
+    }
+    return initial;
+  });
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'board'
 
   const querySize = viewMode === "board" ? 100 : size;
   const queryPage = viewMode === "board" ? 0 : page;
 
+  // Combine search and active filters into a single object for the API & query key
+  const combinedFilters = useMemo(() => {
+    const cf = {};
+    if (searchTerm.trim()) cf.search = searchTerm.trim();
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        cf[k] = String(v).trim();
+      }
+    });
+    return cf;
+  }, [searchTerm, filters]);
+
   const {
     data,
     isLoading,
     error,
-  } = useTelecallerLeads({ search: searchTerm }, queryPage, querySize);
+  } = useTelecallerLeads(combinedFilters, queryPage, querySize);
 
   const voiceCtx = useVoice();
+  const { data: serverFilterOptions } = useLeadFilterOptions();
 
   const rawLeads = data?.leads && data.leads.length > 0 ? data.leads : [];
 
-  const uniqueOptions = useMemo(() => ({
-    status: [...new Set(rawLeads.map(l => l.status).filter(Boolean))],
-    course: [...new Set(rawLeads.map(l => l.course).filter(Boolean))],
-    source: [...new Set(rawLeads.map(l => l.source).filter(Boolean))],
-    opinion: [...new Set(rawLeads.map(l => l.opinion).filter(Boolean))],
-  }), [rawLeads]);
+  const uniqueOptions = useMemo(() => {
+    const sStatuses = serverFilterOptions?.statuses || serverFilterOptions?.status || [];
+    const sCourses = serverFilterOptions?.courses || serverFilterOptions?.course || [];
+    const sSources = serverFilterOptions?.sources || serverFilterOptions?.source || [];
+    const sOpinions = serverFilterOptions?.opinions || serverFilterOptions?.opinion || [];
+
+    const defaultStatuses = ["ENQUIRY", "COLD", "WARM", "HOT", "COMPLETED", "NOT_INTERESTED"];
+    const defaultCourses = ["B.Tech", "M.Tech", "BCA", "MCA", "BBA", "MBA", "B.Com", "B.Sc"];
+    const defaultSources = ["Instagram", "Facebook", "Google Ads", "Direct", "Website", "Walk-in", "Referral"];
+    const defaultOpinions = ["Interested", "Cold", "Warm", "Hot", "Not Interested"];
+
+    const mergeUnique = (defaults, serverOpts, leadOpts) => {
+      const set = new Set();
+      const list = [];
+      const add = (item) => {
+        if (!item || typeof item !== "string") return;
+        const trimmed = item.trim();
+        if (!trimmed) return;
+        const key = trimmed.toUpperCase();
+        if (!set.has(key)) {
+          set.add(key);
+          list.push(trimmed);
+        }
+      };
+      (serverOpts || []).forEach(add);
+      (leadOpts || []).forEach(add);
+      (defaults || []).forEach(add);
+      return list;
+    };
+
+    return {
+      status: mergeUnique(defaultStatuses, sStatuses, rawLeads.map(l => l.status)),
+      course: mergeUnique(defaultCourses, sCourses, rawLeads.map(l => l.course)),
+      source: mergeUnique(defaultSources, sSources, rawLeads.map(l => l.source)),
+      opinion: mergeUnique(defaultOpinions, sOpinions, rawLeads.map(l => l.opinion)),
+    };
+  }, [serverFilterOptions, rawLeads]);
+
+  const updateUrlFilters = (updatedFilters) => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("search", searchTerm);
+    Object.entries(updatedFilters).forEach(([k, v]) => {
+      if (v) params.set(k, v);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    const updated = { ...filters };
+    if (value) {
+      updated[key] = value;
+    } else {
+      delete updated[key];
+    }
+    setFilters(updated);
     setPage(0);
+    updateUrlFilters(updated);
   };
 
   const handleClearFilter = (key) => {
-    setFilters(prev => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
-    setPage(0);
+    handleFilterChange(key, "");
   };
 
   const clearAllFilters = () => {
     setFilters({});
     setPage(0);
+    const params = new URLSearchParams();
+    if (searchTerm) params.set("search", searchTerm);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const activeFilterKeys = Object.keys(filters).filter(k => filters[k]);
   const hasActiveFilters = activeFilterKeys.length > 0;
 
   const allLeads = rawLeads;
-  const totalItems = data?.totalItems || allLeads.length;
-  const totalPages = data?.totalPages || Math.ceil(allLeads.length / size);
+  const totalItems = data?.totalItems ?? allLeads.length;
+  const totalPages = data?.totalPages ?? (Math.ceil(totalItems / size) || 1);
 
   const handleRowClick = (row) => {
     router.push(`/telecaller/leads/${row.enquiryNo || row.id}`);
@@ -88,11 +158,11 @@ export default function TelecallerLeadsPage() {
   const kpiData = useMemo(() => {
     return {
       totalAssigned: totalItems || 0,
-      newLeads: allLeads.filter(l => (l.status||'').toUpperCase().includes('NEW')).length,
-      inProgress: allLeads.filter(l => (l.status||'').toUpperCase().includes('PROGRESS') || (l.status||'').toUpperCase().includes('FOLLOW')).length,
+      newLeads: allLeads.filter(l => (l.status||'').toUpperCase().includes('NEW') || (l.status||'').toUpperCase().includes('ENQUIRY')).length,
+      inProgress: allLeads.filter(l => (l.status||'').toUpperCase().includes('PROGRESS') || (l.status||'').toUpperCase().includes('FOLLOW') || (l.status||'').toUpperCase().includes('WARM') || (l.status||'').toUpperCase().includes('HOT')).length,
       interested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('INTERESTED') || (l.opinion||'').toUpperCase().includes('HOT')).length,
-      notInterested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('NOT')).length,
-      converted: allLeads.filter(l => (l.status||'').toUpperCase().includes('ADMISSION') || (l.status||'').toUpperCase().includes('ENROLLED')).length,
+      notInterested: allLeads.filter(l => (l.opinion||'').toUpperCase().includes('NOT') || (l.status||'').toUpperCase().includes('NOT')).length,
+      converted: allLeads.filter(l => (l.status||'').toUpperCase().includes('ADMISSION') || (l.status||'').toUpperCase().includes('ENROLLED') || (l.status||'').toUpperCase().includes('COMPLETED')).length,
     };
   }, [allLeads, totalItems]);
 
@@ -154,7 +224,14 @@ export default function TelecallerLeadsPage() {
               data={allLeads} 
               isLoading={isLoading} 
               onRowClick={handleRowClick}
-              onCall={(number) => voiceCtx?.startCall(null, number)}
+              onCall={(lead) => {
+                const returnTo = encodeURIComponent(pathname || "/telecaller/leads");
+                if (lead?.enquiryNo || lead?.id) {
+                  router.push(`/telecaller/calling/${lead.enquiryNo || lead.id}?returnTo=${returnTo}`);
+                } else if (lead?.mobileNo || lead?.phone) {
+                  router.push(`/telecaller/calling/manual?phone=${encodeURIComponent(lead.mobileNo || lead.phone)}&returnTo=${returnTo}`);
+                }
+              }}
             />
           </div>
 

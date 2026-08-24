@@ -34,10 +34,15 @@ function VoiceProviderInner({ children }) {
     useVoiceEvents();
   const { startCall, endCall, muteCall, sendDigits, handleCallDisconnect } =
     useVoiceCall(voiceState, setErrorMsg);
-  const { formattedTime } = useCallTimer(voiceState);
+  const { formattedTime, elapsedSeconds } = useCallTimer(voiceState);
 
   // ─── Post-call modal tracking ────────────────────────────────────────────
   const [postCallEnquiryNo, setPostCallEnquiryNo] = useState(null);
+
+  // ─── Scoped calling-page flag ─────────────────────────────────────────
+  // When set to "CALLING_PAGE", the Calling Page handles post-call logging.
+  // Does NOT disable postCallEnquiryNo — consumers check this flag separately.
+  const [callContext, setCallContext] = useState(null);
 
   // ─── Shared selection state ────────────────────────────────────────────────
   // selectedLead: the lead currently chosen in QuickDial — persists across pages
@@ -147,6 +152,7 @@ function VoiceProviderInner({ children }) {
     warningMsg,
     incomingCall,
     formattedTime,
+    elapsedSeconds,
 
     // Call actions
     startCall: enhancedStartCall,
@@ -169,6 +175,10 @@ function VoiceProviderInner({ children }) {
     // Unified mute state
     isMuted,
     setIsMuted,
+
+    // Scoped calling-page context
+    callContext,
+    setCallContext,
 
     // Device diagnostics
     identity,

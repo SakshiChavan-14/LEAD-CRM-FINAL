@@ -18,6 +18,7 @@ export default function GlobalQuickCallWidget() {
   const toggleOpen = () => setIsOpen((prev) => !prev);
 
   if (!mounted) return null;
+  if (pathname?.startsWith("/telecaller/calling")) return null;
 
   return (
     <>

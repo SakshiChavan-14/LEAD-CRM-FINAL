@@ -2,7 +2,7 @@ import React from "react";
 import Modal from "@/components/ui/Modal";
 import CallDetailsView from "./CallDetailsView";
 
-export default function CallDetailsModal({ callId, callData, defaultTab = "summary", open, onClose, showRecording = false }) {
+export default function CallDetailsModal({ callId, callData, defaultTab = "summary", open, onClose, showRecording = true }) {
   return (
     <Modal
       open={open}

@@ -11,7 +11,50 @@ export default function RecentCallLogsSection({ userId }) {
   const { data, isError, isLoading } = useTelecallerCallLogs(userId, filters);
 
   const rawLogs = data?.data?.length > 0 ? data.data : data?.content?.length > 0 ? data.content : Array.isArray(data) ? data : [];
-  const displayLogs = rawLogs;
+  
+  const normalizeLog = (log) => {
+    const studentName = log.name || log.studentName || log.leadName || log.contactName || "Student Lead";
+    const phone = log.phone || log.mobileNo || log.leadPhone || log.mobile || "—";
+    
+    // Call time formatting
+    const rawTime = log.createdAt || log.callDate || log.date || log.time || log.callDateTime;
+    const callTime = rawTime ? formatDisplayDate(rawTime) : "Today";
+    
+    // Duration formatting
+    const durRaw = log.callDurationSeconds !== undefined && log.callDurationSeconds !== null 
+      ? log.callDurationSeconds 
+      : (log.callDuration || log.duration || log.talkTime);
+    let duration = "00:00";
+    if (typeof durRaw === "number") {
+      const m = Math.floor(durRaw / 60);
+      const s = durRaw % 60;
+      duration = `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+    } else if (typeof durRaw === "string" && durRaw) {
+      duration = durRaw;
+    }
+
+    // Outcome & Connected status
+    const rawOutcome = log.callOutcome || log.outcome || log.status || log.interactionStatus || "Connected";
+    const outcomeUpper = String(rawOutcome).toUpperCase();
+    const isConnected = outcomeUpper === "CONNECTED" || outcomeUpper === "ANSWERED" || outcomeUpper === "COMPLETED";
+
+    // Next follow-up
+    const rawFollowup = log.scheduledDate || log.nextFollowUp || log.nextFollowup || log.followupDate;
+    const nextFollowUp = rawFollowup ? formatDisplayDate(rawFollowup) : "—";
+
+    return {
+      id: log.id || log.callId || log.interactionId,
+      studentName,
+      phone,
+      callTime,
+      duration,
+      outcome: rawOutcome,
+      isConnected,
+      nextFollowUp,
+    };
+  };
+
+  const displayLogs = rawLogs.map(normalizeLog);
 
   return (
     <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 shadow-xs font-outfit">
@@ -53,17 +96,16 @@ export default function RecentCallLogsSection({ userId }) {
             <tbody className="divide-y divide-slate-100 text-xs">
                 {displayLogs.length > 0 ? (
                   displayLogs.map((log, idx) => {
-                    const isConnected = String(log.status || "").toLowerCase() === "connected" || (log.duration && log.duration !== "00:00");
                     return (
                       <tr key={log.id || idx} className="h-[56px] hover:bg-slate-50/80 transition-colors">
                         {/* Lead Name */}
                         <td className="px-4 w-[24%]">
                           <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold text-[10px] flex items-center justify-center border border-slate-200 shrink-0">
-                              {(log.studentName || "L").charAt(0).toUpperCase()}
+                              {log.studentName.charAt(0).toUpperCase()}
                             </div>
                             <span className="font-bold text-slate-900 truncate">
-                              {log.studentName || "Lead Contact"}
+                              {log.studentName}
                             </span>
                           </div>
                         </td>
@@ -72,35 +114,35 @@ export default function RecentCallLogsSection({ userId }) {
                         <td className="px-3 w-[16%] font-mono text-slate-600 font-medium">
                           <div className="flex items-center gap-1">
                             <Phone size={10} className="text-slate-400" />
-                            <span className="truncate">{log.mobile || "-"}</span>
+                            <span className="truncate">{log.phone}</span>
                           </div>
                         </td>
 
                         {/* Call Time */}
                         <td className="px-3 w-[16%] text-slate-600 font-medium">
-                          {log.callTime || "Today"}
+                          {log.callTime}
                         </td>
 
                         {/* Duration */}
                         <td className="px-2 w-[12%] text-center font-mono font-bold text-slate-800">
-                          {log.duration || "00:00"}
+                          {log.duration}
                         </td>
 
                         {/* Outcome */}
                         <td className="px-3 w-[16%] text-center">
                           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border shadow-2xs ${
-                            isConnected 
+                            log.isConnected 
                               ? "bg-emerald-50 text-emerald-700 border-emerald-200/80" 
                               : "bg-rose-50 text-rose-700 border-rose-200/80"
                           }`}>
-                            {isConnected ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
-                            {log.outcome || (isConnected ? "Connected" : "Missed")}
+                            {log.isConnected ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
+                            {log.outcome}
                           </span>
                         </td>
 
                         {/* Next Follow-up */}
                         <td className="px-3 w-[16%] text-right font-medium text-slate-500 text-[11px] truncate">
-                          {log.nextFollowUp || "—"}
+                          {log.nextFollowUp}
                         </td>
                       </tr>
                     );

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useCallReportsSummary, useTelecallerCallLogs } from "@/features/callReports/hooks/useCallReports";
 import { useTelecallerTimeline, useTelecallerFollowups } from "@/features/reports/hooks/useReportsQueries";
+import useTelecallerDashboard from "@/features/users/hooks/useTelecallerDashboard";
 
 const toNumber = (v) => {
   if (v === undefined || v === null || v === "" || v === "--" || v === "—") return 0;
@@ -44,9 +45,13 @@ export function useTelecallerReport(id, range = "this-month", options = {}) {
 
   // We need to resolve the empId first to pass to other queries.
   const resolvedEmpId = useMemo(() => {
-    const list = Array.isArray(telecallersData) ? telecallersData : [];
-    const matched = list.find((t) => String(t.empId || t.id) === String(id));
-    return matched?.empId || matched?.id || id;
+    const list = telecallersData?.content || telecallersData?.users || (Array.isArray(telecallersData) ? telecallersData : []);
+    const matched = list.find((t) => 
+      String(t.userId || "").toLowerCase() === String(id).toLowerCase() ||
+      String(t.empId || "").toLowerCase() === String(id).toLowerCase() ||
+      String(t.id || "").toLowerCase() === String(id).toLowerCase()
+    );
+    return matched?.empId || matched?.userId || matched?.id || id;
   }, [telecallersData, id]);
 
   const { data: callsData, isLoading: isCallsLoading } = useTelecallerCallLogs(
@@ -69,14 +74,18 @@ export function useTelecallerReport(id, range = "this-month", options = {}) {
     50
   );
 
-  const isLoading = isSummaryLoading || isCallsLoading || isFollowupsLoading || isTimelineLoading;
+  const { data: dashboardData, isLoading: isDashboardLoading } = useTelecallerDashboard(resolvedEmpId);
+
+  const isLoading = isSummaryLoading || isCallsLoading || isFollowupsLoading || isTimelineLoading || isDashboardLoading;
 
   const data = useMemo(() => {
-    const telecallerList = Array.isArray(telecallersData) ? telecallersData : [];
+    const telecallerList = telecallersData?.content || telecallersData?.users || (Array.isArray(telecallersData) ? telecallersData : []);
 
-    // Find the telecaller in the real list by matching id or empId
-    const realTc = telecallerList.find(
-      (t) => String(t.empId || t.id) === String(id)
+    // Find the telecaller in the real list by matching id or empId or userId
+    const realTc = telecallerList.find((t) => 
+      String(t.userId || "").toLowerCase() === String(id).toLowerCase() ||
+      String(t.empId || "").toLowerCase() === String(id).toLowerCase() ||
+      String(t.id || "").toLowerCase() === String(id).toLowerCase()
     );
 
     const rawCalls = Array.isArray(callsData?.content) ? callsData.content : Array.isArray(callsData) ? callsData : [];
@@ -125,19 +134,103 @@ export function useTelecallerReport(id, range = "this-month", options = {}) {
     const courseDistribution = Object.values(courseMap);
     const monthlyTrend = Object.values(trendMap).reverse(); // Reverse to keep chronological order if sorted
 
-    if (realTc) {
-      const calls = toNumber(realTc.totalCalls || realTc.calls);
-      const connected = toNumber(realTc.connectedCalls || realTc.connected);
-      const interested = toNumber(realTc.interestedLeads || realTc.interested);
-      const followups = toNumber(realTc.followupsCount || realTc.followups);
-      const admissions = toNumber(realTc.totalAdmissions || realTc.admissions);
+    const profile = dashboardData?.profile || {};
+    const tcName = profile.name || realTc?.name || realTc?.empName || "Telecaller";
+    const tcEmpId = profile.empId || realTc?.userId || realTc?.empId || realTc?.id || id;
+
+    if (realTc || dashboardData?.profile || dashboardData?.kpi) {
+      const calls = toNumber(realTc?.totalCalls ?? realTc?.calls ?? dashboardData?.kpi?.callsThisMonth ?? rawCalls.length);
+      const connected = toNumber(realTc?.connectedCalls ?? realTc?.connected ?? dashboardData?.callOutcomes?.find(o => o.name === "CONNECTED")?.value);
+      const interested = toNumber(
+        realTc?.interestedLeads ?? realTc?.interested ??
+        dashboardData?.leadPipeline?.find(p => p.stage === "HOT" || p.stage === "INTERESTED")?.count ??
+        dashboardData?.assignedLeads?.filter(l => l.status === "HOT" || l.temperature === "HOT" || l.stage === "HOT").length
+      );
+      const followups = toNumber(
+        realTc?.followupsCount ?? realTc?.followups ??
+        dashboardData?.kpi?.pendingFollowUps ?? dashboardData?.workload?.pendingFollowUps ??
+        (Array.isArray(followupsData?.items) ? followupsData.items.length : Array.isArray(followupsData) ? followupsData.length : 0)
+      );
+      const admissions = toNumber(realTc?.totalAdmissions ?? realTc?.admissions ?? dashboardData?.kpi?.convertedLeads);
       const conversion = calls > 0 ? ((admissions / calls) * 100).toFixed(1) + "%" : "0.0%";
+
+      // ── Follow-ups Fallback Logic ──────────────────────────────────
+      let mappedFollowups = (followupsData?.items || followupsData?.content || (Array.isArray(followupsData) ? followupsData : [])).map(f => ({
+        lead: f.studentName || f.student || f.name || f.leadName || "Student",
+        course: f.course || f.programme || "N/A",
+        due: f.scheduledTime ? `${f.scheduledDate} ${f.scheduledTime}` : (f.scheduledDate || f.followupDate || f.date || "Today")
+      }));
+
+      if (mappedFollowups.length === 0) {
+        const followupsFromCalls = rawCalls
+          .filter(c => c.nextCallDate || c.scheduledDate || c.followupDate || c.scheduledTime || String(c.outcome || c.callOutcome || "").toUpperCase().includes("FOLLOW"))
+          .map(c => ({
+            lead: c.leadName || c.name || c.studentName || "Student",
+            course: c.course || c.leadCourse || "N/A",
+            due: c.nextCallDate 
+              ? (new Date(c.nextCallDate).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }))
+              : (c.scheduledTime ? `${c.scheduledDate} ${c.scheduledTime}` : (c.scheduledDate || c.followupDate || "Scheduled"))
+          }));
+
+        const followupsFromDashboard = (dashboardData?.followups || dashboardData?.todayFollowups || dashboardData?.nextCalls || []).map(f => ({
+          lead: f.studentName || f.student || f.name || f.leadName || "Student",
+          course: f.course || f.programme || "N/A",
+          due: f.scheduledTime ? `${f.scheduledDate} ${f.scheduledTime}` : (f.scheduledDate || f.time || "Scheduled")
+        }));
+
+        mappedFollowups = followupsFromCalls.length > 0 ? followupsFromCalls : followupsFromDashboard;
+      }
+
+      // ── Timeline Fallback Logic ────────────────────────────────────
+      let mappedTimeline = (timelineData?.items || timelineData?.content || (Array.isArray(timelineData) ? timelineData : [])).map(event => {
+        const typeNorm = String(event.type || event.eventType || event.event_type || "").toUpperCase();
+        let timelineType = event.type || "note";
+        if (typeNorm.includes("CALL") || typeNorm.includes("INTERACTION")) timelineType = "call";
+        if (typeNorm.includes("FOLLOWUP") || typeNorm.includes("FOLLOW_UP")) timelineType = "followup";
+        if (typeNorm.includes("ADMISSION") || typeNorm.includes("CONVERSION") || typeNorm.includes("CONVERTED")) timelineType = "conversion";
+        if (typeNorm.includes("INTERESTED") || typeNorm.includes("OPINION")) timelineType = "interested";
+
+        return {
+          id: event.id,
+          type: timelineType.toLowerCase(),
+          title: event.title || "Action",
+          description: event.description || "",
+          createdAt: event.createdAt
+        };
+      });
+
+      if (mappedTimeline.length === 0 && rawCalls.length > 0) {
+        mappedTimeline = rawCalls.map((c, i) => {
+          const leadName = c.leadName || c.name || c.studentName || "Lead";
+          const outcome = c.outcome || c.callOutcome || "Connected";
+          const notes = c.telecallerNotes || c.notes || c.remarks || c.comment || "";
+          const opinion = c.studentOpinion || c.opinion || "";
+          
+          let type = "call";
+          if (opinion.toLowerCase().includes("interest")) type = "interested";
+          if (outcome.toLowerCase().includes("follow") || c.nextCallDate) type = "followup";
+          if (outcome.toLowerCase().includes("admission") || outcome.toLowerCase().includes("convert")) type = "conversion";
+
+          const formattedDate = c.createdAt || c.callDateTime || c.callTime;
+          const timeStr = formattedDate ? new Date(formattedDate).toLocaleString("en-IN", {
+            day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+          }) : "Today";
+
+          return {
+            id: c.callId || c.interactionId || c.id || `call-${i}`,
+            type,
+            title: `${type === "interested" ? "Marked Interested: " : type === "followup" ? "Scheduled Follow-up: " : "Outbound Call: "}${leadName}`,
+            description: notes || `Call ${outcome} • ${opinion || c.course || "No notes recorded"} (${timeStr})`,
+            createdAt: formattedDate
+          };
+        });
+      }
 
       return {
         telecaller: {
-          id: realTc.empId || realTc.id,
-          empId: realTc.empId || realTc.id,
-          name: realTc.empName || realTc.name || "Telecaller",
+          id: tcEmpId,
+          empId: tcEmpId,
+          name: tcName,
           calls: calls,
           admissions: admissions,
           conversion: toNumber(realTc.conversionRate || realTc.conversion)
@@ -167,36 +260,17 @@ export function useTelecallerReport(id, range = "this-month", options = {}) {
           outcome: c.outcome || c.callOutcome || "Connected",
           time: c.callTime || (c.callDateTime ? new Date(c.callDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Today")
         })),
-        followups: (followupsData?.items || followupsData?.content || followupsData || []).map(f => ({
-          lead: f.studentName || f.student || f.name || f.leadName || "Student",
-          course: f.course || f.programme || "N/A",
-          due: f.scheduledTime ? `${f.scheduledDate} ${f.scheduledTime}` : (f.scheduledDate || "Today")
-        })),
-        timeline: (timelineData?.items || timelineData?.content || timelineData || []).map(event => {
-          const typeNorm = String(event.type || event.eventType || event.event_type || "").toUpperCase();
-          let timelineType = event.type || "note";
-          if (typeNorm.includes("CALL") || typeNorm.includes("INTERACTION")) timelineType = "call";
-          if (typeNorm.includes("FOLLOWUP") || typeNorm.includes("FOLLOW_UP")) timelineType = "followup";
-          if (typeNorm.includes("ADMISSION") || typeNorm.includes("CONVERSION") || typeNorm.includes("CONVERTED")) timelineType = "conversion";
-          if (typeNorm.includes("INTERESTED") || typeNorm.includes("OPINION")) timelineType = "interested";
-
-          return {
-            id: event.id,
-            type: timelineType.toLowerCase(),
-            title: event.title || "Action",
-            description: event.description || "",
-            createdAt: event.createdAt
-          };
-        }),
+        followups: mappedFollowups,
+        timeline: mappedTimeline,
       };
     }
 
     // Zeroed State if not found
     return {
       telecaller: {
-        id: id,
-        empId: id,
-        name: "Telecaller",
+        id: tcEmpId,
+        empId: tcEmpId,
+        name: tcName,
         calls: 0,
         admissions: 0,
         conversion: 0
@@ -223,7 +297,7 @@ export function useTelecallerReport(id, range = "this-month", options = {}) {
       followups: [],
       timeline: [],
     };
-  }, [id, telecallersData, callsData, followupsData, timelineData]);
+  }, [id, telecallersData, callsData, followupsData, timelineData, dashboardData]);
 
   return { data, isLoading, error };
 }

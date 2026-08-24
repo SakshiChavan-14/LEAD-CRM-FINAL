@@ -67,15 +67,15 @@ export default function NextCallsCard({ isLoading, nextCalls = [], onLogCall }) 
       
       {/* Leads List */}
       <div className="space-y-2.5 flex-1 overflow-y-auto pr-1 [scrollbar-width:none]">
-        {leads.map((call) => (
+        {leads.map((call, idx) => (
           <div 
-            key={call.id || call.enquiryNo} 
+            key={`${call.id || call.enquiryNo || 'call'}-${idx}`} 
             className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-blue-200 hover:shadow-2xs transition-all duration-200 group gap-3"
           >
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
-                  {call.name}
+                  {call.name || call.studentName || call.student || call.leadName || `Lead #${call.enquiryNo || call.id}`}
                 </span>
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-blue-50 text-blue-600 border border-blue-200">
                   <Flame size={9} />

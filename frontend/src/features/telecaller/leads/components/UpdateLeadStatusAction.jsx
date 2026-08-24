@@ -2,8 +2,16 @@
 
 import React, { useState } from "react";
 import { ChevronRight, RefreshCw, ChevronDown, Check } from "lucide-react";
-import { LEAD_STAGES } from "@/features/leads/constants/leadStages";
 import { useTelecallerUpdateLeadStatus } from "@/features/telecaller/hooks/useTelecallerUpdateLeadStatus";
+
+const TELECALLER_STAGES = ["ENQUIRY", "COLD", "WARM", "HOT", "COMPLETED"];
+const STAGE_LABELS = {
+  ENQUIRY: "Enquiry",
+  COLD: "Cold Lead",
+  WARM: "Warm Lead",
+  HOT: "Hot Lead",
+  COMPLETED: "Completed",
+};
 
 export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
   const { mutate: updateStatus, isPending } = useTelecallerUpdateLeadStatus();
@@ -13,9 +21,9 @@ export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
   const safeStatus = String(currentStatus || "").toUpperCase();
   const isNotInterested = safeStatus === "NOT_INTERESTED";
 
-  const currentIndex = LEAD_STAGES.indexOf(safeStatus);
-  const nextStage = currentIndex !== -1 && currentIndex < LEAD_STAGES.length - 1 
-    ? LEAD_STAGES[currentIndex + 1] 
+  const currentIndex = TELECALLER_STAGES.indexOf(safeStatus);
+  const nextStage = currentIndex !== -1 && currentIndex < TELECALLER_STAGES.length - 1 
+    ? TELECALLER_STAGES[currentIndex + 1] 
     : null;
 
   const handleUpdate = (targetStatus) => {
@@ -28,15 +36,15 @@ export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
     <div className="flex items-center gap-2 relative">
       {/* Visual Journey Stepper Mini */}
       <div className="hidden lg:flex items-center gap-1.5 mr-2 px-3 py-1.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-        {LEAD_STAGES.map((stage, idx) => {
+        {TELECALLER_STAGES.map((stage, idx) => {
           const isPassed = idx <= currentIndex && !isNotInterested;
           const isActive = idx === currentIndex && !isNotInterested;
           return (
             <React.Fragment key={stage}>
               <span className={`text-[10px] font-bold ${isActive ? "text-blue-700" : isPassed ? "text-slate-700" : "text-slate-400"}`}>
-                {stage}
+                {STAGE_LABELS[stage] || stage}
               </span>
-              {idx < LEAD_STAGES.length - 1 && (
+              {idx < TELECALLER_STAGES.length - 1 && (
                 <ChevronRight size={10} className={isPassed ? "text-slate-400" : "text-slate-300"} />
               )}
             </React.Fragment>
@@ -60,7 +68,7 @@ export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
             onClick={() => handleUpdate(nextStage)}
             className="h-10 px-4 rounded-l-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 border border-blue-600"
           >
-            <span>Move to {nextStage}</span>
+            <span>Move to {STAGE_LABELS[nextStage] || nextStage}</span>
             {isPending ? <RefreshCw size={14} className="animate-spin" /> : <ChevronRight size={14} />}
           </button>
           
@@ -79,7 +87,7 @@ export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
                 </div>
                 
                 <div className="max-h-48 overflow-y-auto mb-2 space-y-1">
-                  {[...LEAD_STAGES, "NOT_INTERESTED"].map(stage => (
+                  {TELECALLER_STAGES.map(stage => (
                     <button
                       key={stage}
                       onClick={() => handleUpdate(stage)}
@@ -90,7 +98,7 @@ export default function UpdateLeadStatusAction({ enquiryNo, currentStatus }) {
                           : "text-slate-700 hover:bg-blue-50 hover:text-blue-700"
                       }`}
                     >
-                      <span>{stage.replace("_", " ")}</span>
+                      <span>{(STAGE_LABELS[stage] || stage).replace("_", " ")}</span>
                       {stage === safeStatus && <Check size={12} className="text-slate-400" />}
                     </button>
                   ))}

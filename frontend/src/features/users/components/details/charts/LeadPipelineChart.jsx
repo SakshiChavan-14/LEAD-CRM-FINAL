@@ -17,32 +17,51 @@ const DashedConnector = ({ isActive }) => (
 
 export default function LeadPipelineChart({ data }) {
   const rawData = Array.isArray(data) ? data : [];
+  const [selectedStageIndex, setSelectedStageIndex] = React.useState(null);
   
   // Dynamic stage mapping with fallback values
   const stages = useMemo(() => {
     const findCount = (label) => {
-      const match = rawData.find(item => 
-        String(item.stage || item.label || item.status || "").toLowerCase().trim() === label.toLowerCase().trim()
-      );
+      const getNormalizedAliases = (lbl) => {
+        const norm = lbl.toLowerCase();
+        if (norm.includes("new") || norm.includes("in")) return ["new lead", "new", "lead in", "lead_in", "enquiry"];
+        if (norm.includes("contact")) return ["contacted", "contact", "in_progress", "follow_up", "followup"];
+        if (norm.includes("qualif") || norm.includes("interest")) return ["qualified", "interested", "qualified lead"];
+        if (norm.includes("app")) return ["application", "applied", "form"];
+        if (norm.includes("admiss") || norm.includes("enroll") || norm.includes("convert")) return ["admission", "admitted", "enrolled", "converted", "completed"];
+        return [norm];
+      };
+
+      const aliases = getNormalizedAliases(label);
+      const match = rawData.find(item => {
+        const itemStage = String(item.stage || item.label || item.status || "").toLowerCase().trim().replace(/_/g, " ");
+        return aliases.includes(itemStage);
+      });
       return match ? match.count || match.value || 0 : 0;
     };
 
     return [
-      { key: "new lead", label: "New Lead", count: findCount("New Lead") || 18, percentage: 0, color: "border-blue-500 text-blue-600 bg-blue-50/50", activeColor: "bg-blue-500 text-white border-blue-500", icon: Sparkles, desc: "Lead created" },
-      { key: "contacted", label: "Contacted", count: findCount("Contacted") || 12, percentage: 25, color: "border-cyan-500 text-cyan-600 bg-cyan-50/50", activeColor: "bg-cyan-500 text-white border-cyan-500", icon: PhoneCall, desc: "First touch" },
-      { key: "qualified", label: "Qualified", count: findCount("Qualified") || 8, percentage: 50, color: "border-emerald-500 text-emerald-600 bg-emerald-50/50", activeColor: "bg-emerald-500 text-white border-emerald-500", icon: UserCheck, desc: "Interested" },
-      { key: "application", label: "Application", count: findCount("Application") || 3, percentage: 75, color: "border-amber-500 text-amber-600 bg-amber-50/50", activeColor: "bg-amber-500 text-white border-amber-500", icon: FileText, desc: "Form filled" },
-      { key: "admission", label: "Admission", count: findCount("Admission") || 1, percentage: 100, color: "border-purple-500 text-purple-600 bg-purple-50/50", activeColor: "bg-purple-500 text-white border-purple-500", icon: Award, desc: "Enrolled" }
+      { key: "new lead", label: "New Lead", count: findCount("New Lead"), percentage: 0, color: "border-blue-500 text-blue-600 bg-blue-50/50", activeColor: "bg-blue-500 text-white border-blue-500", icon: Sparkles, desc: "Lead created" },
+      { key: "contacted", label: "Contacted", count: findCount("Contacted"), percentage: 25, color: "border-cyan-500 text-cyan-600 bg-cyan-50/50", activeColor: "bg-cyan-500 text-white border-cyan-500", icon: PhoneCall, desc: "First touch" },
+      { key: "qualified", label: "Qualified", count: findCount("Qualified"), percentage: 50, color: "border-emerald-500 text-emerald-600 bg-emerald-50/50", activeColor: "bg-emerald-500 text-white border-emerald-500", icon: UserCheck, desc: "Interested" },
+      { key: "application", label: "Application", count: findCount("Application"), percentage: 75, color: "border-amber-500 text-amber-600 bg-amber-50/50", activeColor: "bg-amber-500 text-white border-amber-500", icon: FileText, desc: "Form filled" },
+      { key: "admission", label: "Admission", count: findCount("Admission"), percentage: 100, color: "border-purple-500 text-purple-600 bg-purple-50/50", activeColor: "bg-purple-500 text-white border-purple-500", icon: Award, desc: "Enrolled" }
     ];
   }, [rawData]);
 
-  const totalLeads = useMemo(() => {
-    return stages.reduce((sum, s) => sum + s.count, 0);
+  const defaultStageIndex = useMemo(() => {
+    // Find the furthest stage (right-most) that has count > 0 to indicate progress
+    for (let i = stages.length - 1; i >= 0; i--) {
+      if (stages[i].count > 0) {
+        return i;
+      }
+    }
+    return 0; // Default to New Lead if all are 0
   }, [stages]);
 
-  // Set Qualified as the default active node representing 50% progress as in the screenshot mockup
-  const currentStageIndex = 2;
+  const currentStageIndex = selectedStageIndex !== null ? selectedStageIndex : defaultStageIndex;
   const progressPercentage = stages[currentStageIndex].percentage;
+  const activeStageLeads = stages[currentStageIndex].count;
 
   return (
     <div className="bg-white rounded-[24px] border border-slate-200/80 p-6 shadow-xs h-full flex flex-col justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
@@ -59,21 +78,26 @@ export default function LeadPipelineChart({ data }) {
         </div>
         <div className="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full shadow-2xs">
           <span className="text-xs font-bold text-slate-600">Progress:</span>
-          <span className="text-xs font-extrabold text-blue-700 font-mono">{progressPercentage}%</span>
+          <span className="text-xs font-extrabold text-blue-700 font-mono">
+            {progressPercentage}% ({activeStageLeads} {activeStageLeads === 1 ? 'Lead' : 'Leads'})
+          </span>
         </div>
       </div>
-
+ 
       {/* Pipeline Stage Progression Nodes */}
       <div className="flex items-center justify-between w-full py-6 mt-4 flex-grow">
         {stages.map((s, index) => {
           const isActive = index === currentStageIndex;
           const isCompleted = index <= currentStageIndex;
           const IconComponent = s.icon;
-
+ 
           return (
             <React.Fragment key={s.key}>
               {/* Stage Node */}
-              <div className="flex flex-col items-center gap-2 flex-1 max-w-[120px] group cursor-pointer">
+              <div 
+                onClick={() => setSelectedStageIndex(index)}
+                className="flex flex-col items-center gap-2 flex-1 max-w-[120px] group cursor-pointer"
+              >
                 <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center shadow-xs transition-all duration-300 ${
                   isActive 
                     ? s.activeColor + " scale-110 shadow-md ring-4 ring-offset-2 ring-slate-100" 

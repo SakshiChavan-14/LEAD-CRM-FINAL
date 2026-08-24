@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useVoice } from "../context/VoiceProvider";
 import { VOICE_STATES } from "../utils/twilioEvents";
 import { Phone, PhoneOff, Mic, MicOff, AlertTriangle, Loader2 } from "lucide-react";
@@ -7,12 +8,17 @@ import IncomingCallToast from "./IncomingCallToast";
 export default function GlobalCallOverlay() {
   const { voiceState, errorMsg, warningMsg, formattedTime, endCall, muteCall } = useVoice();
   const [isMuted, setIsMuted] = useState(false);
+  const pathname = usePathname();
+
+  // Hide overlay on the Calling Page — it has its own full-screen controls
+  const isCallingPage = pathname?.startsWith("/telecaller/calling/");
 
   // Determine if overlay should be visible
   const isVisible =
-    voiceState === VOICE_STATES.CONNECTING ||
+    !isCallingPage &&
+    (voiceState === VOICE_STATES.CONNECTING ||
     voiceState === VOICE_STATES.RINGING ||
-    voiceState === VOICE_STATES.CONNECTED;
+    voiceState === VOICE_STATES.CONNECTED);
 
   const handleToggleMute = () => {
     const newMuteState = !isMuted;

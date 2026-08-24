@@ -13,27 +13,40 @@ import {
   Trash2 
 } from "lucide-react";
 import { formatDisplayDate } from "@/utils/dateUtils";
+import { useLeadCalls } from "@/features/telecaller/hooks/useLeadCalls";
 
 export default function LeadHeaderCard({ viewModel, rawData, actions, onDelete, onEdit }) {
   if (!viewModel) return null;
 
-  const leadName = viewModel.header?.name || rawData?.name || "Student";
+  const leadName = viewModel.header?.name || rawData?.student?.name || rawData?.studentName || rawData?.name || "Student";
   const enquiryNo = rawData?.lead?.enquiryNo || rawData?.enquiryNo || rawData?.id || "N/A";
-  const qualificationStatus = (viewModel.status?.currentStatus || rawData?.status || "N/A").toUpperCase();
-  const course = viewModel.header?.course || rawData?.course || rawData?.programme || "N/A";
-  const email = viewModel.contact?.email || rawData?.email || "N/A";
-  const phone = viewModel.contact?.mobile || rawData?.mobile || rawData?.mobileNo || "N/A";
-  const locationStr = viewModel.contact?.locationStr || rawData?.location || rawData?.address || "N/A";
-  const source = viewModel.lead?.source || rawData?.source || "N/A";
+  const qualificationStatus = (viewModel.status?.currentStatus || rawData?.lead?.status || rawData?.status || "N/A").toUpperCase();
+  const course = viewModel.header?.course || rawData?.education?.course || rawData?.course || rawData?.education?.programme || rawData?.programme || "N/A";
+  const email = viewModel.contact?.email || rawData?.student?.email || rawData?.email || "N/A";
+  const phone = viewModel.contact?.mobile || rawData?.student?.mobile || rawData?.mobileNo || rawData?.mobile || "N/A";
+  const locationStr = viewModel.contact?.locationStr 
+    || [rawData?.location?.city, rawData?.location?.district, rawData?.location?.state].filter(Boolean).join(", ")
+    || [rawData?.city, rawData?.district, rawData?.state].filter(Boolean).join(", ")
+    || rawData?.location || rawData?.address || "N/A";
+  const source = viewModel.lead?.source || rawData?.lead?.source || rawData?.source || "N/A";
   
   // Safe resolved dates and assignment
   const rawCreated = rawData?.createdAt || rawData?.lead?.createdAt || rawData?.leadCreationDate;
   const createdAt = rawCreated ? formatDisplayDate(rawCreated) : "N/A";
   
   const rawLastContact = rawData?.lastContactAt || rawData?.lead?.lastContactAt || rawData?.lastInteractionAt || rawData?.updatedAt;
-  const lastContactAt = rawLastContact ? formatDisplayDate(rawLastContact) : "N/A";
+  const cleanEnquiryNo = enquiryNo && enquiryNo !== "N/A" ? String(enquiryNo).replace(/[^\d]/g, "") : null;
+  const { data: callsData } = useLeadCalls(cleanEnquiryNo);
+  const calls = Array.isArray(callsData) ? callsData : [];
   
-  const rawAssigned = viewModel.assignment?.telecaller || rawData?.callerName || rawData?.assignedTo?.name || rawData?.telecallerName || viewModel.assignment?.assignee;
+  console.log("[LeadHeaderCard] enquiryNo:", enquiryNo, "| cleanEnquiryNo:", cleanEnquiryNo, "| calls fetched:", calls.length);
+  
+  const latestCall = [...calls].sort((a, b) => new Date(b.callDateTime || b.createdAt || b.date || 0) - new Date(a.callDateTime || a.createdAt || a.date || 0))[0];
+  const lastContactAt = latestCall 
+    ? formatDisplayDate(latestCall.callDateTime || latestCall.createdAt || latestCall.date) 
+    : (rawLastContact ? formatDisplayDate(rawLastContact) : "N/A");
+  
+  const rawAssigned = viewModel.assignment?.telecaller || rawData?.lead?.assignedTo?.name || rawData?.assignedTo?.name || rawData?.callerName || rawData?.telecallerName || viewModel.assignment?.assignee;
   const assignedTo = (!rawAssigned || rawAssigned.toLowerCase() === "unassigned") ? "Unassigned" : rawAssigned;
 
   // Initials

@@ -73,6 +73,7 @@ const normalizeTemperature = (raw) => {
   const overall = raw?.overall || raw || {};
   return {
     hot: overall.hot || overall.hotLeads || overall.hot_leads || 0,
+    warm: overall.warm || overall.warmLeads || overall.warm_leads || 0,
     cold: overall.cold || overall.coldLeads || overall.cold_leads || 0,
   };
 };
@@ -147,11 +148,12 @@ const normalizePipeline = (raw) => {
 
 const dashboardService = {
   getStats: async (params) => {
-    const [statsRes, upcomingRes, overdueRes, activityRes] = await Promise.allSettled([
+    const [statsRes, upcomingRes, overdueRes, activityRes, leadsRes] = await Promise.allSettled([
       axiosInstance.get(API_ENDPOINTS.DASHBOARD.STATS, { params }),
       axiosInstance.get(API_ENDPOINTS.LEADS.UPCOMING, { params }),
       axiosInstance.get(API_ENDPOINTS.LEADS.OVERDUE, { params }),
       axiosInstance.get(API_ENDPOINTS.DASHBOARD.ACTIVITY, { params }),
+      axiosInstance.get(API_ENDPOINTS.LEADS.LIST, { params: { ...params, size: 10000 } }),
     ]);
 
     const statsData = extractData(statsRes);
@@ -162,16 +164,53 @@ const dashboardService = {
     const upcomingData = extractData(upcomingRes);
     const overdueData = extractData(overdueRes);
     const activityData = extractData(activityRes);
+    const leadsRaw = extractData(leadsRes);
+    const leads = leadsRaw?.leads || leadsRaw?.content || (Array.isArray(leadsRaw) ? leadsRaw : []);
+
+    let hotCount = 0;
+    let warmCount = 0;
+    let coldCount = 0;
+
+    leads.forEach(l => {
+      const statusUpper = (l.status || "").toUpperCase();
+      const opinionUpper = (l.opinion || l.temperature || "").toUpperCase();
+      if (statusUpper === "HOT" || opinionUpper === "HOT" || opinionUpper === "INTERESTED") {
+        hotCount++;
+      } else if (statusUpper === "COLD" || opinionUpper === "COLD" || opinionUpper === "NOT INTERESTED") {
+        coldCount++;
+      } else {
+        warmCount++;
+      }
+    });
+
+    if (statsData.overall) {
+      statsData.overall.hot = hotCount;
+      statsData.overall.warm = warmCount;
+      statsData.overall.cold = coldCount;
+    } else {
+      statsData.hot = hotCount;
+      statsData.warm = warmCount;
+      statsData.cold = coldCount;
+    }
+
+    const pipelineData = [
+      { stage: "ENQUIRY", count: leads.filter(l => ["ENQUIRY", "NEW"].includes((l.status || "").toUpperCase())).length },
+      { stage: "CONTACTED", count: leads.filter(l => ["COLD", "WARM", "CONTACTED", "IN_PROGRESS", "IN-PROGRESS", "FOLLOW_UP", "FOLLOWUP"].includes((l.status || "").toUpperCase())).length },
+      { stage: "QUALIFIED", count: leads.filter(l => ["HOT", "INTERESTED", "QUALIFIED"].includes((l.status || "").toUpperCase())).length },
+      { stage: "APPLICATION", count: leads.filter(l => ["APPLICATION", "APPLIED"].includes((l.status || "").toUpperCase()) || ["APPLICATION", "APPLIED"].includes((l.stage || "").toUpperCase())).length },
+      { stage: "ADMISSION", count: leads.filter(l => ["ENROLLED", "ADMISSION", "ADMITTED", "COMPLETED"].includes((l.status || "").toUpperCase())).length }
+    ];
 
     return {
       stats: normalizeStats(statsData),
       temperature: normalizeTemperature(statsData),
       charts: {
         sourceAnalytics: normalizeSourceAnalytics(statsData),
-        pipeline: normalizePipeline(statsData),
+        pipeline: pipelineData,
         temperatureBreakdown: [
-          { label: "Hot", value: statsData.overall?.hot || statsData.hot || 0 },
-          { label: "Cold", value: statsData.overall?.cold || statsData.cold || 0 }
+          { label: "Hot", value: hotCount },
+          { label: "Warm", value: warmCount },
+          { label: "Cold", value: coldCount }
         ],
         monthlyTrend: statsData.monthlyTrend || statsData.trend || [],
       },

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { KPICard } from "@/components/dashboard-ui/KPICard";
-import { Users, Snowflake, Flame, CheckCircle2, PhoneMissed, RefreshCcw } from "lucide-react";
+import { Users, Snowflake, Flame, Sun, CheckCircle2, PhoneMissed, RefreshCcw } from "lucide-react";
 
 const kpiConfig = [
   {
@@ -10,22 +10,24 @@ const kpiConfig = [
     label: "All Leads",
     icon: Users,
     variant: "blue",
-
-  },
-  {
-    key: "cold",
-    label: "Cold Leads",
-    icon: Snowflake,
-    variant: "blue",
-
-
   },
   {
     key: "hot",
     label: "Hot Leads",
     icon: Flame,
     variant: "danger",
-
+  },
+  {
+    key: "warm",
+    label: "Warm Leads",
+    icon: Sun,
+    variant: "warning",
+  },
+  {
+    key: "cold",
+    label: "Cold Leads",
+    icon: Snowflake,
+    variant: "blue",
   },
   {
     key: "alloted",
@@ -39,13 +41,6 @@ const kpiConfig = [
     label: "Not Consulted",
     icon: PhoneMissed,
     variant: "primary",
-
-  },
-  {
-    key: "opinion-reassign",
-    label: "Opinion Reassign",
-    icon: RefreshCcw,
-    variant: "default",
 
   },
 ];

@@ -2,7 +2,9 @@ import React from "react";
 import { StickyNote, MessageSquare, CheckCircle, Clock } from "lucide-react";
 
 export default function NotesTab({ call }) {
-  const notesText = call?.notes || "Student is interested in B.Tech Computer Science. Requested fee structure brochure on WhatsApp. Follow up tomorrow for seat confirmation.";
+  const notesText = call?.telecallerNotes || call?.notes || call?.remarks || call?.comment || call?.discussion || call?.description || null;
+  const interestLevel = call?.interestLevel || call?.temperature || null;
+  const followUp = call?.scheduledDate || call?.nextFollowUp || call?.followupDate || null;
 
   return (
     <div className="py-2 space-y-4 font-outfit">
@@ -18,19 +20,25 @@ export default function NotesTab({ call }) {
           <span className="text-[10px] font-mono text-amber-700 ml-auto">Logged by Telecaller</span>
         </div>
         <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-wrap font-medium">
-          {notesText}
+          {notesText || "No discussion notes recorded for this call."}
         </p>
 
-        <div className="mt-4 pt-3 border-t border-amber-200/60 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <div className="flex items-center gap-1.5 text-amber-900 font-semibold">
-            <CheckCircle size={13} className="text-emerald-600" />
-            <span>Interest Level: High (Hot Lead)</span>
+        {(interestLevel || followUp) && (
+          <div className="mt-4 pt-3 border-t border-amber-200/60 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            {interestLevel && (
+              <div className="flex items-center gap-1.5 text-amber-900 font-semibold">
+                <CheckCircle size={13} className="text-emerald-600" />
+                <span>Interest Level: {interestLevel}</span>
+              </div>
+            )}
+            {followUp && (
+              <div className="flex items-center gap-1.5 text-amber-900 font-semibold">
+                <Clock size={13} className="text-blue-600" />
+                <span>Follow-up: {followUp}</span>
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-1.5 text-amber-900 font-semibold">
-            <Clock size={13} className="text-blue-600" />
-            <span>Follow-up: Scheduled for Tomorrow</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

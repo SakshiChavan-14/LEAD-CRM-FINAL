@@ -29,8 +29,41 @@ const leadService = {
   },
 
   getLeadNotes: async (leadId) => {
-    const { data } = await axiosInstance.get(API_ENDPOINTS.LEADS.NOTES(leadId));
-    return data.data;
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.LEADS.NOTES(leadId));
+      const res = data?.data ?? data;
+      if (Array.isArray(res) && res.length > 0) return res;
+    } catch (e) {
+      console.warn("Could not fetch from admin lead notes:", e);
+    }
+    
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.TELECALLER.LEAD_NOTES(leadId));
+      const res = data?.data ?? data;
+      if (Array.isArray(res) && res.length > 0) return res;
+    } catch (e) {
+      console.warn("Could not fetch from telecaller lead notes:", e);
+    }
+
+    try {
+      const { data } = await axiosInstance.get(API_ENDPOINTS.LEADS.DETAIL(leadId));
+      const raw = data?.data ?? data;
+      if (Array.isArray(raw?.notes) && raw.notes.length > 0) return raw.notes;
+      if (Array.isArray(raw?.calls) && raw.calls.length > 0) {
+        return raw.calls
+          .filter(c => c.telecallerNotes || c.notes || c.remarks || c.comment)
+          .map(c => ({
+            id: c.id || c.callId || c.interactionId,
+            content: c.telecallerNotes || c.notes || c.remarks || c.comment,
+            author: c.telecallerName || c.callerName || c.assignedTo || "Telecaller",
+            createdAt: c.createdAt || c.callDateTime || c.date
+          }));
+      }
+    } catch (e) {
+      console.warn("Could not fetch notes from lead details:", e);
+    }
+
+    return [];
   },
 
   assignLeads: async (payload) => {

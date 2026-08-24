@@ -120,6 +120,10 @@ const API_ENDPOINTS = {
       TOKEN: "/api/leads/telecaller/voice/token",
       RECORDING: (interactionId) => `/api/leads/telecaller/voice/recordings/${interactionId}`,
     }
+  },
+  TARGETS: {
+    LIST: "/api/leads/manager/targets",
+    UPDATE: "/api/leads/manager/targets",
   }
 };
  
