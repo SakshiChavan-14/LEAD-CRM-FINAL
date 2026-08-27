@@ -14,6 +14,10 @@ import MyLeadsTable from "@/features/telecaller/leads/components/MyLeadsTable";
 import TablePagination from "@/components/table/TablePagination";
 import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { useUrlState } from "@/hooks/useUrlState";
+
 const toTitleCase = (str) => {
   if (!str) return "-";
   return str
@@ -29,23 +33,29 @@ export default function TelecallerLeadsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const searchTerm = searchParams.get("search") || "";
-  
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const { navigateToDetail } = useDetailNavigation();
+  const { getParam, setParams } = useUrlState();
+
+  const searchTerm = getParam("search", "");
+  const page = parseInt(getParam("page", "0"), 10);
+  const size = parseInt(getParam("size", "10"), 10);
+  const viewMode = getParam("view", "list"); // 'list' or 'board'
+
+  const setPage = (p) => setParams({ page: p }, { resetPage: false });
+  const setSize = (s) => setParams({ size: s, page: 0 });
+  const setViewMode = (v) => setParams({ view: v }, { resetPage: false });
   
   // Read initial filters from URL search params
-  const [filters, setFilters] = useState(() => {
+  const filters = useMemo(() => {
     const initial = {};
     for (const key of FILTER_KEYS) {
       const val = searchParams.get(key);
       if (val) initial[key] = val;
     }
     return initial;
-  });
+  }, [searchParams]);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("list"); // 'list' or 'board'
 
   const querySize = viewMode === "board" ? 100 : size;
   const queryPage = viewMode === "board" ? 0 : page;
@@ -67,6 +77,8 @@ export default function TelecallerLeadsPage() {
     isLoading,
     error,
   } = useTelecallerLeads(combinedFilters, queryPage, querySize);
+
+  useScrollRestoration({ ready: !isLoading && data !== undefined });
 
   const voiceCtx = useVoice();
   const { data: serverFilterOptions } = useLeadFilterOptions();
@@ -111,25 +123,8 @@ export default function TelecallerLeadsPage() {
     };
   }, [serverFilterOptions, rawLeads]);
 
-  const updateUrlFilters = (updatedFilters) => {
-    const params = new URLSearchParams();
-    if (searchTerm) params.set("search", searchTerm);
-    Object.entries(updatedFilters).forEach(([k, v]) => {
-      if (v) params.set(k, v);
-    });
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
   const handleFilterChange = (key, value) => {
-    const updated = { ...filters };
-    if (value) {
-      updated[key] = value;
-    } else {
-      delete updated[key];
-    }
-    setFilters(updated);
-    setPage(0);
-    updateUrlFilters(updated);
+    setParams({ [key]: value, page: 0 });
   };
 
   const handleClearFilter = (key) => {
@@ -137,11 +132,9 @@ export default function TelecallerLeadsPage() {
   };
 
   const clearAllFilters = () => {
-    setFilters({});
-    setPage(0);
-    const params = new URLSearchParams();
-    if (searchTerm) params.set("search", searchTerm);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    const cleared = {};
+    FILTER_KEYS.forEach(k => { cleared[k] = null; });
+    setParams({ ...cleared, page: 0 });
   };
 
   const activeFilterKeys = Object.keys(filters).filter(k => filters[k]);
@@ -152,7 +145,7 @@ export default function TelecallerLeadsPage() {
   const totalPages = data?.totalPages ?? (Math.ceil(totalItems / size) || 1);
 
   const handleRowClick = (row) => {
-    router.push(`/telecaller/leads/${row.enquiryNo || row.id}`);
+    navigateToDetail(`/telecaller/leads/${row.enquiryNo || row.id}`);
   };
 
   const kpiData = useMemo(() => {

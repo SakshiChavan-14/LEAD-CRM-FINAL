@@ -13,17 +13,27 @@ import ConversionFunnel from "@/features/reports/components/ConversionFunnel";
 import SourceAnalyticsChart from "@/features/reports/components/SourceAnalyticsChart";
 import CourseAnalyticsChart from "@/features/reports/components/CourseAnalyticsChart";
 import TelecallerPerformanceSection from "@/features/reports/components/TelecallerPerformanceSection";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { useUrlState } from "@/hooks/useUrlState";
 
 export default function ReportsDashboard() {
-  // Date filters for From and To Range
-  const [fromDate, setFromDate] = useState(() => {
+  const { getParam, setParams } = useUrlState();
+
+  const defaultFromDate = useMemo(() => {
     const d = new Date();
-    d.setDate(1); // Default to 1st of current month
+    d.setDate(1);
     return d.toISOString().split("T")[0];
-  });
-  const [toDate, setToDate] = useState(() => {
+  }, []);
+
+  const defaultToDate = useMemo(() => {
     return new Date().toISOString().split("T")[0];
-  });
+  }, []);
+
+  const fromDate = getParam("fromDate", defaultFromDate);
+  const toDate = getParam("toDate", defaultToDate);
+
+  const setFromDate = (val) => setParams({ fromDate: val }, { resetPage: false });
+  const setToDate = (val) => setParams({ toDate: val }, { resetPage: false });
 
   // Fetch real data from dashboard stats API
   const { data: dashboardData, isLoading: isDashboardLoading } = useDashboardStats({
@@ -41,6 +51,8 @@ export default function ReportsDashboard() {
   const { data: rawReportData, isLoading: isRawLoading } = useDashboardRawData();
 
   const isLoading = isDashboardLoading || isTelecallersLoading || isRawLoading;
+
+  useScrollRestoration({ ready: !isLoading });
 
   // Calculate stats based on date range
   const reportData = useMemo(() => {

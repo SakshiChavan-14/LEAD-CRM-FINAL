@@ -15,8 +15,10 @@ import CallStatusBadge from "@/features/telecaller/voice/components/CallStatusBa
 import { useVoice } from "@/features/telecaller/voice/context/VoiceProvider";
 import UpdateLeadStatusAction from "@/features/telecaller/leads/components/UpdateLeadStatusAction";
 
+import { useNavigationBack } from "@/hooks/useNavigationBack";
+
 export default function TelecallerLeadDetailsClient({ enquiryNo }) {
-  const router = useRouter();
+  const { goBack } = useNavigationBack({ fallback: "/telecaller/leads" });
   const [isLogCallOpen, setIsLogCallOpen] = useState(false);
   const [isScheduleFollowupOpen, setIsScheduleFollowupOpen] = useState(false);
   const { postCallEnquiryNo, setPostCallEnquiryNo, callContext } = useVoice();
@@ -25,7 +27,7 @@ export default function TelecallerLeadDetailsClient({ enquiryNo }) {
   const { data: allFollowupsData } = useFollowups("all");
   const allFollowups = Array.isArray(allFollowupsData) ? allFollowupsData : [];
 
-  const handleBack = () => router.push("/telecaller/leads");
+  const handleBack = () => goBack();
 
   const { data: viewModel, isLoading, isError, error } = useLeadDetails(enquiryNo);
 

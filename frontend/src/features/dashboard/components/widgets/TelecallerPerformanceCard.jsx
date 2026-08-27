@@ -18,8 +18,9 @@ const AVATAR_STYLES = [
 
 const cardClass = "rounded-[24px] border border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-6 h-[420px] flex flex-col font-outfit justify-between overflow-hidden";
 
-export default function TelecallerPerformanceCard() {
+export default function TelecallerPerformanceCard({ telecallers, filterPeriod = "This Month" }) {
   const router = useRouter();
+  const { navigateToDetail } = useDetailNavigation();
 
   // Fetch telecallers from directory
   const { data: usersData, isLoading: isUsersLoading } = useUsers({ size: 50 });
@@ -181,7 +182,7 @@ export default function TelecallerPerformanceCard() {
                   return (
                     <tr
                       key={row.id || idx}
-                      onClick={() => router.push(`/dashboard/management/user-directory/${encodeURIComponent(row.empId || row.id)}`)}
+                      onClick={() => navigateToDetail(`/dashboard/management/user-directory/${encodeURIComponent(row.empId || row.id)}`)}
                       className="h-[60px] hover:bg-slate-50/90 transition-colors group cursor-pointer"
                     >
                       {/* Agent Cell */}

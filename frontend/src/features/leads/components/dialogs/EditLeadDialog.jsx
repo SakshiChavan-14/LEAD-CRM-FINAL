@@ -67,6 +67,7 @@ export default function EditLeadDialog({ open, onClose, lead }) {
     } else {
       formik.resetForm();
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, lead]);
 

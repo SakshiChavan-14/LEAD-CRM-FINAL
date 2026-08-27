@@ -6,6 +6,7 @@ import useAuthStore from "@/store/authStore";
 import { rankSearchResults } from "@/utils/searchRanking";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
 
 /**
  * Global Search Modal (API Search Mode)
@@ -83,14 +84,16 @@ export default function GlobalSearchModal({ isOpen, onClose }) {
     fetchAggregation();
   }, [debouncedSearch, addSearch]);
 
+  const { navigateToDetail } = useDetailNavigation();
+
   const handleItemClick = (item) => {
     onClose();
     if (item.type === "Lead") {
-      const isTelecallerPath = window.location.pathname.startsWith("/telecaller");
+      const isTelecallerPath = typeof window !== "undefined" && window.location.pathname.startsWith("/telecaller");
       if (isTelecallerPath) {
-        router.push(`/telecaller/leads/${item.id}`);
+        navigateToDetail(`/telecaller/leads/${item.id}`);
       } else {
-        router.push(`/dashboard/leads/${item.id}`);
+        navigateToDetail(`/dashboard/management/leads/${item.id}`);
       }
     }
   };

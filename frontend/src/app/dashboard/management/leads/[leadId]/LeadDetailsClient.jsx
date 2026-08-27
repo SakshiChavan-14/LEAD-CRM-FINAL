@@ -9,22 +9,23 @@ import LeadDetailsView from "@/features/leads/components/views/LeadDetailsView";
 import AssignLeadAction from "@/features/leads/components/assignments/AssignLeadAction";
 import { useConfirm } from "@/hooks/useConfirm";
 
+import { useNavigationBack } from "@/hooks/useNavigationBack";
+
 export default function LeadDetailsClient({ leadId }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
   const telecallerId = searchParams.get("userId");
   const backUrl = searchParams.get("backUrl");
   const confirm = useConfirm();
 
+  const fallback = from === "telecaller" && telecallerId 
+    ? `/dashboard/management/user-directory/${telecallerId}`
+    : backUrl || "/dashboard/management/leads";
+
+  const { goBack, hasReturnTo } = useNavigationBack({ fallback });
+
   const handleBack = () => {
-    if (backUrl) {
-      router.push(backUrl);
-    } else if (from === "telecaller" && telecallerId) {
-      router.push(`/dashboard/management/user-directory/${telecallerId}`);
-    } else {
-      router.push("/dashboard/management/leads");
-    }
+    goBack();
   };
 
   const { data: rawData, isLoading, isError, error } = useLeadDetails(leadId);
@@ -61,7 +62,7 @@ export default function LeadDetailsClient({ leadId }) {
           className="px-3.5 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-xl transition-all flex items-center gap-2 text-xs font-bold text-slate-700 shadow-2xs cursor-pointer active:scale-95"
         >
           <ArrowLeft size={15} />
-          {backUrl ? "Back" : "Back to Leads"}
+          {backUrl || hasReturnTo ? "Back" : "Back to Leads"}
         </button>
       </div>
 

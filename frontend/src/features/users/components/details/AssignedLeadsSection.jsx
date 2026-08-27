@@ -21,8 +21,10 @@ const TEMP_STYLES = {
   COLD: { bg: "bg-blue-50 border-blue-200 text-blue-700", icon: Snowflake, color: "text-blue-500" },
 };
 
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
+
 export default function AssignedLeadsSection({ leads, userId }) {
-  const router = useRouter();
+  const { navigateToDetail } = useDetailNavigation();
   const [filters] = useState({ page: 0, size: 50 });
 
   const { data, isError } = useTelecallerAssignedLeads(userId, filters);
@@ -81,7 +83,7 @@ export default function AssignedLeadsSection({ leads, userId }) {
                 return (
                   <tr
                     key={lead.enquiryNo || idx}
-                    onClick={() => router.push(`/dashboard/management/leads/${lead.enquiryNo}?from=telecaller&userId=${userId}`)}
+                    onClick={() => navigateToDetail(`/dashboard/management/leads/${lead.enquiryNo}?from=telecaller&userId=${userId}`)}
                     className="h-[56px] hover:bg-slate-50/80 transition-colors cursor-pointer group"
                   >
                     {/* Enquiry No */}

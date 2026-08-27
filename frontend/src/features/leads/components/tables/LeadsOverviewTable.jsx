@@ -10,6 +10,8 @@ import { useLeadCounts } from "@/features/leads/hooks/useLeadCounts";
 import useUsers from "@/features/users/hooks/useUsers";
 import { useAssignLeads } from "@/features/leads/hooks/useAssignLeads";
 import { FILTER_CONFIG } from "@/features/leads/constants/filterConfig";
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
 
 import ReusableFilterDrawer from "@/components/layout/ReusableFilterDrawer";
 import LeadFilters from "@/features/leads/components/filters/LeadFilters";
@@ -34,7 +36,7 @@ const FILTER_LABELS = {
 
 import FilterToolbar from "@/components/management/FilterToolbar";
 
-export default function LeadsOverviewTable({ filters, actions, search }) {
+export default function LeadsOverviewTable({ filters, actions, search, onDataReady }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
@@ -80,6 +82,12 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
   // Call hook with the correct signature: ({ filters, page, size, sort })
   const query = useLeadOverview({ filters: subFilters, page: queryPage, size: querySize, sort });
   const { data, isLoading, isError, error, isFetching } = query;
+
+  React.useEffect(() => {
+    if (onDataReady) {
+      onDataReady(!isLoading && data !== undefined);
+    }
+  }, [isLoading, data, onDataReady]);
 
   const rawLeadsData = data?.leads || [];
   
@@ -193,11 +201,11 @@ export default function LeadsOverviewTable({ filters, actions, search }) {
   }, []);
 
   // Table Handlers
-  const router = useRouter();
+  const { navigateToDetail } = useDetailNavigation();
 
   const handleRowClick = useCallback((lead) => {
-    router.push(`/dashboard/management/leads/${lead.enquiryNo}`);
-  }, [router]);
+    navigateToDetail(`/dashboard/management/leads/${lead.enquiryNo}`);
+  }, [navigateToDetail]);
 
   const handleAssign = useCallback((telecallerId) => {
     assignLeads({

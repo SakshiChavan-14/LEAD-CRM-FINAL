@@ -1,16 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
 import TelecallerLeaderboard from "./TelecallerLeaderboard";
 import MonthlyPerformanceTable from "./MonthlyPerformanceTable";
-// TelecallerDetailDrawer is kept for rollback — uncomment + restore state to revert
-// import TelecallerDetailDrawer from "./TelecallerDetailDrawer";
 
 export default function TelecallerPerformanceSection({ data, isLoading, range = "this-month" }) {
-  const router = useRouter();
+  const { navigateToDetail } = useDetailNavigation();
 
   const handleRowClick = (telecaller) => {
-    router.push(
+    navigateToDetail(
       `/dashboard/reports/telecaller/${telecaller.id}?range=${range}`
     );
   };

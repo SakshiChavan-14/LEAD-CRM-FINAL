@@ -13,12 +13,18 @@ import RecentCallLogsSection from "./RecentCallLogsSection";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import { breadcrumbs } from "@/config/breadcrumbs";
 
+import { ArrowLeft } from "lucide-react";
+import { useNavigationBack } from "@/hooks/useNavigationBack";
+
 export default function TelecallerDetailsView({
   userId,
   telecaller,
   isLoading,
   isError,
 }) {
+  const { goBack, hasReturnTo } = useNavigationBack({
+    fallback: "/dashboard/management/user-directory",
+  });
   if (isLoading) {
     return (
       <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit space-y-6">
@@ -41,6 +47,16 @@ export default function TelecallerDetailsView({
 
   return (
     <div className="py-6 px-4 sm:px-6 max-w-[1600px] mx-auto w-full font-outfit space-y-6">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={goBack}
+          className="px-3.5 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-xl transition-all flex items-center gap-2 text-xs font-bold text-slate-700 shadow-2xs cursor-pointer active:scale-95"
+        >
+          <ArrowLeft size={15} />
+          {hasReturnTo ? "Back" : "Back to User Directory"}
+        </button>
+      </div>
+
       <ManagementHeader
         title="Performance Dashboard"
         description="View telecaller profile, performance analytics, and workload."

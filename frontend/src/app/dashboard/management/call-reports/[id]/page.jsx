@@ -10,10 +10,11 @@ import StitchKPISection from "@/features/callReports/components/ui/StitchKPISect
 import StitchFilterToolbar from "@/features/callReports/components/filters/StitchFilterToolbar";
 import StitchCallReportTable from "@/features/callReports/components/tables/StitchCallReportTable";
 import TablePagination from "@/components/table/TablePagination";
+import { useNavigationBack } from "@/hooks/useNavigationBack";
 
 export default function TelecallerCallLogsPage() {
   const { id: userId } = useParams();
-  const router = useRouter();
+  const { goBack } = useNavigationBack({ fallback: "/dashboard/management/call-reports" });
 
   const [filters, setFilters] = useState({
     search: "",
@@ -175,7 +176,7 @@ export default function TelecallerCallLogsPage() {
       <StitchHeader 
         title={telecallerName} 
         subtitle="Detailed call logs, outcomes, recording playbacks and performance analytics" 
-        onBack={() => router.push("/dashboard/management/call-reports")}
+        onBack={goBack}
       />
       
       <StitchKPISection data={kpiData} isLoading={isLoading || isKPILoading} />

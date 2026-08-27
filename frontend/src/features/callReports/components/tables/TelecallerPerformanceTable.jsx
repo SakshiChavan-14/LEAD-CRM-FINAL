@@ -13,6 +13,10 @@ import CallReportsStats from "../ui/CallReportsStats";
 import CallReportsFilters from "../filters/CallReportsFilters";
 import CallReportsTable from "./CallReportsTable";
 
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { useUrlState } from "@/hooks/useUrlState";
+
 function parseDurationToSeconds(dur) {
   if (typeof dur === "number") return dur;
   if (typeof dur !== "string" || !dur) return 0;
@@ -32,17 +36,26 @@ function formatDuration(s) {
 }
 
 export default function TelecallerPerformanceTable() {
-  const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState("");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const { navigateToDetail } = useDetailNavigation();
+  const { getParam, setParams } = useUrlState();
+
+  const search = getParam("search", "");
+  const selectedDate = getParam("date", "");
+  const page = parseInt(getParam("page", "0"), 10);
+  const pageSize = parseInt(getParam("size", "10"), 10);
+
+  const setSearch = (val) => setParams({ search: val, page: 0 });
+  const setSelectedDate = (val) => setParams({ date: val, page: 0 });
+  const setPage = (p) => setParams({ page: p }, { resetPage: false });
+  const setPageSize = (s) => setParams({ size: s, page: 0 });
 
   const { data, isLoading, isError } = useCallReportsSummary(
     { date: selectedDate, search },
     page,
     pageSize
   );
+
+  useScrollRestoration({ ready: !isLoading && data !== undefined });
 
   const rawRows = Array.isArray(data?.content)
     ? data.content
@@ -83,7 +96,7 @@ export default function TelecallerPerformanceTable() {
   const handleRowClick = (row) => {
     const id = row.userId ?? row.slNo ?? row.id ?? row.empId;
     if (id) {
-      router.push(`/dashboard/management/call-reports/${id}`);
+      navigateToDetail(`/dashboard/management/call-reports/${id}`);
     }
   };
 

@@ -15,8 +15,10 @@ const RANK_COLORS = [
   "text-slate-300",
 ];
 
+import { useNavigationBack } from "@/hooks/useNavigationBack";
+
 export default function TelecallerHeader({ telecaller, id, range = "this-month", exportMode = false }) {
-  const router = useRouter();
+  const { goBack } = useNavigationBack({ fallback: "/dashboard/reports" });
   const toast = useAppToast();
   const [isExporting, setIsExporting] = useState(false);
 
@@ -33,15 +35,7 @@ export default function TelecallerHeader({ telecaller, id, range = "this-month",
     .toUpperCase();
 
   const handleBack = () => {
-    try {
-      if (window.history.length > 1) {
-        router.back();
-      } else {
-        router.push("/dashboard/reports");
-      }
-    } catch {
-      router.push("/dashboard/reports");
-    }
+    goBack();
   };
 
   const handleExport = async (format = "pdf") => {

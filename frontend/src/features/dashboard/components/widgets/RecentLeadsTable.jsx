@@ -3,8 +3,7 @@
 import React from "react";
 import { Users, ExternalLink, Sparkles, Phone } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { EmptyState } from "@/components/dashboard-ui/EmptyState";
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
 
 const STATUS_STYLES = {
   ENQUIRY: "bg-blue-50 text-blue-700 border-blue-200/80",
@@ -30,7 +29,7 @@ const SOURCE_COLORS = {
 const cardClass = "rounded-[24px] border border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 p-6 h-[420px] flex flex-col font-outfit justify-between overflow-hidden";
 
 export default function RecentLeadsTable({ recentLeads }) {
-  const router = useRouter();
+  const { navigateToDetail } = useDetailNavigation();
 
   if (recentLeads?.error) {
     return (
@@ -99,7 +98,7 @@ export default function RecentLeadsTable({ recentLeads }) {
                   return (
                     <tr 
                       key={lead.id || index}
-                      onClick={() => lead.id && router.push(`/dashboard/management/leads/${lead.id}`)}
+                      onClick={() => lead.id && navigateToDetail(`/dashboard/management/leads/${lead.id}`)}
                       className="h-[60px] hover:bg-slate-50/80 transition-colors group cursor-pointer"
                     >
                       {/* Lead Info */}

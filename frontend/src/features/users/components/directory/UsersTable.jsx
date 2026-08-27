@@ -5,7 +5,9 @@ import { useState, useMemo } from "react";
 import { TableSkeleton } from "@/components/ui/Skeletons";
 import TableCard from "@/components/table/TableCard";
 
-import { useRouter } from "next/navigation";
+import { useDetailNavigation } from "@/hooks/useDetailNavigation";
+import { useScrollRestoration } from "@/hooks/useScrollRestoration";
+import { useUrlState } from "@/hooks/useUrlState";
 
 import useInfiniteUsers from "../../hooks/useInfiniteUsers";
 
@@ -15,9 +17,14 @@ import UserDirectoryTable from "./UserDirectoryTable";
 import UserPagination from "../ui/UserPagination";
 
 export default function UsersTable() {
-  const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const { navigateToDetail } = useDetailNavigation();
+  const { getParam, setParams } = useUrlState();
+
+  const search = getParam("search", "");
+  const status = getParam("status", "");
+
+  const setSearch = (val) => setParams({ search: val }, { resetPage: false });
+  const setStatus = (val) => setParams({ status: val }, { resetPage: false });
 
   const {
     data,
@@ -32,6 +39,8 @@ export default function UsersTable() {
     search,
     status,
   });
+
+  useScrollRestoration({ ready: !isLoading && data !== undefined });
 
   const usersData = useMemo(() => {
     return data?.pages?.flatMap(page => page?.users ?? page?.content ?? []) ?? [];
@@ -65,7 +74,7 @@ export default function UsersTable() {
       <TableCard>
         <UserDirectoryTable 
           users={usersData} 
-          onView={(user) => router.push(`/dashboard/management/user-directory/${user.empId}`)} 
+          onView={(user) => navigateToDetail(`/dashboard/management/user-directory/${user.empId}`)} 
         />
         
         {totalResults > 0 && (
