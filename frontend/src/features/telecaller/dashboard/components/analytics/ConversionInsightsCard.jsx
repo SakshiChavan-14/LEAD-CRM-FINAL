@@ -1,32 +1,40 @@
+import React from "react";
 import EmptyState from "@/components/ui/EmptyState";
-import { TrendingUp, AlertTriangle, HelpCircle } from "lucide-react";
+import { TrendingUp, AlertTriangle, HelpCircle, ChevronRight, Info } from "lucide-react";
+
 export default function ConversionInsightsCard({ isLoading, data }) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 min-h-[300px] animate-pulse font-outfit">
+      <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 min-h-[340px] animate-pulse font-outfit">
         <div className="h-5 w-48 bg-slate-100 rounded mb-6" />
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+        <div className="grid grid-cols-5 gap-2 mb-6">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-28 bg-slate-50 rounded-xl" />
+            <div key={i} className="h-20 bg-slate-50 rounded-xl" />
           ))}
         </div>
+        <div className="h-16 bg-slate-50 rounded-2xl" />
       </div>
     );
   }
 
   if (!isLoading && (!data || (!data.assigned && !data.converted))) {
     return (
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 min-h-[300px] font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
-            <TrendingUp size={16} />
+      <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 min-h-[340px] font-outfit flex flex-col justify-between">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+              <TrendingUp size={16} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 leading-tight">Conversion Funnel & Insights</h2>
+              <p className="text-[11px] text-slate-400 font-medium mt-0.5">End-to-end pipeline progression</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-sm font-extrabold text-slate-900 leading-none">Conversion Funnel & Insights</h2>
-            <p className="text-[11px] text-slate-400 font-medium mt-0.5">End-to-end pipeline progression</p>
-          </div>
+          <button className="text-slate-400 hover:text-slate-600 p-1" title="Pipeline progression details">
+            <Info size={16} />
+          </button>
         </div>
-        <div className="flex-grow flex items-center justify-center mt-5">
+        <div className="flex-grow flex items-center justify-center py-8">
           <EmptyState title="No conversion funnel data available" description="End-to-end pipeline progression metrics will appear here." />
         </div>
       </div>
@@ -39,15 +47,15 @@ export default function ConversionInsightsCard({ isLoading, data }) {
     interested: 0,
     followups: 0,
     converted: 0,
-    conversionRate: 0
+    conversionRate: 0,
   };
 
   const stages = [
-    { name: "Assigned", value: safeData.assigned || 0, color: "bg-blue-600", text: "text-blue-600" },
-    { name: "Contacted", value: safeData.contacted || 0, color: "bg-cyan-600", text: "text-cyan-600" },
-    { name: "Interested", value: safeData.interested || 0, color: "bg-purple-600", text: "text-purple-600" },
-    { name: "Follow-up", value: safeData.followups || 0, color: "bg-amber-500", text: "text-amber-600" },
-    { name: "Converted", value: safeData.converted || 0, color: "bg-emerald-600", text: "text-emerald-600" },
+    { name: "Assigned", value: safeData.assigned || 0, bg: "bg-blue-50/70", border: "border-blue-200/80", text: "text-blue-700" },
+    { name: "Contacted", value: safeData.contacted || 0, bg: "bg-cyan-50/70", border: "border-cyan-200/80", text: "text-cyan-700" },
+    { name: "Interested", value: safeData.interested || 0, bg: "bg-purple-50/70", border: "border-purple-200/80", text: "text-purple-700" },
+    { name: "Follow-up", value: safeData.followups || 0, bg: "bg-amber-50/70", border: "border-amber-200/80", text: "text-amber-700" },
+    { name: "Converted", value: safeData.converted || 0, bg: "bg-emerald-50/70", border: "border-emerald-200/80", text: "text-emerald-700" },
   ];
 
   // Calculate drop-off rates between adjacent stages
@@ -83,71 +91,77 @@ export default function ConversionInsightsCard({ isLoading, data }) {
     }
   });
 
-  const totalDropOff = safeData.assigned > 0 ? Math.round(((safeData.assigned - safeData.converted) / safeData.assigned) * 100) : 87;
+  const totalDropOff = safeData.assigned > 0 ? Math.round(((safeData.assigned - safeData.converted) / safeData.assigned) * 100) : 78;
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 min-h-[300px] font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
-          <TrendingUp size={16} />
+    <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 min-h-[340px] font-outfit hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/70 shrink-0">
+            <TrendingUp size={16} />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 leading-tight">Conversion Funnel & Insights</h2>
+            <p className="text-[11px] text-slate-400 font-medium mt-0.5">End-to-end pipeline progression</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-sm font-extrabold text-slate-900 leading-none">Conversion Funnel & Insights</h2>
-          <p className="text-[11px] text-slate-400 font-medium mt-0.5">End-to-end pipeline progression</p>
-        </div>
+        <button className="text-slate-400 hover:text-slate-600 p-1" title="Pipeline progression details">
+          <Info size={16} />
+        </button>
       </div>
 
-      {/* Funnel Steps */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-        {funnelSteps.map((step, idx) => {
-          return (
-            <div key={idx} className="relative flex flex-col items-center">
-              {/* Funnel Block */}
-              <div className="w-full bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 flex flex-col items-center text-center shadow-2xs relative group hover:border-blue-300 hover:bg-white transition-all duration-200 cursor-pointer">
-                <div className={`w-7 h-7 rounded-xl ${step.color} text-white flex items-center justify-center font-extrabold text-xs mb-2 shadow-2xs`}>
-                  {idx + 1}
-                </div>
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{step.name}</span>
-                <span className="text-xl font-mono font-extrabold text-slate-900 mt-1">{step.value}</span>
-                <span className="text-[10px] font-mono font-bold text-slate-400 mt-0.5">({step.overallPercentage}%)</span>
-              </div>
+      {/* Funnel Steps Connected with Chevrons */}
+      <div className="flex items-center justify-between gap-1 sm:gap-2 my-4 w-full overflow-x-auto [scrollbar-width:none]">
+        {funnelSteps.map((step, idx) => (
+          <React.Fragment key={idx}>
+            <div className={`flex-1 min-w-[58px] ${step.bg} border ${step.border} rounded-2xl p-2.5 sm:p-3 flex flex-col items-center text-center shadow-2xs transition-all duration-200 hover:scale-[1.02]`}>
+              <span className={`text-[10px] sm:text-[11px] font-bold ${step.text} truncate`}>{step.name}</span>
+              <span className="text-base sm:text-lg font-bold text-slate-900 mt-0.5 leading-tight">{step.value}</span>
+              <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400 mt-0.5">({step.overallPercentage}%)</span>
             </div>
-          );
-        })}
+            {idx < funnelSteps.length - 1 && (
+              <ChevronRight size={14} className="text-slate-300 shrink-0" />
+            )}
+          </React.Fragment>
+        ))}
       </div>
 
       {/* Stats and Insights Panel */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs border border-emerald-200/60">
-            <TrendingUp size={20} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 bg-slate-50/60 border border-slate-200/70 rounded-2xl p-3 shrink-0">
+        {/* 1. Conversion Rate */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-2xs border border-emerald-200/60 shrink-0">
+            <TrendingUp size={16} />
           </div>
-          <div>
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Conversion Rate</p>
-            <p className="text-base font-mono font-extrabold text-slate-900">{safeData.conversionRate || 0}%</p>
-            <p className="text-[10px] font-medium text-slate-400">Assigned to Enrolled</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-x border-slate-200/80 sm:px-4 pt-3 sm:pt-0">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shadow-2xs border border-rose-200/60">
-            <AlertTriangle size={20} />
-          </div>
-          <div>
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Overall Drop-off</p>
-            <p className="text-base font-mono font-extrabold text-slate-900">{totalDropOff}%</p>
-            <p className="text-[10px] font-medium text-slate-400">Leads lost along funnel</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Conversion Rate</p>
+            <p className="text-sm font-bold text-slate-900 leading-tight">{safeData.conversionRate || 0}%</p>
+            <p className="text-[9px] font-medium text-slate-400 truncate">Assigned to Enrolled</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 border-t sm:border-t-0 border-slate-200/80 sm:pl-4 pt-3 sm:pt-0">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-2xs border border-blue-200/60">
-            <HelpCircle size={20} />
+        {/* 2. Overall Drop-off */}
+        <div className="flex items-center gap-2.5 border-t sm:border-t-0 sm:border-x border-slate-200/70 sm:px-3 pt-2 sm:pt-0">
+          <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shadow-2xs border border-rose-200/60 shrink-0">
+            <AlertTriangle size={16} />
           </div>
-          <div>
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Best Stage Retention</p>
-            <p className="text-base font-extrabold text-slate-900">{bestStageName}</p>
-            <p className="text-[10px] font-medium text-slate-400">Highest progression ({highestRetention}%)</p>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Overall Drop-off</p>
+            <p className="text-sm font-bold text-slate-900 leading-tight">{totalDropOff}%</p>
+            <p className="text-[9px] font-medium text-slate-400 truncate">Leads lost along funnel</p>
+          </div>
+        </div>
+
+        {/* 3. Best Stage Retention */}
+        <div className="flex items-center gap-2.5 border-t sm:border-t-0 border-slate-200/70 sm:pl-2 pt-2 sm:pt-0">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-2xs border border-blue-200/60 shrink-0">
+            <HelpCircle size={16} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Best Stage Retention</p>
+            <p className="text-sm font-bold text-slate-900 leading-tight truncate">{bestStageName}</p>
+            <p className="text-[9px] font-medium text-slate-400 truncate">Highest progression ({highestRetention}%)</p>
           </div>
         </div>
       </div>
