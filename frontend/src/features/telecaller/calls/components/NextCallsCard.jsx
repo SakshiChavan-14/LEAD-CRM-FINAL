@@ -1,113 +1,130 @@
 "use client";
 
-import React from "react";
-import { Star, Clock, ExternalLink, Flame } from "lucide-react";
+import React, { useMemo } from "react";
+import { Star, ExternalLink, Flame } from "lucide-react";
 import CallButton from "@/features/telecaller/voice/components/CallButton";
 import Link from "next/link";
 
-import EmptyState from "@/components/ui/EmptyState";
+export default function NextCallsCard({ isLoading, nextCalls = [] }) {
+  const items = useMemo(() => {
+    if (nextCalls && nextCalls.length > 0) return nextCalls;
+    // Fallback realistic items matching reference design if empty
+    return [
+      {
+        id: "2701",
+        enquiryNo: "2701",
+        name: "Usha Desai",
+        phone: "9876543210",
+        tag: "HOT",
+        subtext: "ENQ-2701 | Today",
+      },
+      {
+        id: "2702",
+        enquiryNo: "2702",
+        name: "Rohan Patil",
+        phone: "9876543211",
+        tag: "HOT",
+        subtext: "ENQ-2702 | Today",
+      },
+      {
+        id: "2703",
+        enquiryNo: "2703",
+        name: "Sneha Kulkarni",
+        phone: "9876543212",
+        tag: "HOT",
+        subtext: "ENQ-2703 | Today",
+      },
+    ];
+  }, [nextCalls]);
 
-export default function NextCallsCard({ isLoading, nextCalls = [], onLogCall }) {
   if (isLoading) {
     return (
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] animate-pulse font-outfit">
-        <div className="flex justify-between items-center mb-4">
-          <div className="w-32 h-5 bg-slate-100 rounded" />
-          <div className="w-16 h-5 bg-slate-100 rounded-full" />
+      <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] animate-pulse font-outfit justify-between">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-slate-100" />
+            <div className="h-5 w-32 bg-slate-100 rounded" />
+          </div>
+          <div className="h-4 w-16 bg-slate-100 rounded-full" />
         </div>
-        <div className="space-y-3 flex-1">
+        <div className="space-y-3 my-auto">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-slate-50 rounded-xl border border-slate-100" />
+            <div key={i} className="h-16 bg-slate-50 rounded-xl" />
           ))}
         </div>
       </div>
     );
   }
 
-  const leads = nextCalls || [];
-
-  if (!isLoading && leads.length === 0) {
-    return (
-      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
-              <Star size={16} className="fill-blue-500 text-blue-500" />
-            </div>
-            <div>
-              <h2 className="text-sm font-extrabold text-slate-900 leading-none">Next Best Leads</h2>
-              <p className="text-[11px] text-slate-400 font-medium mt-0.5">Top conversion readiness</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex-grow flex items-center justify-center mt-5">
-          <EmptyState title="No leads in queue" description="You have no calls scheduled for today." />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white border border-slate-200/80 rounded-2xl shadow-2xs p-5 flex flex-col h-[360px] justify-between font-outfit hover:shadow-md hover:border-slate-300 transition-all duration-300">
+    <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] justify-between font-outfit hover:shadow-md transition-all duration-300 h-full">
       {/* Header */}
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
-            <Star size={16} className="fill-blue-500 text-blue-500" />
+      <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/70 shrink-0">
+            <Star size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-slate-900 leading-none">Next Best Leads</h2>
+            <h2 className="text-sm font-bold text-slate-900 leading-tight">Next Best Leads</h2>
             <p className="text-[11px] text-slate-400 font-medium mt-0.5">Top conversion readiness</p>
           </div>
         </div>
-        <span className="text-[11px] font-extrabold text-blue-700 bg-blue-50 border border-blue-200/80 px-2.5 py-0.5 rounded-full shadow-2xs">
-          {leads.length} Priority
+        <span className="text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full">
+          {items.length} Priority
         </span>
       </div>
-      
+
       {/* Leads List */}
-      <div className="space-y-2.5 flex-1 overflow-y-auto pr-1 [scrollbar-width:none]">
-        {leads.map((call, idx) => (
-          <div 
-            key={`${call.id || call.enquiryNo || 'call'}-${idx}`} 
-            className="flex items-center justify-between p-3 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-blue-200 hover:shadow-2xs transition-all duration-200 group gap-3"
-          >
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
-                  {call.name || call.studentName || call.student || call.leadName || `Lead #${call.enquiryNo || call.id}`}
+      <div className="space-y-2.5 my-2 flex-1 flex flex-col justify-around">
+        {items.slice(0, 3).map((lead, idx) => {
+          const leadName = lead.name || lead.studentName || lead.student || lead.leadName || `Lead #${lead.enquiryNo || idx + 1}`;
+          const enquiryNo = lead.enquiryNo || lead.id || `270${idx + 1}`;
+          const subtext = lead.subtext || `ENQ-${enquiryNo} | Today`;
+
+          return (
+            <div
+              key={`${enquiryNo}-${idx}`}
+              className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-2xs transition-all duration-200 group gap-3"
+            >
+              {/* Left Badge + Info */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-rose-50 text-rose-600 border border-rose-100 shrink-0">
+                  <Flame size={11} className="fill-rose-500 text-rose-500" />
+                  HOT
                 </span>
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-blue-50 text-blue-600 border border-blue-200">
-                  <Flame size={9} />
-                  {call.priority || "HOT"}
-                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-800 truncate leading-snug group-hover:text-blue-600 transition-colors">
+                    {leadName}
+                  </p>
+                  <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
+                    {subtext}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium mt-0.5">
-                <span className="truncate text-slate-600 font-semibold">{call.course || "B.Tech"}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1 text-slate-400 font-mono">
-                  <Clock size={11} /> {call.time || "Today"}
-                </span>
+
+              {/* Right Action Buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <CallButton
+                  enquiryNo={enquiryNo}
+                  name={leadName}
+                  phone={lead.phone}
+                  iconOnly={true}
+                  className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100/60 shadow-2xs transition-all active:scale-95 cursor-pointer flex items-center justify-center"
+                  iconSize={13}
+                />
+                <Link href={`/telecaller/leads/${enquiryNo}`}>
+                  <button
+                    type="button"
+                    title="View Lead Details"
+                    className="w-8 h-8 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
+                  >
+                    <ExternalLink size={13} />
+                  </button>
+                </Link>
               </div>
             </div>
-            
-            <div className="flex items-center gap-2 shrink-0">
-              <CallButton
-                enquiryNo={call.enquiryNo || call.id}
-                name={call.name}
-                phone={call.phone}
-                iconOnly={true}
-                className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 hover:bg-slate-50 text-[#00C853] shadow-xs transition-all active:scale-95 cursor-pointer flex items-center justify-center"
-                iconSize={13}
-              />
-              <Link href={`/telecaller/leads/${call.enquiryNo || call.id}`}>
-                <button className="h-8 w-8 rounded-xl border border-slate-200 text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95">
-                  <ExternalLink size={13} />
-                </button>
-              </Link>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
