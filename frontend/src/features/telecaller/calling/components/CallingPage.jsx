@@ -197,6 +197,7 @@ export default function CallingPage({ enquiryNo, isManualCall = false, manualPho
         />
 
         <CallInteractionPanel
+          enquiryNo={enquiryNo}
           leadData={leadData}
           voiceState={voiceState}
           formattedTime={formattedTime}

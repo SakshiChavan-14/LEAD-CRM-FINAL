@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Save } from "lucide-react";
+import { toast } from "sonner";
 import CallOutcomeSelector from "./CallOutcomeSelector";
 import OpinionSelector from "./OpinionSelector";
 import CallNotes from "./CallNotes";
@@ -9,6 +10,7 @@ import FollowUpScheduler from "./FollowUpScheduler";
 import CallDetailsPanel from "./CallDetailsPanel";
 
 export default function CallInteractionPanel({
+  enquiryNo,
   leadData,
   voiceState,
   formattedTime,
@@ -36,6 +38,12 @@ export default function CallInteractionPanel({
   };
 
   const handleSave = () => {
+    // If connected, validate that student opinion is selected
+    if (outcome === "CONNECTED" && !opinion) {
+      toast.warning("Please select a student opinion before saving (e.g. Interested, Warm, or Not Interested)");
+      return;
+    }
+
     // Calculate call duration in seconds (required by backend validation)
     let durationSeconds = 0;
     if (typeof elapsedSeconds === "number" && elapsedSeconds > 0) {
@@ -49,13 +57,18 @@ export default function CallInteractionPanel({
       }
     }
 
+    const resolvedEnquiryNo = leadData?.enquiryNo || enquiryNo;
+    const finalNotes =
+      notes.trim() ||
+      (outcome === "CONNECTED" ? "Call connected with student" : `Call marked as ${outcome.toLowerCase().replace(/_/g, " ")}`);
+
     // Build the payload matching existing LogCallModal format exactly
     const payload = {
-      enquiryNo: leadData?.enquiryNo ? parseInt(leadData.enquiryNo, 10) : null,
+      enquiryNo: resolvedEnquiryNo ? parseInt(resolvedEnquiryNo, 10) : null,
       callDurationSeconds: durationSeconds,
       callDirection: "OUTBOUND",
       outcome,
-      telecallerNotes: notes,
+      telecallerNotes: finalNotes,
     };
 
     // Only include opinion if outcome is CONNECTED
@@ -145,7 +158,7 @@ export default function CallInteractionPanel({
             type="button"
             className="action-btn--save"
             onClick={handleSave}
-            disabled={isSaving || !notes.trim()}
+            disabled={isSaving}
           >
             <Save size={14} />
             <span>{isSaving ? "Saving..." : "Save Log"}</span>
