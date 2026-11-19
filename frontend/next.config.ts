@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["172.21.81.94"],
+  devIndicators: false,
+  allowedDevOrigins: ["172.21.22.101"],
   turbopack: {
     root: path.resolve(__dirname),
   },
@@ -11,7 +12,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://172.21.81.9:8080/api/:path*",
+        destination: "http://172.21.21.215:8080/api/:path*",
       },
     ];
   },

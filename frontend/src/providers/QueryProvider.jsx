@@ -25,14 +25,21 @@ export default function QueryProvider({ children }) {
       })
   );
 
+  // Never display in production. In development, keep available via NEXT_PUBLIC_ENABLE_DEVTOOLS=true
+  const showDevtools =
+    process.env.NODE_ENV === "development" &&
+    process.env.NEXT_PUBLIC_ENABLE_DEVTOOLS === "true";
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}
 
-      <ReactQueryDevtools
-        initialIsOpen={false}
-        buttonPosition="bottom-right"
-      />
+      {showDevtools && (
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-right"
+        />
+      )}
     </QueryClientProvider>
   );
 }
