@@ -1,6 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function GlobalError({ error, reset }) {
+  useEffect(() => {
+    // Log critical uncaught root errors
+    console.error("Critical root error:", error);
+  }, [error]);
+
+  const isDev = process.env.NODE_ENV === "development";
+  const displayMessage =
+    isDev && error?.message
+      ? error.message
+      : "A critical system error occurred. Please refresh the page or contact support.";
+
   return (
     <html lang="en">
       <body>
@@ -59,7 +72,7 @@ export default function GlobalError({ error, reset }) {
                 color: "#6B7280",
               }}
             >
-              {error?.message || "A critical error occurred. Please try again."}
+              {displayMessage}
             </p>
 
             <button
