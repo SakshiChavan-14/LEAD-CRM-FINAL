@@ -86,7 +86,7 @@ export default function RecentCallsKPIs({ calls, activeFilter, onFilterChange })
     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3.5 font-outfit">
       {kpiConfig.map((kpi) => {
         const Icon = kpi.icon;
-        const isActive = activeFilter === kpi.id;
+        const isActive = activeFilter === kpi.id || (kpi.id === "all" && activeFilter === "today");
 
         return (
           <div
