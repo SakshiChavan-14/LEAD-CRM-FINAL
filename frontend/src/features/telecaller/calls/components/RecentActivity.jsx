@@ -1,56 +1,126 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { Activity, ChevronRight } from "lucide-react";
+import React, { useMemo, useRef } from "react";
+import { Activity, ChevronRight, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useInfiniteCalls } from "@/features/telecaller/hooks/useCalls";
 
-export default function RecentActivity({ isLoading, activities = [] }) {
-  const items = useMemo(() => {
-    if (activities && activities.length > 0) return activities;
-    // Default fallback realistic sample matching reference when empty in dev/demo
-    return [
-      {
-        id: "act-1",
-        title: "Call logged — CONNECTED",
-        leadName: "Aditya Sharma",
-        dotColor: "bg-emerald-500",
-        time: "5 min ago",
-      },
-      {
-        id: "act-2",
-        title: "Follow-up scheduled",
-        leadName: "Priya Mehta • 19 Nov, 02:00 PM",
-        dotColor: "bg-blue-500",
-        time: "18 min ago",
-      },
-      {
-        id: "act-3",
-        title: "Lead marked as INTERESTED",
-        leadName: "Sneha Kulkarni",
-        dotColor: "bg-purple-500",
-        time: "32 min ago",
-      },
-      {
-        id: "act-4",
-        title: "Call logged — NOT CONNECTED",
-        leadName: "Rohan Patil",
-        dotColor: "bg-amber-500",
-        time: "49 min ago",
-      },
-    ];
-  }, [activities]);
+export default function RecentActivity({ isLoading: parentLoading, activities = [] }) {
+  const {
+    data,
+    isLoading: callsLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error,
+  } = useInfiniteCalls({}, 10);
+
+  const scrollRef = useRef(null);
+  const isLoading = parentLoading && callsLoading;
+
+  // Extract raw calls from infinite pages
+  const infiniteCalls = useMemo(() => {
+    if (!data || !data.pages) return [];
+    const list = [];
+    data.pages.forEach((page) => {
+      const pageCalls = Array.isArray(page?.content)
+        ? page.content
+        : Array.isArray(page)
+        ? page
+        : Array.isArray(page?.calls)
+        ? page.calls
+        : [];
+      list.push(...pageCalls);
+    });
+    return list;
+  }, [data]);
+
+  // Combine and deduplicate activities
+  const allItems = useMemo(() => {
+    const seenIds = new Set();
+    const result = [];
+
+    const addItem = (item) => {
+      const id = String(item.id || item.callId || item.interactionId || "");
+      if (!id || seenIds.has(id)) return;
+      seenIds.add(id);
+      result.push(item);
+    };
+
+    // 1. Add infinite query items
+    infiniteCalls.forEach((c) => {
+      const id = c.callId || c.id || c.interactionId;
+      const outcome = (c.outcome || c.callOutcome || c.status || "").toUpperCase();
+      let statusText = "Call logged — LOGGED";
+      let dotColor = "bg-amber-500";
+
+      if (outcome.includes("CONNECT") || outcome.includes("ADMIT")) {
+        statusText = "Call logged — CONNECTED";
+        dotColor = "bg-emerald-500";
+      } else if (outcome.includes("NOT") || outcome.includes("MISS") || outcome.includes("BUSY") || outcome.includes("REJECT")) {
+        statusText = "Call logged — NOT CONNECTED";
+        dotColor = "bg-amber-500";
+      } else if (outcome.includes("FOLLOW") || outcome.includes("SCHEDULE")) {
+        statusText = "Follow-up scheduled";
+        dotColor = "bg-blue-500";
+      } else if (outcome.includes("INTEREST")) {
+        statusText = "Lead marked as INTERESTED";
+        dotColor = "bg-purple-500";
+      }
+
+      let timeStr = "Today";
+      if (c.callDateTime || c.createdAt || c.date) {
+        const d = new Date(c.callDateTime || c.createdAt || c.date);
+        if (!isNaN(d.getTime())) {
+          timeStr = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        }
+      }
+
+      addItem({
+        id: `call-${id}`,
+        title: statusText,
+        leadName: c.leadName || c.name || c.studentName || "Student",
+        dotColor,
+        time: c.time || timeStr,
+      });
+    });
+
+    // 2. Seed with dashboard activities if available
+    if (Array.isArray(activities)) {
+      activities.forEach((act, idx) => {
+        const actId = act.id || `prop-act-${idx}`;
+        addItem({
+          id: actId,
+          title: act.title || act.action || "Activity",
+          leadName: act.leadName || act.studentName || act.name || "Student",
+          dotColor: act.dotColor || "bg-blue-500",
+          time: act.time || "Today",
+        });
+      });
+    }
+
+    return result;
+  }, [infiniteCalls, activities]);
+
+  const handleScroll = () => {
+    if (!scrollRef.current || isFetchingNextPage || !hasNextPage) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    if (scrollHeight - scrollTop - clientHeight < 40) {
+      fetchNextPage();
+    }
+  };
 
   if (isLoading) {
     return (
-      <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] animate-pulse font-outfit justify-between">
-        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+      <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col font-outfit h-full animate-pulse">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-slate-100" />
             <div className="h-5 w-28 bg-slate-100 rounded" />
           </div>
           <div className="h-4 w-16 bg-slate-100 rounded" />
         </div>
-        <div className="space-y-4 my-auto">
+        <div className="pt-3.5 space-y-4 flex-1">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex justify-between items-center">
               <div className="space-y-1.5">
@@ -65,27 +135,8 @@ export default function RecentActivity({ isLoading, activities = [] }) {
     );
   }
 
-  const getDotColor = (item) => {
-    if (item.dotColor) return item.dotColor;
-    const status = (item.status || item.outcome || item.title || "").toUpperCase();
-    if (status.includes("CONNECTED") || status.includes("ADMITTED")) return "bg-emerald-500";
-    if (status.includes("SCHEDULED") || status.includes("FOLLOW")) return "bg-blue-500";
-    if (status.includes("INTERESTED")) return "bg-purple-500";
-    return "bg-amber-500";
-  };
-
-  const getTitle = (item) => {
-    if (item.title) return item.title;
-    const status = (item.status || item.outcome || "").toUpperCase();
-    if (status === "CONNECTED") return "Call logged — CONNECTED";
-    if (status.includes("NOT") || status.includes("MISSED") || status.includes("REJECTED")) return "Call logged — NOT CONNECTED";
-    if (status.includes("FOLLOW")) return "Follow-up scheduled";
-    if (status.includes("INTEREST")) return "Lead marked as INTERESTED";
-    return item.action || `Activity — ${item.status || "LOGGED"}`;
-  };
-
   return (
-    <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] justify-between font-outfit hover:shadow-md transition-all duration-300 h-full">
+    <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col font-outfit hover:shadow-md transition-all duration-300 h-full">
       {/* Header */}
       <div className="flex justify-between items-center pb-3 border-b border-slate-100 shrink-0">
         <div className="flex items-center gap-2.5">
@@ -103,27 +154,54 @@ export default function RecentActivity({ isLoading, activities = [] }) {
         </Link>
       </div>
 
-      {/* Activity Items List */}
-      <div className="divide-y divide-slate-100/80 flex-1 my-2 flex flex-col justify-around">
-        {items.slice(0, 4).map((item, idx) => (
-          <div key={item.id || idx} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-1">
-            <div className="flex items-start gap-2.5 min-w-0 pr-2">
-              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${getDotColor(item)}`} />
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-800 truncate leading-snug">
-                  {getTitle(item)}
-                </p>
-                <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
-                  Lead: {item.leadName || item.studentName || item.name || "Student"}
-                </p>
-              </div>
-            </div>
-            <span className="text-[11px] text-slate-400 font-medium shrink-0 whitespace-nowrap">
-              {item.time || "Today"}
-            </span>
+      {/* Infinite Scroll List */}
+      {allItems.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center py-8 text-center">
+          <div className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 text-slate-400 flex items-center justify-center mb-2 shadow-2xs">
+            <Activity size={18} />
           </div>
-        ))}
-      </div>
+          <p className="text-xs font-bold text-slate-700">No recent activity</p>
+          <p className="text-[11px] text-slate-400 mt-0.5">Your calls and events will stream here live.</p>
+        </div>
+      ) : (
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="pt-2 divide-y divide-slate-100/80 flex-1 overflow-y-auto [scrollbar-width:none] max-h-[260px]"
+        >
+          {allItems.map((item, idx) => (
+            <div key={`${item.id}-${idx}`} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-1">
+              <div className="flex items-start gap-2.5 min-w-0 pr-2">
+                <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${item.dotColor || "bg-blue-500"}`} />
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-800 truncate leading-snug">
+                    {item.title}
+                  </p>
+                  <p className="text-[11px] text-slate-400 font-medium truncate mt-0.5">
+                    Lead: {item.leadName || "Student"}
+                  </p>
+                </div>
+              </div>
+              <span className="text-[11px] text-slate-400 font-medium shrink-0 whitespace-nowrap">
+                {item.time || "Today"}
+              </span>
+            </div>
+          ))}
+
+          {isFetchingNextPage && (
+            <div className="py-2.5 flex items-center justify-center gap-2 text-xs font-semibold text-slate-400">
+              <Loader2 size={13} className="animate-spin text-blue-600" />
+              <span>Loading more activities...</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="py-2 text-center text-[11px] font-semibold text-slate-400">
+              Could not load older activities.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
