@@ -105,8 +105,9 @@ export const telecallerDashboardService = {
       ).length;
 
       // 3. Compute dashboard summary
+      const totalAssignedLeads = leadsData?.totalItems ?? leadsData?.totalElements ?? leadsData?.total ?? leads.length;
       const summary = {
-        assigned: leads.length,
+        assigned: totalAssignedLeads,
         callsToday: voiceAnalytics.callsToday, // Sourced from calls history
         connected: voiceAnalytics.connected, // Sourced from calls history
         interested: interestedCount,

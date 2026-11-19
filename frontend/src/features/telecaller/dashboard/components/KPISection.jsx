@@ -30,48 +30,61 @@ export default function KPISection({ isLoading, summary }) {
     goal: 0,
   };
 
+  const handleScrollToPerformance = (e) => {
+    e.preventDefault();
+    const el = document.getElementById("performance");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-4", "ring-purple-300", "transition-all", "duration-500");
+      setTimeout(() => {
+        el.classList.remove("ring-4", "ring-purple-300");
+      }, 2000);
+    }
+  };
+
   const kpis = [
     {
       title: "Assigned",
       value: safeSummary.assigned ?? 0,
       icon: User,
       iconBg: "bg-blue-50 text-blue-600 border border-blue-100/70",
-      href: "/telecaller/leads?status=ALL",
+      href: "/telecaller/leads",
     },
     {
       title: "Calls Today",
       value: safeSummary.callsToday ?? 0,
       icon: Phone,
       iconBg: "bg-amber-50 text-amber-600 border border-amber-100/70",
-      href: "/telecaller/calls?date=today",
+      href: "/telecaller/calls/history?filter=today",
     },
     {
       title: "Connected",
       value: safeSummary.connected ?? 0,
       icon: PhoneCall,
       iconBg: "bg-emerald-50 text-emerald-600 border border-emerald-100/70",
-      href: "/telecaller/calls?status=CONNECTED",
+      href: "/telecaller/calls/history?filter=connected",
     },
     {
       title: "Interested",
       value: safeSummary.interested ?? 0,
       icon: Heart,
       iconBg: "bg-purple-50 text-purple-600 border border-purple-100/70",
-      href: "/telecaller/leads?status=INTERESTED",
+      href: "/telecaller/leads?opinion=Interested",
     },
     {
       title: "Admissions",
       value: safeSummary.admissions ?? 0,
       icon: GraduationCap,
       iconBg: "bg-rose-50 text-rose-600 border border-rose-100/70",
-      href: "/telecaller/leads?status=ADMISSION",
+      href: "/telecaller/leads?status=COMPLETED",
     },
     {
       title: "Goal %",
       value: `${safeSummary.goal ?? 0}%`,
       icon: Target,
       iconBg: "bg-pink-50 text-pink-600 border border-pink-100/70",
-      href: null,
+      href: "#performance",
+      onClick: handleScrollToPerformance,
     },
   ];
 
@@ -94,6 +107,14 @@ export default function KPISection({ isLoading, summary }) {
             </div>
           </div>
         );
+
+        if (kpi.onClick) {
+          return (
+            <a key={idx} href={kpi.href} onClick={kpi.onClick} className="block outline-none focus:ring-2 focus:ring-purple-500 rounded-[20px] cursor-pointer">
+              {CardInner}
+            </a>
+          );
+        }
 
         if (kpi.href) {
           return (
