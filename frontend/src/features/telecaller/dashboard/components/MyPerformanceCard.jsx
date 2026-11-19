@@ -66,7 +66,7 @@ export default function MyPerformanceCard({ isLoading, summary }) {
   ];
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] justify-between font-outfit hover:shadow-md transition-all duration-300 h-full">
+    <div id="performance" className="bg-white border border-slate-200/80 rounded-[24px] shadow-xs p-5 flex flex-col min-h-[340px] justify-between font-outfit hover:shadow-md transition-all duration-300 h-full scroll-mt-24">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
         <div className="flex items-center gap-2.5">

@@ -50,8 +50,21 @@ export default function TelecallerLeadsPage() {
     const initial = {};
     for (const key of FILTER_KEYS) {
       const val = searchParams.get(key);
-      if (val) initial[key] = val;
+      if (val && val.toUpperCase() !== "ALL") initial[key] = val;
     }
+
+    // Handle cross-mapping for status & opinion aliases
+    const statusParam = searchParams.get("status");
+    if (statusParam) {
+      const upperStatus = statusParam.toUpperCase();
+      if (upperStatus === "INTERESTED") {
+        initial.opinion = "Interested";
+        delete initial.status;
+      } else if (upperStatus === "ADMISSION" || upperStatus === "CONVERTED") {
+        initial.status = "COMPLETED";
+      }
+    }
+
     return initial;
   }, [searchParams]);
 
@@ -65,7 +78,7 @@ export default function TelecallerLeadsPage() {
     const cf = {};
     if (searchTerm.trim()) cf.search = searchTerm.trim();
     Object.entries(filters).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && String(v).trim() !== "") {
+      if (v !== undefined && v !== null && String(v).trim() !== "" && String(v).toUpperCase() !== "ALL") {
         cf[k] = String(v).trim();
       }
     });
