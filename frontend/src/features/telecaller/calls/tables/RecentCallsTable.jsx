@@ -12,7 +12,7 @@ import { Search } from "lucide-react";
 export default function RecentCallsTable({ activeFilter = "all" }) {
   const { data: calls, isLoading } = useCallHistory();
   const { data: leadsData } = useTelecallerLeads({}, 0, 250);
-  const allLeads = leadsData?.leads || [];
+  const allLeads = useMemo(() => leadsData?.leads || [], [leadsData?.leads]);
 
   const { selectedCallId, setSelectedCallId } = useVoice();
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,7 +46,14 @@ export default function RecentCallsTable({ activeFilter = "all" }) {
 
     // Filter by KPI category
     if (activeFilter && activeFilter !== "all") {
-      if (activeFilter === "connected") {
+      if (activeFilter === "today") {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        list = list.filter(c => {
+          const d = new Date(c.callDateTime || c.createdAt || c.date || 0);
+          return !isNaN(d.getTime()) && d >= todayStart;
+        });
+      } else if (activeFilter === "connected") {
         list = list.filter(c => String(c.outcome || c.status || "").toLowerCase().includes("connect") || String(c.outcome || "").toLowerCase().includes("answer"));
       } else if (activeFilter === "missed") {
         list = list.filter(c => String(c.outcome || c.status || "").toLowerCase().includes("miss") || String(c.outcome || "").toLowerCase().includes("no answer"));

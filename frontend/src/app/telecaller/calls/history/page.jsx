@@ -1,18 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import PageContainer from "@/components/layout/PageContainer";
+import { useSearchParams } from "next/navigation";
 import PageHeader from "@/components/management/PageHeader";
 import { telecallerBreadcrumbs } from "@/config/telecallerBreadcrumbs";
 import { useCallHistory } from "@/features/telecaller/voice/hooks/useCallHistory";
 
 import RecentCallsKPIs from "@/features/telecaller/calls/sections/RecentCallsKPIs";
 import RecentCallsTable from "@/features/telecaller/calls/tables/RecentCallsTable";
-import { PhoneCall } from "lucide-react";
 
 export default function CallsHistoryPage() {
   const { data: calls } = useCallHistory();
-  const [activeFilter, setActiveFilter] = useState("all");
+  const searchParams = useSearchParams();
+
+  const paramFilter = searchParams.get("filter") || 
+                      searchParams.get("status") || 
+                      (searchParams.get("date") === "today" ? "today" : null);
+
+  const [userFilter, setUserFilter] = useState(null);
+  const activeFilter = userFilter ?? (paramFilter ? paramFilter.toLowerCase() : "all");
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -29,7 +35,7 @@ export default function CallsHistoryPage() {
         <RecentCallsKPIs 
           calls={calls} 
           activeFilter={activeFilter} 
-          onFilterChange={setActiveFilter} 
+          onFilterChange={(newFilter) => setUserFilter(newFilter)} 
         />
 
         {/* Data Table with Infinite Scrolling */}
